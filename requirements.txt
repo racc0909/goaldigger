@@ -20,11 +20,8 @@ folium
 streamlit_folium
 scikit-misc
 simpy
-pickle
 streamlit_authenticator
-streamlit-authenticator
 streamlit
-pickle
 time
 datetime
 pathlib
