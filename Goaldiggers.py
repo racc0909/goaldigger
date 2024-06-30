@@ -20,6 +20,7 @@ def login_page():
       username = st.text_input("Username")
       password = st.text_input("Password", type="password")
       if st.button("Login"):
+         # Function to authenticate the user
          user = authenticate(username, password)
          if user:
             st.session_state.logged_in = True
@@ -62,6 +63,7 @@ def login_page():
       st.text(f"Your currency: {currency}")
 
       if st.button("Sign Up"):
+         # function to add user to database
          if signup(username, password, birthday, country, currency):
             st.success("User created successfully!")
          else:
@@ -71,6 +73,7 @@ def login_page():
          st.session_state.signup_mode = False
 
 def main():
+    # Content of the main page
     if 'logged_in' not in st.session_state:
       st.session_state.logged_in = False
     
