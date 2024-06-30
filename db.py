@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 import hashlib
 
 # Read database credentials from Streamlit secrets
-db_config = st.secrets["postgres"]
+db_config = st.secrets["postgresql"]
 DATABASE_URL = f"postgresql+psycopg2://{db_config['username']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
 
 # Database setup
