@@ -1,95 +1,81 @@
 import streamlit as st
-import streamlit_authenticator as stauth
-from streamlit_authenticator.utilities.hasher import Hasher
-import pandas as pd
-import pickle
-import time
-from pathlib import Path
-from datetime import datetime, timedelta
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import hashlib
 
-#import psycopg2
+# Database setup
+DATABASE_URL = "postgresql+psycopg2://username:password@host/database"
+engine = create_engine(DATABASE_URL)
+Session = sessionmaker(bind=engine)
+session = Session()
 
-# Page title
-st.set_page_config(page_title='Financial Goal Planer', page_icon='🎫')
+Base = declarative_base()
 
-# --- USER AUTHENTICATION ---
-names = ["Peter Parker", "Rebecca Miller"]
-usernames = ["pparker", "rmiller"]
+# User model
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
 
-# Load hashed passwords
-file_path = Path(__file__).parent / "hashed_pw.pk1"
-# rb (read) and load instead of wb (write) and dump
-with file_path.open("rb") as file:
-  hashed_passwords = pickle.load(file)
+Base.metadata.create_all(engine)
 
-credentials = {"usernames":{}}
-        
-for uname,name,pwd in zip(usernames,names,hashed_passwords):
-    user_dict = {"name": name, "password": pwd}
-    credentials["usernames"].update({uname: user_dict})
+# Helper functions
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def authenticate(username, password):
+    user = session.query(User).filter_by(username=username).first()
+    if user and user.password == hash_password(password):
+        return user
+    return None
+
+def signup(username, password):
+    if session.query(User).filter_by(username=username).first():
+        return False
+    user = User(username=username, password=hash_password(password))
+    session.add(user)
+    session.commit()
+    return True
+
+# Streamlit app
+def login_page():
+    st.title("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        user = authenticate(username, password)
+        if user:
+            st.session_state.logged_in = True
+            st.session_state.user_id = user.id
+            st.success("Logged in successfully!")
+        else:
+            st.error("Invalid username or password")
+
+def signup_page():
+    st.title("Sign Up")
+    username = st.text_input("New Username")
+    password = st.text_input("New Password", type="password")
+    if st.button("Sign Up"):
+        if signup(username, password):
+            st.success("User created successfully!")
+        else:
+            st.error("Username already taken")
+
+def main():
+    if 'logged_in' not in st.session_state:
+        st.session_state.logged_in = False
     
-# Create authentication object
-# Calculator is for cookie, abdef is a random str
-authenticator = stauth.Authenticate(credentials, "cookie_name", "random_key", cookie_expiry_days = 0)
+    if st.session_state.logged_in:
+        st.sidebar.title("Navigation")
+        st.sidebar.write("Go to 'Form' or 'Overview' from the sidebar.")
+    else:
+        auth_choice = st.sidebar.selectbox("Login or Sign Up", ["Login", "Sign Up"])
+        if auth_choice == "Login":
+            login_page()
+        elif auth_choice == "Sign Up":
+            signup_page()
 
-name, authentication_status, username = authenticator.login('main', fields = {'Form name': 'Login'})
-
-if authentication_status == False:
-   st.error("Username/password is incorrect")
-   st.session_state.authentication_status = False
-
-if authentication_status == None:
-   st.warning("Please enter your username and password")
-   st.session_state.authentication_status = None
-
-if authentication_status:
-   st.session_state.authentication_status = True
-
-   st.title('🎫 Financial Goal Planer')
-
-   # SIDEBAR
-   st.sidebar.title(f"Welcome {name}")
-   st.sidebar.success("Select a demo above.")
-   authenticator.logout("Logout", "sidebar")
-
-   # Creat data if not exists
-   if 'df_userinfo' not in st.session_state:
-      df_userinfo = pd.DataFrame(columns=['ID', 'username', 'regular_income', 'additional_income', 'regular_expenses', 'additional_expenses', 'debt_expenses', 'savings', 'investments', 'Status', 'date'])
-      st.session_state.df_userinfo = df_userinfo
-
-   # CREATING A PLAN
-   with st.form('Current situation'):
-      st.header('Income')
-      st.info('To help you get a clear picture of your financial situation, we\'d love for you to answer a few questions. If you\'re unsure about some information, just enter your best estimate — you can always change it later!')
-      regular_income = st.number_input("What is your current regular income after taxes?", 0, 1000000)  
-      additional_income = st.number_input("What is your income from other sources after taxes?", 0, 1000000)
-      # todo: Raises
-      st.header('Expenses')    
-      regular_expenses = st.number_input("What are your monthly regular expenses?", 0, 1000000)     
-      additional_expenses = st.number_input("How much do you set aside for additional monthly expenses?", 0, 1000000)  
-      debt_expenses = st.number_input("What are your monthly debt obligations (e.g., loan payments, credit card payments)?", 0, 1000000)  
-      st.header('Savings and Investments')    
-      savings = st.number_input("How much do you save each month?", 0, 1000000)   
-      investments = st.number_input("How much do you invest each month?", 0, 1000000) 
-      submit = st.form_submit_button('Save')
-
-      if submit:
-         today_date = datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
-         df = pd.DataFrame([{'ID': f'INFO-{username}-{today_date}',
-                              'username': username,                              
-                              'regular_income': regular_income,
-                              'additional_income': additional_income,
-                              'regular_expenses': regular_expenses,
-                              'additional_expenses': additional_expenses,
-                              'debt_expenses': debt_expenses,
-                              'savings': savings,
-                              'investments': investments,
-                              'Status': 'Open',
-                              'date': today_date
-                           }])
-         st.success('Information saved!')
-         time.sleep(0.5)
-         st.session_state.df_userinfo = pd.concat([st.session_state.df_userinfo, df], axis=0).sort_values(by=['ID'], ascending=[False])
-         st.switch_page("pages/1_Overview.py")
-
-
+if __name__ == "__main__":
+    main()

@@ -23,3 +23,5 @@ simpy
 streamlit_authenticator
 streamlit
 pathlib
+sqlalchemy
+psycopg2-binary
