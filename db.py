@@ -1,7 +1,8 @@
 import streamlit as st
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from datetime import datetime
 import hashlib
 
 # Read database credentials from Streamlit secrets
@@ -21,6 +22,9 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
+    birthday = Column(Date, nullable=False)
+    country = Column(String(100), nullable=False)
+    currency = Column(String(10), nullable=False)
 
 # Form data model
 class FormData(Base):
@@ -41,10 +45,11 @@ def authenticate(username, password):
         return user
     return None
 
-def signup(username, password):
+def signup(username, password, birthday, country, currency):
     if session.query(User).filter_by(username=username).first():
         return False
-    user = User(username=username, password=hash_password(password))
+    birthday = birthday.strftime("%Y-%m-%d")
+    user = User(username=username, password=hash_password(password), birthday=birthday, country=country, currency=currency)
     session.add(user)
     session.commit()
     return True
