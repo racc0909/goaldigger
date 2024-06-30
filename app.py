@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 import hashlib
 
 # Database setup
-DATABASE_URL = "postgresql+psycopg2://username:password@host/database"
+DATABASE_URL = "postgresql+psycopg2://username:password@92.205.130.76:9999/postgres"
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
