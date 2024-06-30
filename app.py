@@ -2,28 +2,43 @@ import streamlit as st
 from db import authenticate, signup
 
 def login_page():
-    st.title("Login")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        user = authenticate(username, password)
-        if user:
+   st.title("Welcome to Goaldiggers")
+   st.write("Helping you achieve your financial goals, both short-term and long-term.")
+
+   # Signup and Login Page
+   if "signup_mode" not in st.session_state:
+        st.session_state.signup_mode = False
+
+   if not st.session_state.signup_mode:
+      # Login
+      st.subheader("Login")
+      username = st.text_input("Username")
+      password = st.text_input("Password", type="password")
+      if st.button("Login"):
+         user = authenticate(username, password)
+         if user:
             st.session_state.logged_in = True
             st.session_state.user_id = user.id
-            st.success("Logged in successfully!")
+            st.success(f"Welcome, {username}!")
             st.experimental_rerun()
-        else:
-            st.error("Invalid credentials")
-
-def signup_page():
-    st.title("Sign Up")
-    username = st.text_input("New Username")
-    password = st.text_input("New Password", type="password")
-    if st.button("Sign Up"):
-        if signup(username, password):
+         else:
+            st.error("Invalid username or password.")
+      st.write("Don't have an account?")
+      if st.button("Go to Sign Up"):
+         st.session_state.signup_mode = True
+   else:
+      # Sign up
+      st.subheader("Sign Up")
+      username = st.text_input("New Username")
+      password = st.text_input("New Password", type="password")
+      if st.button("Sign Up"):
+         if signup(username, password):
             st.success("User created successfully!")
-        else:
+         else:
             st.error("Username already taken")
+      
+      if st.button("Back to Login"):
+         st.session_state.signup_mode = False
 
 def main():
     if 'logged_in' not in st.session_state:
