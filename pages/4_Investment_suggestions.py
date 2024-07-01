@@ -20,7 +20,7 @@ def get_image_as_base64(image_path):
         return base64.b64encode(file.read()).decode("utf-8")
     
 # Path to the local icon
-icon_path = "/Users/lishiya/Downloads/goal_digger_web_app/icons8-anzahlung-48.png"
+icon_path = "data/icons8-anzahlung-48.png"
 icon_base64 = get_image_as_base64(icon_path)
 
 
@@ -255,7 +255,7 @@ else:
     }
 
     # 使用图标
-    with open("/Users/lishiya/Downloads/goal_digger_web_app/icons8-anzahlung-48.png", "rb") as file:
+    with open("data/icons8-anzahlung-48.png", "rb") as file:
         cd_icon = file.read()
     gov_bond_icon_url = "https://www.flaticon.com/svg/static/icons/svg/1170/1170638.svg"
     money_market_icon_url = "https://www.flaticon.com/svg/static/icons/svg/1170/1170674.svg"
