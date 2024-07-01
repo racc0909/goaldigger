@@ -26,3 +26,7 @@ pathlib
 sqlalchemy
 psycopg2-binary
 numpy-financial
+plotly.graph_objects
+base64
+matplotlib.pyplot
+datetime
