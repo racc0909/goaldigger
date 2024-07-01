@@ -350,7 +350,7 @@ def main():
         car_option = st.radio('Choose an Option:', ('See Available Suggested Car Prices', 'Input Your Car Price'))
 
         car_price = 0
-        df = load_car_data("C:/Users/thaon/OneDrive/Documents/BFA/FIWP/car_prices.xlsx")
+        df = load_car_data("data/car_prices.xlsx")
 
         if car_option == 'See Available Suggested Car Prices':
             selected_make = st.selectbox('Select Car Make', df['make'].unique(), key='selected_make')
