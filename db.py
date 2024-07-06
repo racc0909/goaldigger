@@ -1,5 +1,5 @@
 import streamlit as st
-from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -16,22 +16,34 @@ session = Session()
 
 Base = declarative_base()
 
-# User model
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    username = Column(String(50), unique=True, nullable=False)
-    password = Column(String(255), nullable=False)
-    birthday = Column(Date, nullable=False)
-    country = Column(String(100), nullable=False)
-    currency = Column(String(10), nullable=False)
+# User credential model
+class Credential(Base):
+    __tablename__ = 'credentials'
+    userid = Column(Integer, primary_key=True)
+    username = Column(String(255), unique=True, nullable=False)
+    password = Column(String(255), unique=True, nullable=False)
 
-# Form data model
-class FormData(Base):
-    __tablename__ = 'form_data'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    data = Column(String(255))
+# User information model
+class User(Base):
+    __tablename__ = 'userinfo'
+    userid = Column(Integer, unique=True, primary_key=True)
+    birthday = Column(Date, nullable=False)
+    country = Column(String(255), nullable=False)
+    currency = Column(String(10), nullable=False)
+    savings = Column(Numeric(10, 2), nullable=True)
+
+# Plan information model
+class Plan(Base):
+    __tablename__ = 'plans'
+    planid = Column(Integer, unique=True, primary_key=True)
+    userid = Column(Integer)
+    goal_age = Column(Integer)
+    goal_duration = Column(Integer)
+    payment_duration = Column(Integer)
+    total_amount = Column(Numeric(10, 2), nullable=True)
+    payment_first = Column(Numeric(10, 2), nullable=True)
+    payment_last = Column(Numeric(10, 2), nullable=True)
+    payment_monthly = Column(Numeric(10, 2), nullable=True)
 
 Base.metadata.create_all(engine)
 

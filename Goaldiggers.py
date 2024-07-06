@@ -78,6 +78,13 @@ def main():
       st.session_state.logged_in = False
     
     if st.session_state.logged_in:
+      
+      # Add logout button at the end of the sidebar
+      if st.sidebar.button("Logout"):
+         st.session_state.logged_in = False
+         st.experimental_rerun()
+         
+      # First page
       st.title("Investment Options Comparison Calculator")
       st.write("Enter your investment amount and term to simulate the expected returns on different investment options.")
 
@@ -133,6 +140,7 @@ def main():
          plt.legend()
          plt.grid(True)
          st.pyplot(plt)
+
     else:
          login_page()
 
