@@ -2,61 +2,49 @@ import streamlit as st
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from db import authenticate, signup
-import time
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
 
-# Function to display the logout button
-
-def login_page():
-   # todo: Introduction to the app
-   st.title("Welcome to Goaldiggers")
-   st.write("Helping you achieve your financial goals, both short-term and long-term.")
-
-   # Signup and Login Page
-   if "signup_mode" not in st.session_state:
-        st.session_state.signup_mode = False
-
-   if not st.session_state.signup_mode:
-      # Login
-      st.subheader("Login")
-      username = st.text_input("Username")
-      password = st.text_input("Password", type="password")
-      if st.button("Login"):
-         # Function to authenticate the user
-         user = authenticate(username, password)
-         if user:
-            st.session_state.logged_in = True
-            st.session_state.user_id = user.userid
-            st.success("Login successfully!")
-            time.sleep(0.8)
-            st.experimental_rerun()
-         else:
-            st.error("Invalid username or password.")
-      st.write("Don't have an account?")
-      if st.button("Go to Sign Up"):
-         st.session_state.signup_mode = True
-         st.experimental_rerun()
-   else:
-      # Sign up
+def signup_page():
+   # Sign up
       st.subheader("Sign Up")
       username = st.text_input("New Username")
       password = st.text_input("New Password", type="password")
 
       if st.button("Sign Up"):
-         # Function to add user to database
+         # function to add user to database
          if signup(username, password):
             st.success("User created successfully!")
-            st.session_state.signup_mode = False
-            # Automatically logging in
-            user = authenticate(username, password)
-            st.session_state.user_id = user.userid
-            st.session_state.logged_in = True
-            time.sleep(0.8)
-            st.experimental_rerun()
          else:
             st.error("Username already taken")
+      
+      if st.button("Back to Login"):
+         st.session_state.signup_mode = False
+
+def login_page():
+   # todo: Introduction to the app
+    st.title("Welcome to Goaldiggers")
+    st.write("Helping you achieve your financial goals, both short-term and long-term.")
+
+    # Login
+    st.subheader("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        # Function to authenticate the user
+        user = authenticate(username, password)
+        if user:
+            st.session_state.logged_in = True
+            st.session_state.user_id = user.userid
+            st.success(f"Welcome, {username}!")
+        else:
+            st.error("Invalid username or password.")
+    st.write("Don't have an account?")
+    if st.button("Go to Sign Up"):
+        st.session_state.signup_mode = True
+        signup_page()
+      
 
 def main():
     # Content of the main page

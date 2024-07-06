@@ -24,7 +24,7 @@ class Credential(Base):
     password = Column(String(255), unique=True, nullable=False)
 
 # User information model
-class User(Base):
+class Userinfo(Base):
     __tablename__ = 'userinfo'
     userid = Column(Integer, unique=True, primary_key=True)
     birthday = Column(Date, nullable=False)
@@ -52,16 +52,24 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 def authenticate(username, password):
-    user = session.query(User).filter_by(username=username).first()
+    user = session.query(Credential).filter_by(username=username).first()
     if user and user.password == hash_password(password):
         return user
     return None
 
-def signup(username, password, birthday, country, currency):
-    if session.query(User).filter_by(username=username).first():
+def signup(username, password):
+    if session.query(Credential).filter_by(username=username).first():
         return False
-    birthday = birthday.strftime("%Y-%m-%d")
-    user = User(username=username, password=hash_password(password), birthday=birthday, country=country, currency=currency)
-    session.add(user)
+    # Add user credential to Credential
+    credential = Credential(username=username, password=hash_password(password))
+    session.add(credential)
+    session.commit()
+    return True
+
+def userinfo(userid, birthday, country, currency):
+    if session.query(Credential).filter_by(userid=userid).first():
+        return False
+    userinfo = Userinfo(userid=userid, birthday=birthday, country=country, currency=currency)
+    session.add(userinfo)
     session.commit()
     return True
