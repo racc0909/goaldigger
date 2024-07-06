@@ -55,7 +55,7 @@ def login_page():
             st.session_state.logged_in = True
             time.sleep(0.5)
             #st.experimental_rerun()
-            st.switch_page("pages/User_Info.py")
+            st.switch_page("pages/1_User_Info.py")
          else:
             st.error("Username already taken")
 

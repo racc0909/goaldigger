@@ -92,4 +92,5 @@ def logout():
     # Button to logout
       if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
+        st.switch_page("Goaldiggers.py")
         st.experimental_rerun()
