@@ -53,7 +53,7 @@ def login_page():
             user = authenticate(username, password)
             st.session_state.user_id = user.userid
             st.session_state.logged_in = True
-            time.sleep(0.8)
+            time.sleep(0.5)
             st.experimental_rerun()
          else:
             st.error("Username already taken")
