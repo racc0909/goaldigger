@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-from db import authenticate, signup
+from db import authenticate, signup, logout
 import time
 
 # Set page title and icon
@@ -54,7 +54,8 @@ def login_page():
             st.session_state.user_id = user.userid
             st.session_state.logged_in = True
             time.sleep(0.5)
-            st.experimental_rerun()
+            #st.experimental_rerun()
+            st.switch_page("pages/User_Info.py")
          else:
             st.error("Username already taken")
 
@@ -64,10 +65,8 @@ def main():
       st.session_state.logged_in = False
     
     if st.session_state.logged_in:
-      # Ensure the logout button is available on all pages
-      if st.sidebar.button("Logout"):
-        st.session_state.logged_in = False
-        st.experimental_rerun()
+      
+      logout()
 
       # First page
       st.title("Investment Options Comparison Calculator")

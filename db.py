@@ -27,6 +27,7 @@ class Credential(Base):
 class Userinfo(Base):
     __tablename__ = 'userinfo'
     userid = Column(Integer, unique=True, primary_key=True)
+    usernickname = Column(String(255), nullable=False)
     birthday = Column(Date, nullable=False)
     country = Column(String(255), nullable=False)
     currency = Column(String(10), nullable=False)
@@ -66,10 +67,29 @@ def signup(username, password):
     session.commit()
     return True
 
-def userinfo(userid, birthday, country, currency):
-    if session.query(Credential).filter_by(userid=userid).first():
-        return False
-    userinfo = Userinfo(userid=userid, birthday=birthday, country=country, currency=currency)
-    session.add(userinfo)
+def getUserInfo(userid):
+    info = session.query(Userinfo).filter_by(userid=userid).first()
+    return info
+
+def createOrUpdateUserInfo(userid, usernickname, country, currency, birthday, savings):
+    info = getUserInfo(userid)
+    
+    if info:
+        info.usernickname = usernickname
+        info.country = country
+        info.currency = currency
+        info.birthday = birthday
+        info.savings = savings
+    else:
+        info = Userinfo(
+            userid=userid, usernickname=usernickname, country=country, currency=currency, birthday=birthday, savings=savings
+        )
+        session.add(info)
     session.commit()
-    return True
+    return info
+
+def logout():
+    # Button to logout
+      if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
+        st.experimental_rerun()
