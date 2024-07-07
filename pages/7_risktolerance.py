@@ -9,9 +9,11 @@ import streamlit as st
 # 页面标题
 st.title("Risk Tolerance Assessment")
 
-# 获取用户输入的存款时间和金额
-saving_time = st.slider("Select your saving time (in months):", min_value=1, max_value=360, value=12)
-saving_amount = st.text_input("Enter your saving amount (€):", value="10000")
+# 使用st.expander隐藏特定部分
+with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
+    # 获取用户输入的存款时间和金额
+    saving_time = st.slider("Select your saving time (in months):", min_value=1, max_value=360, value=12)
+    saving_amount = st.text_input("Enter your saving amount (€):", value="10000")
 
 # 描述
 st.write(f"So, you're planning to save {saving_amount} euros over {saving_time} months, huh? That's great! Now, let's talk about your risk tolerance. How bold are you feeling today? :)")
