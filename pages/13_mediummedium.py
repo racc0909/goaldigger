@@ -47,5 +47,5 @@ They often provide high dividends and have the potential for appreciation.
 
 # 返回按钮
 if st.button("Back to Assessment"):
-    st.session_state.page = "Risk Tolerance Assessment"
+    st.switch_page("pages/7_risktolerance.py")
 
