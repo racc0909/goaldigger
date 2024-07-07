@@ -35,20 +35,30 @@ class Userinfo(Base):
 
 # Plan information model
 class Plan(Base):
-    __tablename__ = 'plans'
+    __tablename__ = 'plans2'
     planid = Column(Integer, unique=True, primary_key=True)
     userid = Column(Integer)
+    goal_title = Column(String(255), nullable=False)
     goal_age = Column(Integer)
     goal_duration = Column(Integer)
-    payment_duration = Column(Integer)
     total_amount = Column(Numeric(10, 2), nullable=True)
+    payment_duration = Column(Integer)
     payment_first = Column(Numeric(10, 2), nullable=True)
     payment_last = Column(Numeric(10, 2), nullable=True)
     payment_monthly = Column(Numeric(10, 2), nullable=True)
 
+# Saving information model
+class Saving(Base):
+    __tablename__ = 'savings'
+    userid = Column(Integer)
+    planid = Column(Integer, primary_key=True)
+    savings_date = Column(Date, primary_key=True)
+    savings_amount = Column(Numeric(10, 2), primary_key=True)
+
 Base.metadata.create_all(engine)
 
 # Helper functions
+### --- SIGN UP / LOG IN / LOG OUT ---
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -67,13 +77,20 @@ def signup(username, password):
     session.commit()
     return True
 
+def logout():
+    # Button to logout
+      if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
+        st.switch_page("Goaldiggers.py")
+        st.experimental_rerun()
+
+### --- USER INFO ---
 def getUserInfo(userid):
     info = session.query(Userinfo).filter_by(userid=userid).first()
     return info
 
 def createOrUpdateUserInfo(userid, usernickname, country, currency, birthday, savings):
     info = getUserInfo(userid)
-    
     if info:
         info.usernickname = usernickname
         info.country = country
@@ -88,9 +105,52 @@ def createOrUpdateUserInfo(userid, usernickname, country, currency, birthday, sa
     session.commit()
     return info
 
-def logout():
-    # Button to logout
-      if st.sidebar.button("Logout"):
-        st.session_state.logged_in = False
-        st.switch_page("Goaldiggers.py")
-        st.experimental_rerun()
+### --- PLANS ---
+def createPlan(userid, goal_title, goal_age, goal_duration, total_amount, payment_duration, payment_first, payment_last, payment_monthly):
+    # Add plan to to the SQL table
+    plan = Plan(userid=userid, goal_title=goal_title, goal_age=goal_age, goal_duration=goal_duration, 
+                total_amount=total_amount, payment_duration=payment_duration, 
+                payment_first=payment_first, payment_last=payment_last, payment_monthly=payment_monthly)
+    session.add(plan)
+    session.commit()
+    return True
+
+def getUserPlans(userid):
+    return session.query(Plan).filter_by(userid=userid).all()
+
+def getPlan(planid):
+    return session.query(Plan).filter_by(planid=planid).first()
+
+def updatePlan(planid, goal_title, goal_age, goal_duration, total_amount, payment_duration, payment_first, payment_last, payment_monthly):
+    plan = getPlan(planid)
+    if plan:
+        plan.goal_title = goal_title
+        plan.goal_age = goal_age
+        plan.goal_duration = goal_duration
+        plan.total_amount = total_amount
+        plan.payment_duration = payment_duration
+        plan.payment_first = payment_first
+        plan.payment_last = payment_last
+        plan.payment_monthly = payment_monthly
+        session.commit()
+        return True
+    return False
+
+def deletePlan(planid):
+    plan = getPlan(planid)
+    if plan:
+        session.delete(plan)
+        session.commit()
+        return True
+    return False
+
+### --- SAVINGS ---
+def createSaving(userid, planid, savings_date, savings_amount):
+    saving = Saving(userid=userid, planid=planid, savings_date=savings_date, savings_amount=savings_amount)
+    session.add(saving)
+    session.commit()
+    return True
+
+def getTotalSavings(userid, planid):
+    total_savings = session.query(Saving).filter_by(userid=userid, planid=planid).all()
+    return sum([saving.savings_amount for saving in total_savings])

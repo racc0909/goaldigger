@@ -4,9 +4,11 @@ import numpy as np
 import numpy_financial as npf
 import plotly.graph_objs as go
 from datetime import datetime, timedelta
+from db import getUserInfo, createPlan
 
 def your_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
+        user_id = st.session_state.user_id
         # Nhus Code
         # Define color palette
         colors = ['#f7f7f7', '#f0f0f0', '#d9d9d9', '#bdbdbd', '#969696', '#737373', '#525252', '#252525', '#000000', '#636363']
@@ -329,15 +331,20 @@ def your_page():
                 house_loan_term_years = st.number_input('Enter the loan term in years:', value=30, min_value=0, max_value=100, step=1, key='house_loan_term_years')
                 house_target_age = st.number_input('Enter the age you want to acquire a house:', min_value=current_age + 1, max_value=100, step=1, key='house_target_age')
                 house_current_savings = st.number_input('Enter your current savings for the house (optional):', min_value=0.0, format="%.2f", key='house_current_savings')
-        
                 house_current_savings_return = 0
                 if house_current_savings > 0:
                     house_current_savings_return = st.slider('Enter the annual return on current savings:', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='house_current_savings_return')
         
+                goal_title= 'Housing Plan'
+                goal_duration = current_age - house_target_age
+                payment_first = house_price * 0.1
+                payment_last = house_price * 0.2
+                payment_monthly = house_price * 0.7 / house_loan_term_years
                 if st.button('Calculate House Plan'):
                     if current_age >= house_target_age:
                         st.error("Target age must be greater than current age.")
                     else:
+                        createPlan(user_id, goal_title, house_target_age, goal_duration, house_price, house_loan_term_years, payment_first, payment_last, payment_monthly)
                         st.session_state.house_plan = HouseBuyingPlan(house_price, house_down_payment_percent, house_mortgage_interest_rate, house_loan_term_years, current_age, house_target_age, inflation_rate, house_current_savings, house_current_savings_return)
         
                 if st.session_state.house_plan:
