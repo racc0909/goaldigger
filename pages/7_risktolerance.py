@@ -38,30 +38,30 @@ if st.button("Submit"):
                 st.switch_page("pages/9_lowshort.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('Medium risk'):
-                st.switch_page("pages/10_lowmedium")
+                st.switch_page("pages/10_lowmedium.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('High risk'):
-                st.switch_page("pages/11_lowhigh")
+                st.switch_page("pages/11_lowhigh.py")
                 st.experimental_rerun()
         elif 12 < saving_time <= 60:  # 中期投资
             if risk_tolerance.startswith('Low risk'):
-                st.switch_page("pages/12_mediumlow")
+                st.switch_page("pages/12_mediumlow.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('Medium risk'):
-                st.switch_page("pages/13_mediummedium")
+                st.switch_page("pages/13_mediummedium.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('High risk'):
-                st.switch_page("pages/14_mediumhigh")
+                st.switch_page("pages/14_mediumhigh.py")
                 st.experimental_rerun()
         else:  # 长期投资
             if risk_tolerance.startswith('Low risk'):
-                st.switch_page("pages/15_longlow")
+                st.switch_page("pages/15_longlow.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('Medium risk'):
-                st.switch_page("pages/16_longmedium")
+                st.switch_page("pages/16_longmedium.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('High risk'):
-                st.switch_page("pages/17_longhigh")
+                st.switch_page("pages/17_longhigh.py")
                 st.experimental_rerun()
     else:
         st.write("Please select a risk tolerance level.")
