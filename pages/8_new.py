@@ -300,7 +300,7 @@ if page == "Car Buyer Savings Plan":
         monthly_payment = npf.pmt(monthly_interest_rate, number_of_payments, loan_amount)
         return monthly_payment
 
-    file_path = "C:/Users/thaon/OneDrive/Documents/BFA/FIWP/car_prices.xlsx"
+    file_path = "data/car_prices.xlsx"
     df = load_car_data(file_path)
 
     if option == "Savings Plan":
