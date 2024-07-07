@@ -47,5 +47,5 @@ They are suitable for long-term investments with moderate risk.
 
 # 返回按钮
 if st.button("Back to Assessment"):
-    st.session_state.page = "Risk Tolerance Assessment"
+    st.switch_page("pages/7_risktolerance.py")
 
