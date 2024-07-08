@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from db import authenticate, signup, logout
 import time
 
-st.logo("Logo.jpeg", link="https://fiepdemoapp.streamlit.app/", icon_image=None)
+st.logo("img/Logo.jpeg", link="https://fiepdemoapp.streamlit.app/", icon_image=None)
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
