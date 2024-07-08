@@ -53,7 +53,7 @@ with col1:
         Diversification helps manage risk while aiming for growth.
         <ul>
             <li><b>Typical Duration</b>: 5 to 10 years or more</li>
-            <div class="duration-bar" style="width: 80%;"></div>
+            <div class="duration-bar" style="width: 90%;"></div>
             <li><b>Expected Return</b>: Moderate to high, with moderate risk</li>
             <div class="return-bar" style="width: 60%;"></div>
         </ul>
@@ -70,7 +70,7 @@ with col2:
         They often provide high dividends and have the potential for appreciation.
         <ul>
             <li><b>Typical Duration</b>: 5 to 10 years</li>
-            <div class="duration-bar" style="width: 80%;"></div>
+            <div class="duration-bar" style="width: 90%;"></div>
             <li><b>Expected Return</b>: Moderate to high, with moderate risk</li>
             <div class="return-bar" style="width: 60%;"></div>
         </ul>
@@ -89,7 +89,7 @@ with col3:
         They provide moderate returns and are less volatile than pure equity funds.
         <ul>
             <li><b>Typical Duration</b>: 5 to 10 years</li>
-            <div class="duration-bar" style="width: 80%;"></div>
+            <div class="duration-bar" style="width: 90%;"></div>
             <li><b>Expected Return</b>: Moderate, with a balanced risk profile</li>
             <div class="return-bar" style="width: 50%;"></div>
         </ul>
@@ -106,7 +106,7 @@ with col4:
         They are suitable for long-term investments with moderate risk.
         <ul>
             <li><b>Typical Duration</b>: 5 to 10 years</li>
-            <div class="duration-bar" style="width: 80%;"></div>
+            <div class="duration-bar" style="width: 90%;"></div>
             <li><b>Expected Return</b>: Moderate, with relatively low risk compared to lower-grade corporate bonds</li>
             <div class="return-bar" style="width: 50%;"></div>
         </ul>
