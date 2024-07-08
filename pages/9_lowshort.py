@@ -112,7 +112,7 @@ with col4:
         </p>
     </div>
     """, unsafe_allow_html=True)
-
+st.divider()
 # 返回按钮
 if st.button("Back to Assessment"):
     st.switch_page("pages/7_risktolerance.py")
