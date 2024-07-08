@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from db import authenticate, signup, logout
 import time
 
-st.logo("img/Logo.jpeg", link="data/Goal_Digger-removebg-preview (1).png", icon_image=None)
+st.logo("data/Goal_Digger-removebg-preview (1)", link="data/Goal_Digger-removebg-preview (1).png", icon_image=None)
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
