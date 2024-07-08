@@ -6,7 +6,7 @@ import time
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
-
+st.logo(LOGO_URL_LARGE, link="data/logo.jpeg", icon_image=LOGO_URL_SMALL)
 # Function to display the logout button
 
 def login_page():
