@@ -28,7 +28,7 @@ def login_page():
          user = authenticate(username, password)
          if user:
             st.session_state.logged_in = True
-            st.session_state.user_id = user.userid
+            st.session_state.user_id = user.user_id
             st.success("Login successfully!")
             time.sleep(0.8)
             st.experimental_rerun()
@@ -51,7 +51,7 @@ def login_page():
             st.session_state.signup_mode = False
             # Automatically logging in
             user = authenticate(username, password)
-            st.session_state.user_id = user.userid
+            st.session_state.user_id = user.user_id
             st.session_state.logged_in = True
             time.sleep(0.5)
             #st.experimental_rerun()

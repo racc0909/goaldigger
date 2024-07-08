@@ -35,21 +35,19 @@ def user_info_page():
 
         if profile:
             st.subheader("Your Profile")
-            usernickname = st.text_input("Name", profile.usernickname)
-            birthday = st.date_input("Birthday", profile.birthday, format="DD.MM.YYYY")
-            country = st.selectbox("Country", list(COUNTRY_CURRENCY_MAP.keys()), index=list(COUNTRY_CURRENCY_MAP.keys()).index(profile.country) if profile.country else 0)
-            currency = st.selectbox("Currency", [COUNTRY_CURRENCY.get(country)], index=0)
-            savings = st.number_input("Savings", value=float(profile.savings))
+            user_nickname = st.text_input("Name", profile.user_nickname)
+            user_birthday = st.date_input("Birthday", profile.user_birthday, format="DD.MM.YYYY")
+            user_country = st.selectbox("Country", list(COUNTRY_CURRENCY_MAP.keys()), index=list(COUNTRY_CURRENCY_MAP.keys()).index(profile.user_country) if profile.user_country else 0)
+            user_currency = st.selectbox("Currency", [COUNTRY_CURRENCY.get(user_country)], index=0)
         else:
             st.subheader("Create Your Profile")
-            usernickname = st.text_input("How should we call you?")
-            birthday = st.date_input("When is your birthday?", format="DD.MM.YYYY")
-            country = st.selectbox("Which country are you in?", list(COUNTRY_CURRENCY_MAP.keys()))
-            currency = st.selectbox("Which currency are you using?", [COUNTRY_CURRENCY.get(country, "")])
-            savings = st.number_input("What is the total of your current savings?", value=0.00)
+            user_nickname = st.text_input("How should we call you?")
+            user_birthday = st.date_input("When is your birthday?", format="DD.MM.YYYY")
+            user_country = st.selectbox("Which country are you in?", list(COUNTRY_CURRENCY_MAP.keys()))
+            user_currency = st.selectbox("Which currency are you using?", [COUNTRY_CURRENCY.get(user_country, "")])
 
         if st.button("Save"):
-            createOrUpdateUserInfo(user_id, usernickname, country, currency, birthday, savings)
+            createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday)
             st.success("Profile saved successfully!")
 
     else:
