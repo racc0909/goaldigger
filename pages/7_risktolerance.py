@@ -1,9 +1,3 @@
-um#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import streamlit as st
 
 # 页面标题
