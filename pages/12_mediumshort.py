@@ -35,13 +35,13 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
     <div class="custom-box">
-        <h2>1. Corporate Bonds (Investment-Grade)</h2>
+        <h2>1. Dividend-Paying Stocks</h2>
         <p>
-        Investment-grade corporate bonds are issued by financially stable companies and offer higher returns than government bonds.
-        They come with moderate risk and are suitable for short-term investments.
+        Dividend-paying stocks provide regular income through dividends and potential for capital appreciation.
+        They can be more volatile than bonds but offer higher returns.
         <ul>
             <li><b>Typical Duration</b>: 1 to 3 years</li>
-            <li><b>Expected Return</b>: Moderate, with relatively low risk compared to lower-grade corporate bonds</li>
+            <li><b>Expected Return</b>: Moderate to high, with moderate risk</li>
         </ul>
         </p>
     </div>
@@ -67,13 +67,13 @@ col3, col4 = st.columns(2)
 with col3:
     st.markdown("""
     <div class="custom-box">
-        <h2>3. Short-term Bond Funds</h2>
+        <h2>3. Corporate Bonds (Investment-Grade)</h2>
         <p>
-        Short-term bond funds invest in bonds with short maturities, reducing interest rate risk.
-        They offer higher returns than money market funds but come with moderate risk.
+        Investment-grade corporate bonds are issued by financially stable companies and offer higher returns than government bonds.
+        They come with moderate risk and are suitable for short-term investments.
         <ul>
             <li><b>Typical Duration</b>: 1 to 3 years</li>
-            <li><b>Expected Return</b>: Moderate, with lower risk than longer-term bond funds</li>
+            <li><b>Expected Return</b>: Moderate, with relatively low risk compared to lower-grade corporate bonds</li>
         </ul>
         </p>
     </div>
@@ -82,13 +82,13 @@ with col3:
 with col4:
     st.markdown("""
     <div class="custom-box">
-        <h2>4. Dividend-Paying Stocks</h2>
+        <h2>4. Short-term Bond Funds</h2>
         <p>
-        Dividend-paying stocks provide regular income through dividends and potential for capital appreciation.
-        They can be more volatile than bonds but offer higher returns.
+        Short-term bond funds invest in bonds with short maturities, reducing interest rate risk.
+        They offer higher returns than money market funds but come with moderate risk.
         <ul>
             <li><b>Typical Duration</b>: 1 to 3 years</li>
-            <li><b>Expected Return</b>: Moderate to high, with moderate risk</li>
+            <li><b>Expected Return</b>: Moderate, with lower risk than longer-term bond funds</li>
         </ul>
         </p>
     </div>
