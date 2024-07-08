@@ -26,6 +26,18 @@ st.markdown("""
         transform: translateY(-5px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+    .duration-bar, .return-bar {
+        height: 10px;
+        border-radius: 5px;
+        margin-top: 5px;
+        margin-left: 20px; /* 缩进与项目符号对齐 */
+    }
+    .duration-bar {
+        background-color: #4CAF50; /* 绿色 */
+    }
+    .return-bar {
+        background-color: #2196F3; /* 蓝色 */
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -41,7 +53,9 @@ with col1:
         They offer low risk and high liquidity, making them suitable for short-term investment goals.
         <ul>
             <li><b>Typical Duration</b>: A few months to a year</li>
+            <div class="duration-bar" style="width: 30%;"></div>
             <li><b>Expected Return</b>: Low, but stable</li>
+            <div class="return-bar" style="width: 20%;"></div>
         </ul>
         </p>
     </div>
@@ -56,7 +70,9 @@ with col2:
         They offer regular interest payments over a fixed period and are considered very safe.
         <ul>
             <li><b>Typical Duration</b>: 4 weeks to 1 year</li>
+            <div class="duration-bar" style="width: 30%;"></div>
             <li><b>Expected Return</b>: Low, but very safe</li>
+            <div class="return-bar" style="width: 15%;"></div>
         </ul>
         </p>
     </div>
@@ -73,12 +89,14 @@ with col3:
         They offer a fixed interest rate for a specified term, making them a predictable and secure investment option.
         <ul>
             <li><b>Typical Duration</b>: 3 months to 1 year</li>
+            <div class="duration-bar" style="width: 30%;"></div>
             <li><b>Expected Return</b>: Higher than regular savings accounts</li>
+            <div class="return-bar" style="width: 30%;"></div>
         </ul>
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
 with col4:
     st.markdown("""
     <div class="custom-box">
@@ -87,7 +105,9 @@ with col4:
         High-Yield Savings Accounts offer higher interest rates than regular savings accounts while maintaining liquidity and safety.
         <ul>
             <li><b>Typical Duration</b>: No fixed duration, accessible anytime</li>
+            <div class="duration-bar" style="width: 30%;"></div>
             <li><b>Expected Return</b>: Higher than regular savings accounts, but lower than CDs</li>
+            <div class="return-bar" style="width: 25%;"></div>
         </ul>
         </p>
     </div>
