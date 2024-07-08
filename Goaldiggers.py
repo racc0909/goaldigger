@@ -4,7 +4,14 @@ import matplotlib.pyplot as plt
 from db import authenticate, signup, logout
 import time
 
-st.logo("data/Goal_Digger-removebg-preview (1)", link="data/Goal_Digger-removebg-preview (1).png", icon_image=None)
+# Way one
+# st.logo("data/Goal_Digger-removebg-preview (1)", link="data/Goal_Digger-removebg-preview (1).png", icon_image=None)
+
+# Way two
+# 定义图片路径
+LOGO_URL_LARGE = "data/Goal_Digger-removebg-preview (1).png"
+# 在侧边栏显示大图标
+st.sidebar.image(LOGO_URL_LARGE use_column_width=True)
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
