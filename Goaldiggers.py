@@ -11,7 +11,7 @@ sidebar_logo = "data/Goal_Digger-removebg-preview (1).png"
 st.logo(sidebar_logo)
 
 # Logo on the Sidebar
-st.sidebar.logo("data/Goal_Digger-removebg-preview (1)", icon_image=None)
+st.sidebar.logo("data/Goal_Digger-removebg-preview (1).png", icon_image=None)
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
