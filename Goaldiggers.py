@@ -7,11 +7,11 @@ import time
 # Way one
 # st.logo("data/Goal_Digger-removebg-preview (1)", link="data/Goal_Digger-removebg-preview (1).png", icon_image=None)
 # 定义图片路径
-sidebar_logo = "data/Goal_Digger-removebg-preview (1).png"
+sidebar_logo = "data/Logo_Without_Background.png"
 st.logo(sidebar_logo)
 
 # Logo on the Sidebar
-st.sidebar.logo("data/Goal_Digger-removebg-preview (1).png", icon_image=None)
+#st.sidebar.logo("data/Logo_Without_Background.png", icon_image=None)
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
