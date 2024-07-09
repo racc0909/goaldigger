@@ -6,10 +6,10 @@ import time
 
 # Way one
 sidebar_logo = "img/Logo_Without_Text.png"
-st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/")
+st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img/Logo_Without_Text.png")
 
 # Logo on the Sidebar
-#st.sidebar.logo("img/Logo_Without_Text.png", icon_image=None, link="https://fiepdemoapp.streamlit.app/")
+#st.sidebar.logo("img/Logo_Without_Text.png", icon_image="img/Logo_Without_Text.png", link="https://fiepdemoapp.streamlit.app/")
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
