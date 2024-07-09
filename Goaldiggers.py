@@ -5,13 +5,11 @@ from db import authenticate, signup, logout
 import time
 
 # Way one
-# st.logo("data/Goal_Digger-removebg-preview (1)", link="data/Goal_Digger-removebg-preview (1).png", icon_image=None)
-# 定义图片路径
-sidebar_logo = "data/Logo_Without_Background.png"
-st.logo(sidebar_logo)
+sidebar_logo = "img/Logo_Without_Text.png"
+st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/")
 
 # Logo on the Sidebar
-#st.sidebar.logo("data/Logo_Without_Background.png", icon_image=None)
+#st.sidebar.logo("img/Logo_Without_Text.png", icon_image=None, link="https://fiepdemoapp.streamlit.app/")
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
