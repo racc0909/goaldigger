@@ -2,8 +2,8 @@ import streamlit as st
 import plotly.express as px
 from datetime import datetime, timedelta, date
 from financial_plan import display_timeline
-from db import getUserInfo, getUserPlans, getTotalSavings, getSavings, logout
-from db import authenticate, signup, logout
+from db import getUserInfo, getUserPlans, createSaving, getTotalSavings, getSavings, logout
+from db import authenticate, signup, logout, deletePlan, getPlan
 import time
 
 # Way one
@@ -38,7 +38,7 @@ def login_page():
             st.session_state.logged_in = True
             st.session_state.user_id = user.user_id
             st.success("Login successfully!")
-            time.sleep(0.5)
+            time.sleep(0.3)
             st.experimental_rerun()
          else:
             st.error("Invalid username or password.")
@@ -114,22 +114,37 @@ def main():
 
          col1, col2 = st.columns(2)
          for i, plan in enumerate(plans):
-               with col1 if i % 2 == 0 else col2:
-                  st.markdown(f"""
-                  <div style="background-color:#f4f4f4; padding: 10px; margin: 10px; border-radius: 10px;">
-                     <h3>{plan.goal_name}</h3>
-                     <p><strong>Target Amount:</strong> {plan.goal_target:,.2f} {profile.user_currency}</p>
-                     <p><strong>Due Date:</strong> {plan.goal_date.strftime('%d.%m.%Y')}</p>
-                     <p style="color: red;"><strong>Monthly Savings Needed:</strong> {plan.goal_target_monthly:,.2f} {profile.user_currency}</p>
-                     <p><strong>Savings Term:</strong> {plan.saving_duration} months</p>
-                  </div>
-                  """, unsafe_allow_html=True)
+            total_saving = getTotalSavings(user_id, plan.plan_id)
+            rest_saving = plan.goal_target - total_saving
+            with col1 if i % 2 == 0 else col2:
+               st.markdown(f"""
+               <div style="background-color:#f4f4f4; padding: 10px; margin: 10px; border-radius: 10px;">
+                  <h3>{plan.goal_name}</h3>
+                    <p style="margin: 1;"><strong>Target Amount:</strong> {plan.goal_target:,.2f} {profile.user_currency}</p>
+                    <p style="margin: 1;"><strong>Due Date:</strong> {plan.goal_date.strftime('%d.%m.%Y')}</p>
+                    <p style="margin: 1; color: red;"><strong>Current Savings:</strong> {total_saving:,.2f} {profile.user_currency}</p>
+                    <p style="margin: 1; color: red;"><strong>Rest Amount Needed:</strong> {rest_saving:,.2f} {profile.user_currency}</p>
+                    <p style="margin: 1;"><strong>Monthly Savings Needed:</strong> {plan.goal_target_monthly:,.2f} {profile.user_currency}</p>
+                    <p style="margin: 1;"><strong>Savings Term:</strong> {plan.saving_duration} months</p>
+               </div>
+               """, unsafe_allow_html=True)
+               
+               col1_1, col1_2, col1_3 = st.columns([2, 0.8, 1])
+               with col1_1:
+                  if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}_{i}"):
+                     st.session_state.add_saving_plan_id = plan.plan_id
+                     st.switch_page("pages/8_Add_Saving.py")
+               with col1_2:
+                  if st.button(f"✏️ Edit", key=f"edit_{plan.plan_id}_{i}"):
+                     st.session_state.edit_plan_id = plan.plan_id
+                     st.switch_page("pages/3_Edit_Plan.py")
+               with col1_3:
+                  if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}_{i}"):
+                     deletePlan(plan.plan_id)
+                     st.experimental_rerun()
 
-                  # <a href="?page={plan['details_link']}">{plan['details_link']}</a>
-                  # todo: delete, edit, add saving
-                  # <form action="?delete_plan={i}" method="post">
-                  #     <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">🗑️ Delete</button>
-                  # </form>
+      # Handle edit plan
+      #if 'edit_plan_id' in st.session_state:
 
     else:
          login_page()
