@@ -4,17 +4,7 @@ import streamlit as st
 ICON_PATH_0_5 = "img/icon_0_5.png"
 
 # 使用 HTML 和 CSS 在标题左侧添加图标
-st.markdown(
-    f"""
-    <div style="display: flex; align-items: center;">
-        <img src="{ICON_PATH_0_5}" width="40" style="margin-right: 10px;">
-        <h1 style="margin: 0;">Risk Tolerance Assessment</h1>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
+st.image(ICON_PATH_0_5, width=40)
 
 # 页面标题
 st.title("Risk Tolerance Assessment")
