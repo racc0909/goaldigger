@@ -1,7 +1,7 @@
 import streamlit as st
 
 # 定义图标路径
-ICON_PATH_0_5 = "data/icon_0_5.png"
+ICON_PATH_0_5 = "img/icon_0_5.png"
 
 # 使用 HTML 和 CSS 在标题左侧添加图标
 st.markdown(
