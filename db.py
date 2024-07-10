@@ -2,7 +2,7 @@ import streamlit as st
 from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import hashlib
 
 # Read database credentials from Streamlit secrets
@@ -131,6 +131,7 @@ def calculateSavingDuration(goal_date):
     # Calculate the duration in days
     duration_days = (goal_date - today).days
     return duration_days
+
 def calculateGoalAge(user_birthday, goal_date):
     """
     Calculate the goal age by substracting goal_date to the user's birthday and get the lower number
@@ -144,10 +145,24 @@ def calculateGoalAge(user_birthday, goal_date):
     
     return goal_age
 
+def calculateUserAge(user_birthday):
+    """
+    Calculate the user age by substracting today to the user's birthday and get the lower number
+    """
+    # Calculate the difference in years
+    today = date.today()
+    user_age = today.year - user_birthday.year
+    
+    # Adjust for cases where the goal date is before the birthday in the year
+    if (today.month, today.day) < (user_birthday.month, user_birthday.day):
+        user_age -= 1
+    
+    return user_age
+
 
 ### --- PLANS ---
-def createPlanFromHouse(user_id, goal_age, goal_total, goal_target, goal_target_monthly, 
-                        saving_initial, saving_interest, 
+def createPlanFromHouse(user_id, goal_name, goal_age, goal_total, goal_target, goal_target_monthly, 
+                        saving_initial, saving_interest, saving_duration,
                         payment_first_percent, payment_first, payment_last_percent, payment_last, 
                         loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
     userinfo = session.query(Userinfo).filter_by(user_id=user_id).first()
@@ -155,7 +170,7 @@ def createPlanFromHouse(user_id, goal_age, goal_total, goal_target, goal_target_
     # Add plan to to the SQL table
     plan = Plan(
                 user_id=user_id, 
-                goal_name="Buy a House", 
+                goal_name=goal_name, 
                 goal_age=goal_age, 
                 goal_date=calculateGoalDate(userinfo.user_birthday, goal_age), 
                 goal_total=goal_total, 
@@ -163,7 +178,7 @@ def createPlanFromHouse(user_id, goal_age, goal_total, goal_target, goal_target_
                 goal_target_monthly=goal_target_monthly,
                 saving_initial=saving_initial, 
                 saving_interest=saving_interest, 
-                saving_duration=calculateSavingDuration(calculateGoalDate(userinfo.user_birthday, goal_age)),
+                saving_duration=saving_duration,
                 payment_first_percent=payment_first_percent, 
                 payment_first=payment_first, 
                 payment_last_percent=payment_last_percent, 
@@ -179,7 +194,7 @@ def createPlanFromHouse(user_id, goal_age, goal_total, goal_target, goal_target_
     return True
 
 def createPlanFromCar(user_id, goal_car_brand, goal_car_model, goal_age, goal_total, goal_target, goal_target_monthly, 
-                        saving_initial, saving_interest, 
+                        saving_initial, saving_interest, saving_duration,
                         payment_first_percent, payment_first, payment_last_percent, payment_last, 
                         loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
     userinfo = session.query(Userinfo).filter_by(user_id=user_id).first()
@@ -195,7 +210,7 @@ def createPlanFromCar(user_id, goal_car_brand, goal_car_model, goal_age, goal_to
                 goal_target_monthly=goal_target_monthly,
                 saving_initial=saving_initial, 
                 saving_interest=saving_interest, 
-                saving_duration=calculateSavingDuration(calculateGoalDate(userinfo.user_birthday, goal_age)),
+                saving_duration=saving_duration,
                 payment_first_percent=payment_first_percent, 
                 payment_first=payment_first, 
                 payment_last_percent=payment_last_percent, 
@@ -241,7 +256,7 @@ def createPlanFromRetirement(user_id, goal_name, goal_age, goal_total, goal_targ
     return True
 
 def createPlanFromCustomized(user_id, goal_date, goal_target, goal_target_monthly, 
-                        saving_initial, saving_interest, 
+                        saving_initial, saving_interest, saving_duration,
                         payment_first_percent, payment_first, payment_last_percent, payment_last, 
                         loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
     userinfo = session.query(Userinfo).filter_by(user_id=user_id).first()
@@ -257,7 +272,7 @@ def createPlanFromCustomized(user_id, goal_date, goal_target, goal_target_monthl
                 goal_target_monthly=goal_target_monthly,
                 saving_initial=saving_initial, 
                 saving_interest=saving_interest, 
-                saving_duration=calculateSavingDuration(calculateGoalDate(userinfo.user_birthday, goal_age)),
+                saving_duration=saving_duration,
                 payment_first_percent=payment_first_percent, 
                 payment_first=payment_first, 
                 payment_last_percent=payment_last_percent, 
