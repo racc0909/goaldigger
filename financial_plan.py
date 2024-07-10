@@ -6,6 +6,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 from datetime import datetime, timedelta, date
 import matplotlib.pyplot as plt
+from db import getUserPlans
 
 # Helper function to calculate monthly savings
 def calculate_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_months, inflation_rate):
@@ -33,16 +34,16 @@ def handle_deletion():
         st.experimental_rerun()
 
 # Function to display the timeline
-def display_timeline():
-    plans = st.session_state['plans']
+def display_timeline(user_id):
+    plans = getUserPlans(user_id)
     events = []
 
     for plan in plans:
-        end_date = plan['due_date']
+        end_date = plan.goal_date
         if isinstance(end_date, datetime):
             end_date = end_date.date()  # Convert to date if it's a datetime
         events.append({
-            'event': plan['name'],
+            'event': plan.goal_name,
             'start_date': date.today(),
             'end_date': end_date
         })

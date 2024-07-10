@@ -1,26 +1,7 @@
 import streamlit as st
 from db import getUserInfo, createOrUpdateUserInfo, logout
 from datetime import datetime
-import pycountry
-
-# A mapping from countries to their currencies
-COUNTRY_CURRENCY_MAP = {country.name: country.alpha_3 for country in pycountry.countries}
-COUNTRY_CURRENCY = {
-    'United States': 'USD',
-    'Canada': 'CAD',
-    'United Kingdom': 'GBP',
-    'Germany': 'EUR',
-    'France': 'EUR',
-    'Italy': 'EUR',
-    'Spain': 'EUR',
-    'China': 'CNY',
-    'Japan': 'JPY',
-    'India': 'INR',
-    'Australia': 'AUD',
-    'Brazil': 'BRL',
-    'Viet Nam': 'VND'
-    # Add more countries and currencies as needed
-}
+import time
 
 def user_info_page():
     st.title("📝 Personal Information")
@@ -33,22 +14,34 @@ def user_info_page():
 
         profile = getUserInfo(user_id)
 
+        # Country selection
+        country_data = {
+            'Germany': {'Currency': '€', 'Inflation rate': 5.9, 'LifeExpectancy': 80.7},
+            'United Kingdom': {'Currency': '£', 'Inflation rate': 6.8, 'LifeExpectancy': 82.1},
+            'United States': {'Currency': '$', 'Inflation rate': 4.1, 'LifeExpectancy': 77.4}
+        }
+
         if profile:
             st.subheader("Your Profile")
             user_nickname = st.text_input("Name", profile.user_nickname)
             user_birthday = st.date_input("Birthday", profile.user_birthday, format="DD.MM.YYYY")
-            user_country = st.selectbox("Country", list(COUNTRY_CURRENCY_MAP.keys()), index=list(COUNTRY_CURRENCY_MAP.keys()).index(profile.user_country) if profile.user_country else 0)
-            user_currency = st.selectbox("Currency", [COUNTRY_CURRENCY.get(user_country)], index=0)
+            user_country = st.selectbox("Country", list(country_data.keys()), index=list(country_data.keys()).index(profile.user_country) if profile.user_country else 0)
+            user_currency = st.selectbox("Currency", country_data[user_country]['Currency'], index=0)
+            mode = "edit"
         else:
             st.subheader("Create Your Profile")
             user_nickname = st.text_input("How should we call you?")
             user_birthday = st.date_input("When is your birthday?", format="DD.MM.YYYY")
-            user_country = st.selectbox("Which country are you in?", list(COUNTRY_CURRENCY_MAP.keys()))
-            user_currency = st.selectbox("Which currency are you using?", [COUNTRY_CURRENCY.get(user_country, "")])
+            user_country = st.selectbox("Which country are you in?", list(country_data.keys()))
+            user_currency = st.selectbox("Which currency are you using?", country_data[user_country]['Currency'])
+            mode = "create"
 
         if st.button("Save"):
             createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday)
             st.success("Profile saved successfully!")
+            time.sleep(0.5)
+            if mode == "create":
+                st.switch_page("Goaldigger.py")
 
     else:
         st.warning("Please log in to access this page.")

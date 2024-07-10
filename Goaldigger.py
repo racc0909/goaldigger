@@ -1,6 +1,8 @@
 import streamlit as st
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
+import plotly.express as px
+from datetime import datetime, timedelta, date
+from financial_plan import display_timeline
+from db import getUserInfo, getUserPlans, getTotalSavings, getSavings, logout
 from db import authenticate, signup, logout
 import time
 
@@ -61,7 +63,7 @@ def login_page():
             st.session_state.logged_in = True
             time.sleep(0.5)
             #st.experimental_rerun()
-            st.switch_page("pages/1_User_Info.py")
+            st.switch_page("pages/1_Personal_Information.py")
          else:
             st.error("Username already taken")
 
@@ -74,62 +76,60 @@ def main():
       
       logout()
 
-      # First page
-      st.title("Investment Options Comparison Calculator")
-      st.write("Enter your investment amount and term to simulate the expected returns on different investment options.")
+      # --- PERSONAL INFORMATION ---
+      # PREPARATION
+      # Get user info
+      user_id = st.session_state.user_id
+      profile = getUserInfo(user_id)
+      plans = getUserPlans(user_id)
 
-      # 利率信息
-      cd_rates = {
-         '1_year': 0.0434,  # 4.34%
-         '3_year': 0.03,    # 假设为3.0%
-         '5_year': 0.035    # 假设为3.5%
-      }
+      # ---- OVERVIEW ---
+      if not plans:
+         st.info("No financial plans found. Please add a plan first.")
+         if st.button("Add Plan"):
+               st.switch_page("pages/2_Create_Plan.py")
 
-      gov_bond_rates = {
-         '1_year': 0.015,  # 1.5%
-         '3_year': 0.02,   # 2.0%
-         '5_year': 0.025   # 2.5%
-      }
+      else:
+         st.title(f"Overview of All Financial Plans for {profile.user_nickname}")
 
-      money_market_rates = {
-         '1_year': 0.0065,  # 0.65%
-         '3_year': 0.01,    # 假设为1.0%
-         '5_year': 0.015    # 假设为1.5%
-      }
+         for plan in plans:
+               #savings = getSavings(user_id, plan.plan_id)
+               savings_distribution = {plan.goal_name: plan.goal_target_monthly for plan in plans}
 
-      investment_amount = st.number_input("Investment Amount (€)", min_value=0, value=125000)
-      investment_term = st.selectbox("Investment Term (Years)", [1, 3, 5])
+         # Rearrange plans
+         st.subheader("Rearrange Plans")
+         plan_order = st.multiselect("Drag to reorder plans", options=[plan.goal_name for plan in plans], default=[plan.goal_name for plan in plans])
+         plans = [plan for name in plan_order for plan in plans if plan.goal_name == name]
 
-      def calculate_return(amount, years, rate):
-         return amount * (1 + rate) ** years
+         col1, col2 = st.columns([2, 1])
 
-      if st.button("Calculate"):
-         term_str = f'{investment_term}_year'
-         cd_return = calculate_return(investment_amount, investment_term, cd_rates[term_str])
-         gov_bond_return = calculate_return(investment_amount, investment_term, gov_bond_rates[term_str])
-         money_market_return = calculate_return(investment_amount, investment_term, money_market_rates[term_str])
+         with col1:
+
+               # Plotting the timeline of financial goals
+               display_timeline(user_id)
       
-         st.write(f"Expected return after {investment_term} years:")
-         st.write(f"Certificate of Deposit (CD): {cd_return:.2f} €")
-         st.write(f"Government Bonds: {gov_bond_return:.2f} €")
-         st.write(f"Money Market Funds: {money_market_return:.2f} €")
-      
-         # 图表展示
-         terms = [1, 3, 5]
-         cd_returns = [calculate_return(investment_amount, term, cd_rates[f'{term}_year']) for term in terms]
-         gov_bond_returns = [calculate_return(investment_amount, term, gov_bond_rates[f'{term}_year']) for term in terms]
-         money_market_returns = [calculate_return(investment_amount, term, money_market_rates[f'{term}_year']) for term in terms]
+               # Pie chart for savings distribution
+               fig_pie = px.pie(values=list(savings_distribution.values()), names=list(savings_distribution.keys()), title='Monthly Savings Distribution')
+               st.plotly_chart(fig_pie)
 
-         plt.figure(figsize=(10, 6))
-         plt.plot(terms, cd_returns, marker='o', label='Certificate of Deposit (CD)')
-         plt.plot(terms, gov_bond_returns, marker='o', label='Government Bonds')
-         plt.plot(terms, money_market_returns, marker='o', label='Money Market Funds')
-         plt.title("Investment Returns Over Different Terms")
-         plt.xlabel("Investment Term (Years)")
-         plt.ylabel("Expected Return (€)")
-         plt.legend()
-         plt.grid(True)
-         st.pyplot(plt)
+         col1, col2 = st.columns(2)
+         for i, plan in enumerate(plans):
+               with col1 if i % 2 == 0 else col2:
+                  st.markdown(f"""
+                  <div style="background-color:#f4f4f4; padding: 10px; margin: 10px; border-radius: 10px;">
+                     <h3>{plan.goal_name}</h3>
+                     <p><strong>Target Amount:</strong> {plan.goal_target:,.2f} {profile.user_currency}</p>
+                     <p><strong>Due Date:</strong> {plan.goal_date.strftime('%d.%m.%Y')}</p>
+                     <p style="color: red;"><strong>Monthly Savings Needed:</strong> {plan.goal_target_monthly:,.2f} {profile.user_currency}</p>
+                     <p><strong>Savings Term:</strong> {plan.saving_duration} months</p>
+                  </div>
+                  """, unsafe_allow_html=True)
+
+                  # <a href="?page={plan['details_link']}">{plan['details_link']}</a>
+                  # todo: delete, edit, add saving
+                  # <form action="?delete_plan={i}" method="post">
+                  #     <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">🗑️ Delete</button>
+                  # </form>
 
     else:
          login_page()

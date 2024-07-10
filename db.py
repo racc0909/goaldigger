@@ -34,9 +34,10 @@ class Userinfo(Base):
 
 # Plan information model
 class Plan(Base):
-    __tablename__ = 'plans'
+    __tablename__ = 'plans2'
     plan_id = Column(Integer, unique=True, primary_key=True)
     user_id = Column(Integer)
+    created_on = Column(Date, nullable=False)
     goal_name = Column(String(255), nullable=False)
     goal_age = Column(Integer)
     goal_date = Column(Date, nullable=False)
@@ -91,7 +92,7 @@ def logout():
     # Button to logout
       if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
-        st.switch_page("Goaldiggers.py")
+        st.switch_page("Goaldigger.py")
         st.experimental_rerun()
 
 ### --- USER INFO ---
@@ -161,113 +162,19 @@ def calculateUserAge(user_birthday):
 
 
 ### --- PLANS ---
-def createPlanFromHouse(user_id, goal_name, goal_age, goal_total, goal_target, goal_target_monthly, 
-                        saving_initial, saving_interest, saving_duration,
-                        payment_first_percent, payment_first, payment_last_percent, payment_last, 
-                        loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
-    userinfo = session.query(Userinfo).filter_by(user_id=user_id).first()
+def createPlan(user_id, goal_name, goal_age, goal_date, 
+                goal_total, goal_target, goal_target_monthly, 
+                saving_initial, saving_interest, saving_duration,
+                payment_first_percent, payment_first, payment_last_percent, payment_last, 
+                loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
 
     # Add plan to to the SQL table
     plan = Plan(
                 user_id=user_id, 
                 goal_name=goal_name, 
                 goal_age=goal_age, 
-                goal_date=calculateGoalDate(userinfo.user_birthday, goal_age), 
-                goal_total=goal_total, 
-                goal_target=goal_target, 
-                goal_target_monthly=goal_target_monthly,
-                saving_initial=saving_initial, 
-                saving_interest=saving_interest, 
-                saving_duration=saving_duration,
-                payment_first_percent=payment_first_percent, 
-                payment_first=payment_first, 
-                payment_last_percent=payment_last_percent, 
-                payment_last=payment_last, 
-                loan_duration=loan_duration, 
-                loan_startdate=loan_startdate, 
-                loan_amount=loan_amount, 
-                loan_interest=loan_interest, 
-                loan_monthly=loan_monthly
-                )
-    session.add(plan)
-    session.commit()
-    return True
-
-def createPlanFromCar(user_id, goal_car_brand, goal_car_model, goal_age, goal_total, goal_target, goal_target_monthly, 
-                        saving_initial, saving_interest, saving_duration,
-                        payment_first_percent, payment_first, payment_last_percent, payment_last, 
-                        loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
-    userinfo = session.query(Userinfo).filter_by(user_id=user_id).first()
-
-    # Add plan to to the SQL table
-    plan = Plan(
-                user_id=user_id, 
-                goal_name=f"Buy a {goal_car_brand} {goal_car_model}", 
-                goal_age=goal_age, 
-                goal_date=calculateGoalDate(userinfo.user_birthday, goal_age), 
-                goal_total=goal_total, 
-                goal_target=goal_target, 
-                goal_target_monthly=goal_target_monthly,
-                saving_initial=saving_initial, 
-                saving_interest=saving_interest, 
-                saving_duration=saving_duration,
-                payment_first_percent=payment_first_percent, 
-                payment_first=payment_first, 
-                payment_last_percent=payment_last_percent, 
-                payment_last=payment_last, 
-                loan_duration=loan_duration, 
-                loan_startdate=loan_startdate, 
-                loan_amount=loan_amount, 
-                loan_interest=loan_interest, 
-                loan_monthly=loan_monthly
-                )
-    session.add(plan)
-    session.commit()
-    return True
-
-def createPlanFromRetirement(user_id, goal_name, goal_age, goal_total, goal_target, goal_target_monthly, 
-                        saving_initial, saving_interest, saving_duration):
-    userinfo = session.query(Userinfo).filter_by(user_id=user_id).first()
-
-    # Add plan to to the SQL table
-    plan = Plan(
-                user_id=user_id, 
-                goal_name=goal_name, 
-                goal_age=goal_age, 
-                goal_date=calculateGoalDate(userinfo.user_birthday, goal_age), 
-                goal_total=goal_total, 
-                goal_target=goal_target, 
-                goal_target_monthly=goal_target_monthly,
-                saving_initial=saving_initial, 
-                saving_interest=saving_interest, 
-                saving_duration=saving_duration,
-                payment_first_percent=0, 
-                payment_first=0, 
-                payment_last_percent=0, 
-                payment_last=0, 
-                loan_duration=0, 
-                loan_startdate="", 
-                loan_amount=0, 
-                loan_interest=0, 
-                loan_monthly=0
-                )
-    session.add(plan)
-    session.commit()
-    return True
-
-def createPlanFromCustomized(user_id, goal_date, goal_target, goal_target_monthly, 
-                        saving_initial, saving_interest, saving_duration,
-                        payment_first_percent, payment_first, payment_last_percent, payment_last, 
-                        loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
-    userinfo = session.query(Userinfo).filter_by(user_id=user_id).first()
-
-    # Add plan to to the SQL table
-    plan = Plan(
-                user_id=user_id, 
-                goal_name="Buy a House", 
-                goal_age=calculateGoalAge(userinfo.user_birthday, goal_date), 
                 goal_date=goal_date, 
-                goal_total=goal_target, 
+                goal_total=goal_total, 
                 goal_target=goal_target, 
                 goal_target_monthly=goal_target_monthly,
                 saving_initial=saving_initial, 
@@ -326,3 +233,6 @@ def createSaving(user_id, plan_id, saving_date, saving_amount):
 def getTotalSavings(user_id, plan_id):
     total_savings = session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
     return sum([saving.saving_amount for saving in total_savings])
+
+def getSavings(user_id, plan_id):
+    return session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
