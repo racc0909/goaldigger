@@ -77,14 +77,6 @@ def display_timeline(user_id):
 
     st.plotly_chart(fig_timeline)
 
-# Calculate mortgage payment
-def calculate_mortgage_payment(loan_amount, annual_interest_rate, loan_term_years):
-    monthly_interest_rate = annual_interest_rate / 100 / 12
-    number_of_payments = loan_term_years * 12
-    monthly_payment = np.abs(npf.pmt(monthly_interest_rate, number_of_payments, loan_amount))
-    total_payment = monthly_payment * number_of_payments
-    return float(monthly_payment), float(total_payment)
-
 # Calculate mortization schedule
 def calculate_amortization_schedule(loan_amount, annual_interest_rate, loan_term_years, start_date):
     monthly_interest_rate = annual_interest_rate / 100 / 12
@@ -120,12 +112,13 @@ def calculate_car_savings(car_price, down_payment_percent, current_age, target_a
 
     return monthly_savings_needed
 
-def calculate_car_loan(loan_amount, annual_interest_rate, loan_term_years):
+# Calculate mortgage payment
+def calculate_loan_payment(loan_amount, annual_interest_rate, loan_term_years):
     monthly_interest_rate = annual_interest_rate / 100 / 12
     number_of_payments = loan_term_years * 12
     monthly_payment = np.abs(npf.pmt(monthly_interest_rate, number_of_payments, loan_amount))
     total_payment = monthly_payment * number_of_payments
-    return float(monthly_payment), float(total_payment)
+    return float(monthly_payment)
 
 def calculate_pension_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_years):
         monthly_interest_rate = current_savings_return / 100 / 12
@@ -138,10 +131,3 @@ def calculate_pension_monthly_saving(target_amount, current_savings, current_sav
             return 0
         monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
         return monthly_saving
-
-def calculate_loan(loan_amount, annual_interest_rate, loan_term_years):
-        monthly_interest_rate = annual_interest_rate / 100 / 12
-        number_of_payments = loan_term_years * 12
-        monthly_payment = np.abs(npf.pmt(monthly_interest_rate, number_of_payments, loan_amount))
-        total_payment = monthly_payment * number_of_payments
-        return monthly_payment, total_payment
