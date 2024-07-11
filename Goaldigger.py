@@ -149,5 +149,19 @@ def main():
     else:
          login_page()
 
+import streamlit as st
+
+pages = {
+    "Your account" : [
+        st.Page("1_Personal_Information.py", title="Personal Information"),
+    ],
+    "Resources" : [
+        st.Page("3_Edit_Plan.py", title="Edit"),
+    ]
+}
+
+pg = st.navigation(pages)
+pg.run()
+
 if __name__ == "__main__":
     main()
