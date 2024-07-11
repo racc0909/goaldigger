@@ -135,8 +135,8 @@ if bank in ["VR Bank", "Sparkasse", "ING Bank"]:
         term = st.selectbox("Select Deposit Term", ["3 months", "6 months", "12 months"])
         years = int(term.split()[0]) / 12
     else:
-        term = st.selectbox("Select Deposit Term", ["3 months", "6 months", "1 year", "2 years", "3 years", "4 years"])
-        years = {"3 months": 3/12, "6 months": 6/12, "1 year": 1, "2 years": 2, "3 years": 3, "4 years": 4}[term]
+        term = st.selectbox("Select Deposit Term", ["3 months", "6 months", "12 months", "2 years", "3 years", "4 years"])
+        years = {"3 months": 3/12, "6 months": 6/12, "12 months": 1, "2 years": 2, "3 years": 3, "4 years": 4}[term]
 else:
     years = st.number_input("Enter Deposit Duration (years)", min_value=1, value=1)
 
