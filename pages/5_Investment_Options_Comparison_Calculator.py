@@ -65,7 +65,29 @@ banks = {
 }
 
 # User interface
-st.title("Bank Term Deposit Profit Calculator")
+# 定义图标路径 Define the icon path
+ICON_PATH_0_2 = "img/icon_0_2.png"
+
+# 使用 base64 编码嵌入图像 Embed images using base64 encoding
+import base64
+
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode()
+    return encoded_image
+
+encoded_image = get_base64_image(ICON_PATH_0_2)
+
+# 使用 HTML 和 CSS 在标题右侧添加图标 Add the icon to the right side of the title using HTML and CSS
+st.markdown(
+    f"""
+    <div style="display: flex; align-items: center;">
+        <h1 style="margin: 0;">Bank Term Deposit Profit Calculator</h1>
+        <img src="data:image/png;base64,{encoded_image}" width="40" style="margin-left: 10px;">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Select bank
 bank = st.selectbox("Select Bank", list(banks.keys()))
