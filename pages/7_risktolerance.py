@@ -1,9 +1,9 @@
 import streamlit as st
 
-# 定义图标路径
+# 定义图标路径 Define the icon path
 ICON_PATH_0_5 = "img/icon_0_5.png"
 
-# 使用 base64 编码嵌入图像
+# 使用 base64 编码嵌入图像 Embed images using base64 encoding
 import base64
 
 def get_base64_image(image_path):
@@ -13,7 +13,7 @@ def get_base64_image(image_path):
 
 encoded_image = get_base64_image(ICON_PATH_0_5)
 
-# 使用 HTML 和 CSS 在标题右侧添加图标
+# 使用 HTML 和 CSS 在标题右侧添加图标 Add the icon to the right side of the title using HTML and CSS
 st.markdown(
     f"""
     <div style="display: flex; align-items: center;">
