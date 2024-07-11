@@ -90,7 +90,7 @@ st.markdown(
 )
 
 # Select bank
-bank = st.selectbox("Select Bank", list(banks.keys()))
+bank = st.selectbox("Choose Your Bank", list(banks.keys()))
 
 # Display deposit conditions
 min_amount = banks[bank]["min_amount"]
@@ -151,7 +151,7 @@ else:
 amount = st.number_input(f"Enter Deposit Amount ({currency})", min_value=min_amount, max_value=None if max_amount == float('inf') else int(max_amount), value=min_amount)
 
 # Calculate profit
-if st.button("Calculate Profit"):
+if st.button("Compute Profit"):
     if bank == "VR Bank" or bank == "ING Bank":
         interest_rate = banks[bank]["rates"][term]
     elif bank == "Sparkasse":
@@ -163,11 +163,11 @@ if st.button("Calculate Profit"):
     profit = amount * (interest_rate / 100) * years
     st.write(f"The profit for a deposit of {amount} {currency} for {years} years at {bank} is: {profit:.2f} {currency}")
     
-    st.write("Want to learn more? Click [here]({}) to visit the bank's website.".format(banks[bank]["link"]))
+    st.write("For more details, click [here]({}) to visit the bank's official website.".format(banks[bank]["link"]))
 
 # Multi-select box for bank comparison
-st.header("Compare Bank Tariffs")
-selected_banks = st.multiselect("Select Banks to Compare", list(banks.keys()), default=[bank])
+st.header("Compare Bank Rates")
+selected_banks = st.multiselect("Select Banks for Comparison", list(banks.keys()), default=[bank])
 
 
 # Generate comparison chart
@@ -200,7 +200,7 @@ if selected_banks:
         "VR Bank": "#0066b3"
     }
     
-    fig = px.line(comparison_df, x='Term', y='Interest Rate (%)', color='Bank', markers=True, title='Comparison of Bank Tariffs',
+    fig = px.line(comparison_df, x='Term', y='Interest Rate (%)', color='Bank', markers=True, title='Bank Rates Comparison',
                   color_discrete_map=colors)
 
     # Disconnect points for different banks to avoid unwanted lines
