@@ -3,11 +3,26 @@ import streamlit as st
 # 定义图标路径
 ICON_PATH_0_5 = "img/icon_0_5.png"
 
-# 使用 HTML 和 CSS 在标题左侧添加图标
-st.image(ICON_PATH_0_5, width=40)
+# 使用 base64 编码嵌入图像
+import base64
 
-# 页面标题
-st.title("Risk Tolerance Assessment")
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode()
+    return encoded_image
+
+encoded_image = get_base64_image(ICON_PATH_0_5)
+
+# 使用 HTML 和 CSS 在标题右侧添加图标
+st.markdown(
+    f"""
+    <div style="display: flex; align-items: center;">
+        <h1 style="margin: 0;">Risk Tolerance Assessment</h1>
+        <img src="data:image/png;base64,{encoded_image}" width="40" style="margin-left: 10px;">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # 使用st.expander隐藏特定部分
 with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
