@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 
 
 # In[ ]:
-
+page_title="Goaldiggers", page_icon=":moneybag:"
 
 # Function to load a local image and convert it to a base64 string
 def get_image_as_base64(image_path):
