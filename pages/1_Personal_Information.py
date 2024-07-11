@@ -23,9 +23,9 @@ def user_info_page():
 
         if profile:
             st.subheader("Your Profile")
-            user_nickname = st.text_input("Name", profile.user_nickname)
-            user_birthday = st.date_input("Birthday", profile.user_birthday, format="DD.MM.YYYY")
-            user_country = st.selectbox("Country", list(country_data.keys()), index=list(country_data.keys()).index(profile.user_country) if profile.user_country else 0)
+            user_nickname = st.text_input("Your Name", profile.user_nickname)
+            user_birthday = st.date_input("Your Birthday", profile.user_birthday, format="DD.MM.YYYY")
+            user_country = st.selectbox("Your Country", list(country_data.keys()), index=list(country_data.keys()).index(profile.user_country) if profile.user_country else 0)
             user_currency = st.selectbox("Currency", country_data[user_country]['Currency'], index=0)
             mode = "edit"
         else:
