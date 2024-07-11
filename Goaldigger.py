@@ -17,6 +17,7 @@ st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
 # Function to display the logout button
 
+
 def login_page():
    # todo: Introduction to the app
    st.title("Welcome to Goaldiggers")
@@ -148,20 +149,6 @@ def main():
 
     else:
          login_page()
-
-import streamlit as st
-
-pages = {
-    "Your account" : [
-        st.Page("1_Personal_Information.py", title="Personal Information"),
-    ],
-    "Resources" : [
-        st.Page("3_Edit_Plan.py", title="Edit"),
-    ]
-}
-
-pg = st.navigation(pages)
-pg.run()
 
 if __name__ == "__main__":
     main()
