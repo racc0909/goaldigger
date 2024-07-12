@@ -18,7 +18,7 @@ st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
 # Function to display the logout button
 
 
-st.sidebar.divider
+st.sidebar.divider()
 
 def login_page():
    # todo: Introduction to the app
