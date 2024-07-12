@@ -17,9 +17,6 @@ st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img
 st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
 # Function to display the logout button
 
-
-st.sidebar.divider()
-
 def login_page():
    # todo: Introduction to the app
    st.title("Welcome to Goaldiggers")
