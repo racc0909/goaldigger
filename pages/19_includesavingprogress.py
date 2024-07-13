@@ -752,7 +752,7 @@ def get_years(start_year, end_year):
 
 # Track Your Savings Progress page
 if page == "Track Your Savings Progress":
-    st.title("Track Your Savings Progress")
+    st.title("📊 Track Your Savings Progress")
 
     # Month and Year selection
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
