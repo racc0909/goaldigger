@@ -59,7 +59,9 @@ risk_tolerance = st.selectbox("Please select your level of risk tolerance:", ris
 
 # 确定按钮
 if st.button("Submit"):
-    if risk_tolerance != 'Select your risk tolerance level':
+    if risk_tolerance == 'Select your risk tolerance level 👉':
+        st.error("Please select a risk tolerance level.")
+    else:
         st.write(f"You selected: {risk_tolerance}")
         st.write(f"Great! You're saving {saving_amount} euros over {saving_time} months and you have a {risk_tolerance.split(':')[0]} tolerance to risk.")
         
@@ -94,5 +96,3 @@ if st.button("Submit"):
             elif risk_tolerance.startswith('🔴 High risk'):
                 st.switch_page("pages/17_High Risk, Long Term Investments.py")
                 st.experimental_rerun()
-    else:
-        st.write("Please select a risk tolerance level.")
