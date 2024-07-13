@@ -7,11 +7,21 @@
 import streamlit as st
 
 # 页面标题
-st.title("Recommended Investment Options for Medium Risk and Medium Term")
+st.markdown(
+    f"""
+    <h1>Recommended Investment Options for Medium Risk and Medium Term"</h1>
+    """,
+    unsafe_allow_html=True
+)
 
+st.divider()
 # 描述
-st.write("Based on your medium risk tolerance and preference for medium-term investments, we recommend the following options:")
-
+st.markdown(
+    """
+    Based on your <u>medium</u> risk tolerance and preference for <u>medium-term</u> investments, we recommend the following options:
+    """,
+    unsafe_allow_html=True
+)
 # 自定义CSS样式
 st.markdown("""
     <style>
