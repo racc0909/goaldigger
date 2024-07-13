@@ -146,21 +146,28 @@ def editing_page():
                         "description": "We have been assisting Expats for more than 20 years to secure their German mortgage. An easy English speaking step-by-step service which is free of charge. Blue-Card holders welcome. Five star Google Reviews from our clients prove our services.",
                         "link_text": "View more",
                         "link": "https://your-german-mortgage.de/",
-                        "image_path": "img/image_removebg_preview.png"
+                        "image_path": "img/image_removebg_preview.png",
+                        "button_background_color": "#9e8360",
+                        "button_text_color": "#ffffff"
+
                     },
                     {
                         "company":" ",
                         "description": "Baufi24 is Germany’s first digital mortgage broker. Baufi24 combines smart technology and certified mortgage advice to help clients save time and money while making property purchasing in Germany transparent and hassle-free.",
                         "link_text": "View more",
                         "link": "https://www.baufi24.de",
-                        "image_path": "img/baufi.png"
+                        "image_path": "img/baufi.png",
+                        "button_background_color": "#d5fdcf",
+                        "button_text_color": "#0e2a47"
                     },
                     {
                         "company":" ",
                         "description": "finbird digital provides English mortgage and property consulting for international professionals throughout Germany. We help with checking your property budget and affordability at an early stage and with guiding you along the purchase process until transaction close. We educate about the buying process and mortgage financing options with recurring events and comprehensive educational guides.",
                         "link_text": "View more",
                         "link": "https://www.finbird.digital",
-                        "image_path": "img/finbird.png"
+                        "image_path": "img/finbird.png",
+                        "button_background_color": "#5cb6d5",
+                        "button_text_color": "#ffffff"
                     },
                     {
                         "company":" ",
@@ -168,12 +175,14 @@ def editing_page():
                         "link_text": "View more",
                         "link": "https://www.hypofriend.de",
                         "image_path": "img/hypofriend.png"
+                        "button_background_color": "#3f818f",
+                        "button_text_color": "#ffffff"
                     } 
                 ]
                 colors = ["#ffffff", "#0c2c4c", "#24243c", "#ffffff", "#fff3e0"] 
                 border_colors = ["#000000", "#ffffff", "#d81b60", "#8e24aa", "#ffb300"]  # Border colors
-                text_colors = ["#333333", "#ffffff", "#ffffff", "##0c2c4c", "#333333"]
-                button_text_color = ["#0c2c4c", "#ffffff", "#0c2c4c", "#0c2c4c", "#0c2c4c"] 
+                text_colors = ["#333333", "#ffffff", "#ffffff", "##547e8c", "#333333"]
+                button_text_color = ["#24243c", "#ffffff", "#24243c", "#ffffff", "#24243c"] 
                 
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
@@ -182,6 +191,8 @@ def editing_page():
                     button_text_color = colors[i % len(button_text_color)]
                     border_color = border_colors[i % len(border_colors)]  # Cycle through the list of border colors
                     text_color = text_colors[i % len(text_colors)]
+                    button_background_color = ad.get("button_background_color", "#000000")  # Default to black if not provided
+                    button_text_color = ad.get("button_text_color", "#ffffff")    
                     with col1 if i % 2 == 0 else col2:
                         st.markdown(f"""
                          <div style="background-color:{background_color}; padding: 10px; margin: 10px; border-radius: 10px;">
