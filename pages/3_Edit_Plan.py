@@ -11,6 +11,12 @@ from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate
 from financial_plan import calculate_amortization_schedule, generate_data_and_plot
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 
+# Function to encode images in base64
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode()
+    return encoded_image
+    
 def editing_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         user_id = st.session_state.user_id
