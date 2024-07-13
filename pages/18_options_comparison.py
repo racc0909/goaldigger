@@ -84,5 +84,5 @@ st.plotly_chart(fig, use_container_width=True)
 
 # 返回按钮
 if st.button("Back to Assessment"):
-    st.switch_page("pages/7_risktolerance.py")
+    st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
 
