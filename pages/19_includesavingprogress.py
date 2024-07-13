@@ -426,28 +426,28 @@ if page == "House Buyer Savings Plan":
                 st.subheader("Your Local Mortgage Providers")
                 ads = [
                     {
-                        "company":" "
+                        "company":" ",
                         "description": "We have been assisting Expats for more than 20 years to secure their German mortgage. An easy English speaking step-by-step service which is free of charge. Blue-Card holders welcome. Five star Google Reviews from our clients prove our services.",
                         "link_text": "View more",
                         "link": "https://www.yourgermanmortgage.com",
                         "image_path": "img/image_removebg_preview.png"
                     },
                     {
-                        "company":" "
+                        "company":" ",
                         "description": "Baufi24 is Germany’s first digital mortgage broker. Baufi24 combines smart technology and certified mortgage advice to help clients save time and money while making property purchasing in Germany transparent and hassle-free.",
                         "link_text": "View more",
                         "link": "https://www.baufi24.de",
                         "image_path": "img/baufi.png"
                     },
                     {
-                        "company":" "
+                        "company":" ",
                         "description": "Hypofriend is Germany’s smartest mortgage broker, built by PhDs and engineers they calculate the optimal mortgage for your situation. Their English-speaking mortgage experts will guide you through the entire process giving you insights along the way, free of charge.",
                         "link_text": "View more",
                         "link": "https://www.hypofriend.de",
                         "image_path": "img/hypofriend.png"
                     },
                     {
-                        "company":" "
+                        "company":" ",
                         "description": "finbird digital provides English mortgage and property consulting for international professionals throughout Germany. We help with checking your property budget and affordability at an early stage and with guiding you along the purchase process until transaction close. We educate about the buying process and mortgage financing options with recurring events and comprehensive educational guides.",
                         "link_text": "View more",
                         "link": "https://www.finbird.digital",
