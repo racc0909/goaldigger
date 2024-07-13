@@ -92,14 +92,7 @@ st.markdown(
 st.divider()
 
 # Select bank
-st.markdown(
-    f"""
-    <p style="margin: 0;">
-        <span style="text-decoration: underline;">{bank}</span> deposits, the amount must be more than {min_amount} with no upper limit.
-    </p>
-    """,
-    unsafe_allow_html=True
-)
+bank = st.selectbox("Choose Your Bank", list(banks.keys()))
 
 # Display deposit conditions
 min_amount = banks[bank]["min_amount"]
