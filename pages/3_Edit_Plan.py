@@ -174,7 +174,7 @@ def editing_page():
                         "description": "Hypofriend is Germany’s smartest mortgage broker, built by PhDs and engineers they calculate the optimal mortgage for your situation. Their English-speaking mortgage experts will guide you through the entire process giving you insights along the way, free of charge.",
                         "link_text": "View more",
                         "link": "https://www.hypofriend.de",
-                        "image_path": "img/hypofriend.png"
+                        "image_path": "img/hypofriend.png",
                         "button_background_color": "#3f818f",
                         "button_text_color": "#ffffff"
                     } 
