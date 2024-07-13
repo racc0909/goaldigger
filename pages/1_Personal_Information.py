@@ -12,8 +12,13 @@ css_file_path = "data/titlestyle.css"
 load_css(css_file_path)
 
 def user_info_page():
-    st.title("📝 Personal Information")
-
+    st.markdown(
+        f"""
+        <h1>📝 Personal Information</h1>
+        """,
+        unsafe_allow_html=True
+    )
+    
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         user_id = st.session_state.user_id
 
