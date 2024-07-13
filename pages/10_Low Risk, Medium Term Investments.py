@@ -2,15 +2,29 @@
 # coding: utf-8
 
 # In[ ]:
+import streamlit as st
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 import streamlit as st
 
 # 页面标题
-st.title("Recommended Investment Options for Low Risk and Medium Term")
+st.markdown(
+    f"""
+    <h1>Recommended Investment Options for Low Risk and Medium Term</h1>
+    """,
+    unsafe_allow_html=True
+)
 
 # 描述
-st.write("Based on your low risk tolerance and preference for medium-term investments, we recommend the following options:")
+st.markdown(
+    """
+    Based on your <u>low</u> risk tolerance and preference for <u>medium-term</u> investments, we recommend the following options:
+    """,
+    unsafe_allow_html=True
+)
 
 # 自定义CSS样式
 st.markdown("""
