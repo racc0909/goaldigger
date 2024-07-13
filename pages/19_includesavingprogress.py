@@ -468,9 +468,10 @@ if page == "House Buyer Savings Plan":
                         st.markdown(f"""
                          <div style="background-color:{background_color}; padding: 10px; margin: 10px; border-radius: 10px;">
             <h3>{ad['company']}</h3>
+                            <h3 style="color: {text_color};">{ad['company']}</h3>
                             <img src="data:image/png;base64,{encoded_image}" width="100%" style="margin: 10px 0;">
-                            <p>{ad['description']}</p>
-                            <a href="{ad['link']}" target="_blank">{ad['link_text']}</a>
+                            <p style="color: {text_color};">{ad['description']}</p>
+                            <a href="{ad['link']}" target="_blank" style="color: {text_color};">{ad['link_text']}</a>
                         </div>
                         """, unsafe_allow_html=True)
 # Car Buyer Savings Plan
