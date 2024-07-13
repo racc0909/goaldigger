@@ -103,7 +103,7 @@ def planning_page():
             goal_name = st.text_input("Name of the plan", value = "Buy a Car")
             df = pd.read_excel("data/car_prices.xlsx")
 
-            st.subheader('Choose an Option:')
+            st.subheader('Choose an Option 👉:')
             savings_option = st.radio('', ('See Available Suggested Car Prices', 'Input Your Car Price'))
 
             if savings_option == 'See Available Suggested Car Prices':
