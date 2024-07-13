@@ -66,33 +66,33 @@ if st.button("Submit"):
         # 根据用户选择重定向到不同页面
         if saving_time <= 12:  # 短期投资
             if risk_tolerance.startswith('🟢 Low risk'):
-                st.switch_page("pages/9_lowshort.py")
+                st.switch_page("pages/9_Low Risk, Short Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🟡 Medium risk'):
-                st.switch_page("pages/12_mediumshort.py")
+                st.switch_page("pages/12_Meidum Risk, Short Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🔴 High risk'):
-                st.switch_page("pages/15_highshort.py")
+                st.switch_page("pages/15_High Risk, Short Term Investments.py")
                 st.experimental_rerun()
         elif 12 < saving_time <= 60:  # 中期投资
             if risk_tolerance.startswith('🟢 Low risk'):
-                st.switch_page("pages/10_lowmedium.py")
+                st.switch_page("pages/10_Low Risk, Medium Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🟡 Medium risk'):
-                st.switch_page("pages/13_mediummedium.py")
+                st.switch_page("pages/13_Medium Risk, Medium Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🔴 High risk'):
-                st.switch_page("pages/16_highmedium.py")
+                st.switch_page("pages/16_High Risk, Medium Term Investments.py")
                 st.experimental_rerun()
         else:  # 长期投资
             if risk_tolerance.startswith('🟢 Low risk'):
-                st.switch_page("pages/11_lowlong.py")
+                st.switch_page("pages/11_Low Risk, Long Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🟡 Medium risk'):
-                st.switch_page("pages/14_mediumlong.py")
+                st.switch_page("pages/14_Medium Risk, Long Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🔴 High risk'):
-                st.switch_page("pages/17_highlong.py")
+                st.switch_page("pages/17_High Risk, Long Term Investments.py")
                 st.experimental_rerun()
     else:
         st.write("Please select a risk tolerance level.")
