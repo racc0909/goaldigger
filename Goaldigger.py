@@ -80,7 +80,7 @@ def login_page():
                 st.error("Invalid username or password.")
         st.markdown(
             """
-            <p style='font-family: 'Montserrat', sans-serif; color: #7776B3; font-size: 10px;'>New here?</p>
+            <p style="font-family: 'Montserrat', sans-serif; color: #7776B3; font-size: 10px;">New here?</p>
             """,
             unsafe_allow_html=True
         )
