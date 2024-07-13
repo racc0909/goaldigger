@@ -69,9 +69,10 @@ def editing_page():
             backToOverview()
             logout()
 
-            # --- HOUSE BUYER SAVINGS PLAN ---
-            if page == "House Buyer Savings Plan":
+            # --- st.title ---
+            if page == "st.title":
                 st.title(plan.goal_name)
+                st.divider()
                 goal_name = st.text_input("Name of the plan", value = plan.goal_name)
                 house_price = st.number_input(f'House price ({currency_symbol}):', min_value=0.0, format="%.2f", key='house_price', value=float(plan.goal_total))
                 down_payment_percent = st.slider('Down payment percentage:', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=float(plan.payment_first_percent))
