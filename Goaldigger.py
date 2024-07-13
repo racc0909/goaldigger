@@ -19,7 +19,14 @@ st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
 
 def login_page():
    # todo: Introduction to the app
-   st.title("Welcome to Goaldiggers")
+   # 使用 HTML 和 CSS 更改标题颜色
+   st.markdown(
+       f"""
+       <h1 style="color: #478CCF;">Welcome to Goaldiggers</h1>
+       """,
+       unsafe_allow_html=True
+   )
+
    st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
    # Signup and Login Page
