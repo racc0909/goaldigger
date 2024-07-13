@@ -115,7 +115,12 @@ def main():
                st.switch_page("pages/2_Create_Plan.py")
 
       else:
-         st.title(f"Overview of All Financial Plans for {profile.user_nickname}")
+         st.markdown(
+             f"""
+             <h1>Overview of All Financial Plans for {profile.user_nickname}</h1>
+             """,
+             unsafe_allow_html=True
+         )
 
          for plan in plans:
                savings_distribution = {plan.goal_name: plan.goal_target_monthly for plan in plans}
