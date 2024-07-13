@@ -10,9 +10,6 @@ import time
 sidebar_logo = "img/Logo_Without_Text.png"
 st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img/Logo_Without_Text.png")
 
-# Logo on the Sidebar
-#st.sidebar.logo("img/Logo_Without_Text.png", icon_image="img/Logo_Without_Text.png", link="https://fiepdemoapp.streamlit.app/")
-
 # Set page title and icon
 st.set_page_config(page_title="Goaldigger", page_icon=":moneybag:")
 
@@ -42,50 +39,48 @@ def login_page():
 
     st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
-   # Signup and Login Page
+    # Signup and Login Page
     if "signup_mode" not in st.session_state:
         st.session_state.signup_mode = False
 
     if not st.session_state.signup_mode:
-      # Login
+        # Login
         st.subheader("Login")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         if st.button("Login"):
-         # Function to authenticate the user
-        user = authenticate(username, password)
-        if user:
-            st.session_state.logged_in = True
-            st.session_state.user_id = user.user_id
-            st.success("Login successfully!")
-            time.sleep(0.3)
-            st.experimental_rerun()
-        else:
-            st.error("Invalid username or password.")
-            st.write("Don't have an account?")
+            # Function to authenticate the user
+            user = authenticate(username, password)
+            if user:
+                st.session_state.logged_in = True
+                st.session_state.user_id = user.user_id
+                st.success("Login successfully!")
+                time.sleep(0.3)
+                st.experimental_rerun()
+            else:
+                st.error("Invalid username or password.")
+        st.write("Don't have an account?")
         if st.button("Go to Sign Up"):
             st.session_state.signup_mode = True
             st.experimental_rerun()
     else:
-      # Sign up
+        # Sign up
         st.subheader("Sign Up")
         username = st.text_input("New Username")
         password = st.text_input("New Password", type="password")
-
         if st.button("Sign Up"):
-         # Function to add user to database
-        if signup(username, password):
-            st.success("User created successfully!")
-            st.session_state.signup_mode = False
-            # Automatically logging in
-            user = authenticate(username, password)
-            st.session_state.user_id = user.user_id
-            st.session_state.logged_in = True
-            time.sleep(0.5)
-            #st.experimental_rerun()
-            st.switch_page("pages/1_Personal_Information.py")
-         else:
-            st.error("Username already taken")
+            # Function to add user to database
+            if signup(username, password):
+                st.success("User created successfully!")
+                st.session_state.signup_mode = False
+                # Automatically logging in
+                user = authenticate(username, password)
+                st.session_state.user_id = user.user_id
+                st.session_state.logged_in = True
+                time.sleep(0.5)
+                st.switch_page("pages/1_Personal_Information.py")
+            else:
+                st.error("Username already taken")
 
 def main():
     # Content of the main page
