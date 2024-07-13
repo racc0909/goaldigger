@@ -78,8 +78,14 @@ def login_page():
                 st.experimental_rerun()
             else:
                 st.error("Invalid username or password.")
-        st.write("Don't have an account?")
-        if st.button("Go to Sign Up"):
+        st.markdown(
+            """
+            <p style='font-family: "Montserrat", sans-serif; color: #6c757d; font-size: 18px;'>
+            New here?</p>
+            """,
+            unsafe_allow_html=True
+        )
+        if st.button("Create an account!"):
             st.session_state.signup_mode = True
             st.experimental_rerun()
     else:
