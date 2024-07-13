@@ -6,12 +6,30 @@
 
 import streamlit as st
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# 加载 CSS 文件
+css_file_path = "data/titlestyle.css"
+load_css(css_file_path)
+
 # 页面标题
-st.title("Recommended Investment Options for High Risk and Short Term")
+st.markdown(
+    f"""
+    <h1>Recommended Investment Options for High Risk and Short Term</h1>
+    """,
+    unsafe_allow_html=True
+)
 
+st.divider()
 # 描述
-st.write("Based on your high risk tolerance and preference for short-term investments, we recommend the following options:")
-
+st.markdown(
+    """
+    Based on your <u>high</u> risk tolerance and preference for <u>short-term</u> investments, we recommend the following options:
+    """,
+    unsafe_allow_html=True
+)
 # 自定义CSS样式
 st.markdown("""
     <style>
