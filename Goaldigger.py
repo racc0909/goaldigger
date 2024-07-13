@@ -75,7 +75,12 @@ def login_page():
             st.experimental_rerun()
     else:
         # Sign up
-        st.subheader("Sign Up")
+        st.markdown(
+            f"""
+            <h2 class="custom-subheaader">Sign Up</h2>
+            """,
+            unsafe_allow_html=True
+        )
         username = st.text_input("New Username")
         password = st.text_input("New Password", type="password")
         if st.button("Sign Up"):
@@ -126,7 +131,12 @@ def main():
                savings_distribution = {plan.goal_name: plan.goal_target_monthly for plan in plans}
 
          # Rearrange plans
-         st.subheader("Rearrange Plans")
+         st.markdown(
+             f"""
+             <h2 class="custom-subheader">Rearrange Plans</h2>
+             """,
+             unsafe_allow_html=True
+         )
          plan_order = st.multiselect("Drag to reorder plans", options=[plan.goal_name for plan in plans], default=[plan.goal_name for plan in plans])
          plans = [plan for name in plan_order for plan in plans if plan.goal_name == name]
 
