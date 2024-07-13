@@ -79,8 +79,8 @@ def login_page():
             else:
                 st.error("Invalid username or password.")
         st.markdown(
-            f"""
-            <h2 class="custom-subheader">New here?</h2>
+            """
+            <p style='font-family: 'Montserrat', sans-serif; color: #7776B3; font-size: 10px;'>New here?</p>
             """,
             unsafe_allow_html=True
         )
