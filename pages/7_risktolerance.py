@@ -39,7 +39,13 @@ with st.expander("You want to adjust the amount and time? Input your saving deta
     saving_amount = st.text_input("Enter your saving amount (€):", value="10000")
 
 # 描述
-st.write(f"So, you're planning to save {saving_amount} euros over {saving_time} months, huh? That's great! Now, let's talk about your risk tolerance. How bold are you feeling today? :)")
+# 使用自定义样式的子标题
+st.markdown(
+    f"""
+    <p class="custom-subheader">So, you're planning to save {saving_amount} euros over {saving_time} months, huh? That's great! Now, let's talk about your risk tolerance. How bold are you feeling today? :)</p>
+    """,
+    unsafe_allow_html=True
+)
 
 # 下拉菜单
 risk_tolerance_options = [
