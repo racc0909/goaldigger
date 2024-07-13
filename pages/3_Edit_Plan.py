@@ -12,6 +12,14 @@ from financial_plan import calculate_amortization_schedule, generate_data_and_pl
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 import base64
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# 加载 CSS 文件
+css_file_path = "data/titlestyle.css"
+load_css(css_file_path)
+
 # Function to encode images in base64
 def get_base64_image(image_path):
     with open(image_path, "rb") as image_file:
