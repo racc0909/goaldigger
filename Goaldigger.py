@@ -20,7 +20,7 @@ st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
 def login_page():
    # todo: Introduction to the app
    st.title("Welcome to Goaldiggers")
-   st.write("Helping you achieve your financial goals, both short-term and long-term.")
+   st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
    # Signup and Login Page
    if "signup_mode" not in st.session_state:
