@@ -31,7 +31,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
+st.divider()
 # 使用st.expander隐藏特定部分
 with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
     # 获取用户输入的存款时间和金额
