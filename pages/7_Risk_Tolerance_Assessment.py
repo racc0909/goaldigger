@@ -69,7 +69,7 @@ if st.button("Submit"):
                 st.switch_page("pages/9_Low Risk, Short Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🟡 Medium risk'):
-                st.switch_page("pages/12_Meidum Risk, Short Term Investments.py")
+                st.switch_page("pages/12_Medium Risk, Short Term Investments.py")
                 st.experimental_rerun()
             elif risk_tolerance.startswith('🔴 High risk'):
                 st.switch_page("pages/15_High Risk, Short Term Investments.py")
