@@ -454,14 +454,16 @@ if page == "House Buyer Savings Plan":
                         "image_path": "img/image_removebg_preview.png"
                     }
                 ]
-
+                colors = ["#f4f4f4", "#e0f7fa", "#fce4ec", "#f3e5f5", "#fff3e0"] 
+                
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
                     encoded_image = get_base64_image(ad["image_path"])
+                    background_color = colors[i % len(colors)]
                     with col1 if i % 2 == 0 else col2:
                         st.markdown(f"""
-                        <div style="background-color:#f4f4f4; padding: 10px; margin: 10px; border-radius: 10px;">
-                            <h3>{ad['company']}</h3>
+                         <div style="background-color:{background_color}; padding: 10px; margin: 10px; border-radius: 10px;">
+            <h3>{ad['company']}</h3>
                             <img src="data:image/png;base64,{encoded_image}" width="100%" style="margin: 10px 0;">
                             <p>{ad['description']}</p>
                             <a href="{ad['link']}" target="_blank">{ad['link_text']}</a>
