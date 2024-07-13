@@ -18,14 +18,28 @@ st.set_page_config(page_title="Goaldigger", page_icon=":moneybag:")
 # Function to display the logout button
 
 def login_page():
-   # todo: Introduction to the app
-   # 使用 HTML 和 CSS 更改标题颜色
-   st.markdown(
-       f"""
-       <h1 style="color: #4535C1; font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Welcome to Goaldigger</h1>
-       """,
-       unsafe_allow_html=True
-   )
+    # 引入 Google Fonts
+    st.markdown(
+        """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Montserrat+Alternates:wght@400&display=swap');
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: #4535C1;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    # 使用 HTML 和 CSS 更改标题颜色和字体
+    st.markdown(
+        f"""
+        <h1>Welcome to Goaldigger</h1>
+        """,
+        unsafe_allow_html=True
+    )
 
    st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
