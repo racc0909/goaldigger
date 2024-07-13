@@ -137,7 +137,7 @@ st.divider()
 
 # 返回按钮
 if st.button("Back to Assessment"):
-    st.switch_page("pages/7_risktolerance.py")
+    st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
 if st.button("I want to compare opotions"):
     st.switch_page("pages/18_options_comparison.py")
 
