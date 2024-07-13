@@ -437,7 +437,7 @@ if page == "House Buyer Savings Plan":
                         "description": "Baufi24 is Germany’s first digital mortgage broker. Baufi24 combines smart technology and certified mortgage advice to help clients save time and money while making property purchasing in Germany transparent and hassle-free.",
                         "link_text": "View more",
                         "link": "https://www.baufi24.de",
-                        "image_path": "img/image_removebg_preview.png"
+                        "image_path": "img/baufi.png"
                     },
                     {
                         "company": "Hypofriend",
@@ -454,7 +454,7 @@ if page == "House Buyer Savings Plan":
                         "image_path": "img/image_removebg_preview.png"
                     }
                 ]
-                colors = ["#f4f4f4", "#e0f7fa", "#fce4ec", "#f3e5f5", "#fff3e0"] 
+                colors = ["#ffffff", "#0c2c4c", "#fce4ec", "#f3e5f5", "#fff3e0"] 
                 
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
