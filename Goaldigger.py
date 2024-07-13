@@ -42,7 +42,7 @@ def login_page():
         """,
         unsafe_allow_html=True
     )
-    
+
     # 使用 HTML 和 CSS 更改标题颜色和字体
     st.markdown(
         f"""
@@ -50,7 +50,7 @@ def login_page():
         """,
         unsafe_allow_html=True
     )
-
+    st.divider()
     st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
     # Signup and Login Page
@@ -135,7 +135,7 @@ def main():
              """,
              unsafe_allow_html=True
          )
-
+         st.divider()
          # CSS for custom styling
          st.markdown("""
             <style>
