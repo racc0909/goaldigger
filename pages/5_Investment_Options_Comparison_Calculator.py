@@ -8,6 +8,14 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# 加载 CSS 文件
+css_file_path = "data/titlestyle.css"
+load_css(css_file_path)
+
 # Bank data
 banks = {
     "ING Bank": {
@@ -82,7 +90,7 @@ encoded_image = get_base64_image(ICON_PATH_0_2)
 st.markdown(
     f"""
     <div style="display: flex; align-items: center;">
-        <h1 style="margin: 0;">Bank Term Deposit Profit Calculator</h1>
+        <h1>Bank Term Deposit Profit Calculator</h1>
         <img src="data:image/png;base64,{encoded_image}" width="40" style="margin-left: 10px;">
     </div>
     """,
