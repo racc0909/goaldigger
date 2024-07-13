@@ -42,7 +42,7 @@ def planning_page():
         life_expectancy = country_data[selected_country]['LifeExpectancy']
 
         # --- HOUSE BUYER SAVINGS PLAN ---
-        if page == "House Buyer Savings Plan":
+        if page == "🏡 House Buyer Savings Plan":
             st.title("🏡 House Buyer Savings Plan")
             goal_type = "House Buyer Savings Plan"
             goal_name = st.text_input("Name of the plan", value = "Buy a House")
