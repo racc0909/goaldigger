@@ -8,6 +8,14 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# 加载 CSS 文件
+css_file_path = "data/titlestyle.css"
+load_css(css_file_path)
+
 # 示例数据
 data = {
     "Investment Option": [
@@ -33,9 +41,15 @@ data = {
 # 将数据转换为 DataFrame
 df = pd.DataFrame(data)
 
-# Streamlit 界面
-st.title("Investment Options Comparison")
+# 页面标题
+st.markdown(
+    f"""
+    <h1>Investment Options Comparison</h1>
+    """,
+    unsafe_allow_html=True
+)
 
+st.divider()
 st.write("Select the investment options you want to compare:")
 
 # 多选框供用户选择投资选项
