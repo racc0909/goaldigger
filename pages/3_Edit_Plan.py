@@ -179,6 +179,7 @@ def editing_page():
                 for i, ad in enumerate(ads):
                     encoded_image = get_base64_image(ad["image_path"])
                     background_color = colors[i % len(colors)]
+                    button_text_color = colors[i % len(button_text_color)]
                     border_color = border_colors[i % len(border_colors)]  # Cycle through the list of border colors
                     text_color = text_colors[i % len(text_colors)]
                     with col1 if i % 2 == 0 else col2:
