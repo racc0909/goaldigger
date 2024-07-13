@@ -134,7 +134,12 @@ def editing_page():
                 generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
 
                 # Mortgage ads
-                st.subheader("Your Local Mortgage Providers")
+                st.markdown(
+                    f"""
+                    <h2 class="custom-subheader">Your Local Mortgage Providers</h2>
+                    """,
+                    unsafe_allow_html=True
+                )
                 ads = [
                     {
                         "company":" ",
@@ -196,11 +201,21 @@ def editing_page():
 
                 df = pd.read_excel("data/car_prices.xlsx")
 
-                st.subheader('Choose an Option:')
+                st.markdown(
+                    f"""
+                    <h2 class="custom-subheader">Choose an Option:</h2>
+                    """,
+                    unsafe_allow_html=True
+                )
                 savings_option = st.radio('', ('See Available Suggested Car Prices', 'Input Your Car Price'))
 
                 if savings_option == 'See Available Suggested Car Prices':
-                    st.subheader('See Available Suggested Car Prices')
+                    st.markdown(
+                    f"""
+                    <h2 class="custom-subheader">See Available Suggested Car Prices</h2>
+                    """,
+                    unsafe_allow_html=True
+                )
 
                     col1, col2, col3 = st.columns(3)
                     selected_make = col1.selectbox('Select Car Make', df['make'].unique())
@@ -217,7 +232,12 @@ def editing_page():
 
                     car_price_input = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(price) if selected_model else 0.0, key='adjusted_car_price')
                 else:
-                    st.subheader('Input Your Car Price')
+                    st.markdown(
+                    f"""
+                    <h2 class="custom-subheader">Input Your Car Price</h2>
+                    """,
+                    unsafe_allow_html=True
+                    )
                     car_price_input = st.number_input('Enter the total cost of the car:', min_value=0.0, format="%.2f", key='adjusted_car_price')
                 
                 down_payment_percent = st.slider('Enter your down payment percentage:', min_value=0.0, max_value=100.0, step=1.0, key='car_down_payment_percent', value=float(plan.payment_first_percent))
