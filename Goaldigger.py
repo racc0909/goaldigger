@@ -24,6 +24,11 @@ def login_page():
             font-family: 'Montserrat', sans-serif;
             color: #4535C1;
         }
+        .subheader-login {
+            font-family: 'Montserrat', sans-serif;
+            color: #478CCF;
+            font-size: 24px;
+        }
         </style>
         """,
         unsafe_allow_html=True
@@ -45,7 +50,12 @@ def login_page():
 
     if not st.session_state.signup_mode:
         # Login
-        st.subheader("Login")
+        st.markdown(
+            """
+            <h2 class="subheader-login">Login</h2>
+            """,
+            unsafe_allow_html=True
+        )
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         if st.button("Login"):
