@@ -758,8 +758,8 @@ if page == "Track Your Savings Progress":
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     years = get_years(2020, datetime.now().year + 10)
     col1, col2 = st.columns([2, 1])
-    selected_month = col1.selectbox ("Select month", months, index=datetime.now().month - 1)
-    selected_year = col2.selectbox("Select year", years, index=years.index(str(datetime.now().year)))
+    selected_month = col1.selectbox ("📅 Select month", months, index=datetime.now().month - 1)
+    selected_year = col2.selectbox("📅 Select year", years, index=years.index(str(datetime.now().year)))
     
     # Convert selected month and year to date
     selected_date = datetime.strptime(f"01 {selected_month} {selected_year}", "%d %B %Y")
