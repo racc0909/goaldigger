@@ -96,8 +96,8 @@ def planning_page():
                 st.switch_page("pages/3_Edit_Plan.py")
 
         # --- CAR BUYER SAVINGS PLAN ----
-        if page == "Car Buyer Savings Plan":
-            st.title("Car Buyer Savings Plan")
+        if page == "🚘 Car Buyer Savings Plan":
+            st.title("🚘 Car Buyer Savings Plan")
             goal_type = "Car Buyer Savings Plan"
             # Enter goal name
             goal_name = st.text_input("Name of the plan", value = "Buy a Car")
