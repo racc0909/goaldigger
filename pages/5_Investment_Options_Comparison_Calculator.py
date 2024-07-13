@@ -176,7 +176,12 @@ if st.button("Compute Profit"):
     st.write("For more details, click [here]({}) to visit the bank's official website.".format(banks[bank]["link"]))
 
 # Multi-select box for bank comparison
-st.header("Compare Bank Rates")
+st.markdown(
+    f"""
+    <h2 class="custom-subheader">Compare Bank Rates</h2>
+    """,
+    unsafe_allow_html=True
+)
 selected_banks = st.multiselect("Select Banks for Comparison", list(banks.keys()), default=[bank])
 
 
