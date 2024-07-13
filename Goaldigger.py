@@ -43,38 +43,38 @@ def login_page():
     st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
    # Signup and Login Page
-   if "signup_mode" not in st.session_state:
+    if "signup_mode" not in st.session_state:
         st.session_state.signup_mode = False
 
-   if not st.session_state.signup_mode:
+    if not st.session_state.signup_mode:
       # Login
-      st.subheader("Login")
-      username = st.text_input("Username")
-      password = st.text_input("Password", type="password")
-      if st.button("Login"):
+        st.subheader("Login")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        if st.button("Login"):
          # Function to authenticate the user
-         user = authenticate(username, password)
-         if user:
+        user = authenticate(username, password)
+        if user:
             st.session_state.logged_in = True
             st.session_state.user_id = user.user_id
             st.success("Login successfully!")
             time.sleep(0.3)
             st.experimental_rerun()
-         else:
+        else:
             st.error("Invalid username or password.")
-      st.write("Don't have an account?")
-      if st.button("Go to Sign Up"):
-         st.session_state.signup_mode = True
-         st.experimental_rerun()
-   else:
+            st.write("Don't have an account?")
+        if st.button("Go to Sign Up"):
+            st.session_state.signup_mode = True
+            st.experimental_rerun()
+    else:
       # Sign up
-      st.subheader("Sign Up")
-      username = st.text_input("New Username")
-      password = st.text_input("New Password", type="password")
+        st.subheader("Sign Up")
+        username = st.text_input("New Username")
+        password = st.text_input("New Password", type="password")
 
-      if st.button("Sign Up"):
+        if st.button("Sign Up"):
          # Function to add user to database
-         if signup(username, password):
+        if signup(username, password):
             st.success("User created successfully!")
             st.session_state.signup_mode = False
             # Automatically logging in
