@@ -5,6 +5,14 @@ from db import createPlan, getUserInfo, calculateUserAge, calculateGoalDate, cal
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 import time
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# 加载 CSS 文件
+css_file_path = "data/titlestyle.css"
+load_css(css_file_path)
+
 def planning_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         logout()
