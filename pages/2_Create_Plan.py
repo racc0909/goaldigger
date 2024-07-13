@@ -219,8 +219,8 @@ def planning_page():
                 st.switch_page("pages/3_Edit_Plan.py")
 
         # --- CUSTOMIZED FINANCIAL PLAN ---
-        if page == "Customized Financial Plan":
-            st.title("Customized Financial Plan")
+        if page == "🔧 Customized Financial Plan":
+            st.title("🔧 Customized Financial Plan")
             goal_type = "Customized Financial Plan"
 
             # Inputs for custom financial plan
