@@ -173,7 +173,7 @@ def editing_page():
                 colors = ["#ffffff", "#0c2c4c", "#24243c", "#ffffff", "#fff3e0"] 
                 border_colors = ["#000000", "#ffffff", "#d81b60", "#8e24aa", "#ffb300"]  # Border colors
                 text_colors = ["#333333", "#ffffff", "#ffffff", "##0c2c4c", "#333333"]
-                button_text_color = ["#0c2c4c", "#ffffff", "#0c2c4c", "#ffffff", "#0c2c4c"] 
+                button_text_color = ["#0c2c4c", "#ffffff", "#0c2c4c", "#0c2c4c", "#0c2c4c"] 
                 
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
