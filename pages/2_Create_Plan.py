@@ -1,20 +1,13 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import numpy_financial as npf
-import plotly.graph_objs as go
-import plotly.express as px
-from datetime import datetime, timedelta, date
-import matplotlib.pyplot as plt
-from db import createPlan, getUserInfo, calculateUserAge, calculateGoalDate, calculateGoalAge
+from datetime import datetime, date
+from db import createPlan, getUserInfo, calculateUserAge, calculateGoalDate, calculateGoalAge, logout
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 import time
 
 def planning_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
-        # Initialize session state for plans if not already set
-        if 'plans' not in st.session_state:
-            st.session_state['plans'] = []
+        logout()
 
         # --- PERSONAL INFORMATION ---
         # PREPARATION
@@ -50,9 +43,8 @@ def planning_page():
         # --- HOUSE BUYER SAVINGS PLAN ---
         if page == "House Buyer Savings Plan":
             st.title("House Buyer Savings Plan")
-
+            goal_type = "House Buyer Savings Plan"
             goal_name = st.text_input("Name of the plan", value = "Buy a House")
-            option = st.radio("Select Option", ["Savings Plan", "Mortgage Calculator"])
             house_price = st.number_input(f'House price ({currency_symbol}):', min_value=0.0, format="%.2f", key='house_price', value=250000.00)
             down_payment_percent = st.slider('Down payment percentage:', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=10.00)
             target_age = st.number_input("Enter the age by which you want to achieve this goal:", min_value=current_age + 1, max_value=100, step=1, key='target_age')
@@ -69,48 +61,41 @@ def planning_page():
             payment_last = house_price * (payment_last_percent / 100) 
             # Calculate monthly saving
             savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
-            monthly_saving = calculate_monthly_saving(house_price * (down_payment_percent / 100), current_savings, current_savings_return, savings_term_months, inflation_rate)            
+            monthly_saving = calculate_monthly_saving(house_price * (down_payment_percent / 100), current_savings, current_savings_return, savings_term_months, inflation_rate)   
+
+            take_house_loan = st.radio("Do you want to take a mortgage loan?", ("Yes", "No"), index=1)
+            if take_house_loan == "Yes":
+                loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_house_loan == "No" else house_price - down_payment_amount - current_savings)
+                loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=0.0 if take_house_loan == "No" else 5.7)
+                loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=0 if take_house_loan == "No" else 20)
+                loan_start_date = st.date_input("Mortgage start date:", min_value=date.today(), key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_house_loan == "No" else current_date)  
+                monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
+            else:
+                loan_amount = 0.0
+                loan_interest_rate = 0.0
+                loan_term_years = 0
+                loan_start_date = "01.01.1990"
+                monthly_loan_payment = 0.0
+
               
             # SAVING PLAN OPTION 
-            if option == "Savings Plan":
-                if st.button('Calculate House Buyer Saving Plan'):  
-                    # Save plan to DB
-                    createPlan(user_id, goal_name, target_age, due_date, 
-                                house_price, down_payment_amount, monthly_saving, 
-                                current_savings, current_savings_return, savings_term_months,
-                                down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                0, '1900-01-01', 0, 0, 0)
-                    
-                    # Write result
-                    st.success("Plan created!")
-                    time.sleep(0.8)
-                    st.switch_page("Goaldigger.py")
-
-
-            if option == "Mortgage Calculator":
-                loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if house_price == 0 else house_price - down_payment_amount - current_savings)
-                loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate')
-                loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years')
-                loan_start_date = st.date_input("Mortgage start date:", min_value=date.today(), key='loan_start_date', format="DD.MM.YYYY")  
-
-                if st.button('Calculate Mortgage Payment'):
-                    monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-
-                    # Add plan to database
-                    createPlan(user_id, goal_name, target_age, due_date, 
-                                house_price, down_payment_amount, monthly_saving, 
-                                current_savings, current_savings_return, savings_term_months,
-                                down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
-                    
-                    # Write result
-                    st.success("Plan created!")
-                    time.sleep(0.8)
-                    st.switch_page("Goaldigger.py")
+            if st.button('Calculate House Buyer Saving Plan'):  
+                # Add plan to database
+                createPlan(user_id, goal_type, goal_name, target_age, due_date, 
+                            house_price, down_payment_amount, monthly_saving, 
+                            current_savings, current_savings_return, savings_term_months,
+                            down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
+                            loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
+                
+                # Write result
+                st.success("Plan created!")
+                time.sleep(0.8)
+                st.switch_page("Goaldigger.py")
 
         # --- CAR BUYER SAVINGS PLAN ----
         if page == "Car Buyer Savings Plan":
             st.title("Car Buyer Savings Plan")
+            goal_type = "Car Buyer Savings Plan"
             # Enter goal name
             goal_name = st.text_input("Name of the plan", value = "Buy a Car")
             # Calculator option
@@ -166,7 +151,7 @@ def planning_page():
 
                 if st.button('Calculate Car Plan'):
                     # Save plan to DB
-                    createPlan(user_id, goal_name, target_age, due_date, 
+                    createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                                 car_price_input, down_payment_amount, monthly_saving, 
                                 current_savings, current_savings_return, savings_term_months,
                                 down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
@@ -207,7 +192,7 @@ def planning_page():
                 if st.button('Calculate Loan Payment'):
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                     # Add plan to database
-                    createPlan(user_id, goal_name, target_age, due_date, 
+                    createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                                 car_price_input, down_payment_amount, monthly_saving, 
                                 current_savings, current_savings_return, savings_term_months,
                                 down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
@@ -222,6 +207,8 @@ def planning_page():
         # --- RETIREMENT SAVINGS PLAN ----
         if page == "Retirement Savings Plan":
             st.title('Retirement Savings Plan')
+            goal_type = "Retirement Savings Plan"
+
             # Enter goal name
             goal_name = st.text_input("Name of the plan", value = "Retirement Savings Plan")
             target_age = st.number_input('When do you want to retire?', min_value=current_age + 1, max_value=100, value=67, key='target_age')
@@ -239,7 +226,7 @@ def planning_page():
 
             if st.button('Calculate Retirement Plan'):
                 # Save plan to DB
-                createPlan(user_id, goal_name, target_age, due_date, 
+                createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                             retirement_amount, retirement_amount, monthly_saving, 
                             current_savings, current_savings_return, savings_term_months,
                             0, savings_term_months, 0, 0, 
@@ -253,6 +240,7 @@ def planning_page():
         # --- CUSTOMIZED FINANCIAL PLAN ---
         if page == "Customized Financial Plan":
             st.title("Customized Financial Plan")
+            goal_type = "Customized Financial Plan"
 
             # Inputs for custom financial plan
             goal_name = st.text_input("Enter the name of your plan:")
@@ -298,7 +286,7 @@ def planning_page():
 
                     if loan_option == "Yes":
                         # Add plan to database
-                        createPlan(user_id, goal_name, target_age, due_date, 
+                        createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                                     goal_total, down_payment_amount, monthly_saving, 
                                     current_savings, current_savings_return, savings_term_months,
                                     down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 

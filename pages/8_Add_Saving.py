@@ -1,10 +1,11 @@
 import streamlit as st
 from datetime import datetime
-from db import getPlan, createSaving
+from db import getPlan, createSaving, logout
 import time
 
-def planning_page():
+def add_saving_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
+        logout()
         user_id = st.session_state.user_id
 
         if 'add_saving_plan_id' in st.session_state:
@@ -32,4 +33,4 @@ def planning_page():
         st.stop()
 
 if __name__ == "__main__":
-    planning_page()
+    add_saving_page()

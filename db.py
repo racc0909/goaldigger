@@ -34,10 +34,11 @@ class Userinfo(Base):
 
 # Plan information model
 class Plan(Base):
-    __tablename__ = 'plans2'
+    __tablename__ = 'plans'
     plan_id = Column(Integer, unique=True, primary_key=True)
     user_id = Column(Integer)
     created_on = Column(Date, nullable=False)
+    goal_type = Column(String(255), nullable=False)
     goal_name = Column(String(255), nullable=False)
     goal_age = Column(Integer)
     goal_date = Column(Date, nullable=False)
@@ -162,7 +163,7 @@ def calculateUserAge(user_birthday):
 
 
 ### --- PLANS ---
-def createPlan(user_id, goal_name, goal_age, goal_date, 
+def createPlan(user_id, goal_type, goal_name, goal_age, goal_date, 
                 goal_total, goal_target, goal_target_monthly, 
                 saving_initial, saving_interest, saving_duration,
                 payment_first_percent, payment_first, payment_last_percent, payment_last, 
@@ -171,6 +172,7 @@ def createPlan(user_id, goal_name, goal_age, goal_date,
     # Add plan to to the SQL table
     plan = Plan(
                 user_id=user_id, 
+                goal_type=goal_type, 
                 goal_name=goal_name, 
                 goal_age=goal_age, 
                 goal_date=goal_date, 
@@ -200,20 +202,35 @@ def getUserPlans(user_id):
 def getPlan(plan_id):
     return session.query(Plan).filter_by(plan_id=plan_id).first()
 
-# def updatePlan(plan_id, goal_name, goal_age, goal_duration, total_amount, payment_duration, payment_first, payment_last, payment_monthly):
-#     plan = getPlan(plan_id)
-#     if plan:
-#         plan.goal_name = goal_name
-#         plan.goal_age = goal_age
-#         plan.goal_duration = goal_duration
-#         plan.total_amount = total_amount
-#         plan.payment_duration = payment_duration
-#         plan.payment_first = payment_first
-#         plan.payment_last = payment_last
-#         plan.payment_monthly = payment_monthly
-#         session.commit()
-#         return True
-#     return False
+def updatePlan(plan_id, goal_name, goal_age, goal_date, 
+                goal_total, goal_target, goal_target_monthly, 
+                saving_initial, saving_interest, saving_duration,
+                payment_first_percent, payment_first, payment_last_percent, payment_last, 
+                loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
+    plan = getPlan(plan_id)
+    if plan:
+        plan.plan_id = plan_id,
+        plan.goal_name=goal_name, 
+        plan.goal_age=goal_age, 
+        plan.goal_date=goal_date, 
+        plan.goal_total=goal_total, 
+        plan.goal_target=goal_target, 
+        plan.goal_target_monthly=goal_target_monthly,
+        plan.saving_initial=saving_initial, 
+        plan.saving_interest=saving_interest, 
+        plan.saving_duration=saving_duration,
+        plan.payment_first_percent=payment_first_percent, 
+        plan.payment_first=payment_first, 
+        plan.payment_last_percent=payment_last_percent, 
+        plan.payment_last=payment_last, 
+        plan.loan_duration=loan_duration, 
+        plan.loan_startdate=loan_startdate, 
+        plan.loan_amount=loan_amount, 
+        plan.loan_interest=loan_interest, 
+        plan.loan_monthly=loan_monthly
+        session.commit()
+        return True
+    return False
 
 def deletePlan(plan_id):
     plan = getPlan(plan_id)

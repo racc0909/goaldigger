@@ -25,14 +25,6 @@ def calculate_monthly_saving(target_amount, current_savings, current_savings_ret
     monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
     return float(monthly_saving)
 
-# Handle plan deletion: todo
-def handle_deletion():
-    query_params = st.experimental_get_query_params()
-    if 'delete_plan' in query_params:
-        delete_idx = int(query_params['delete_plan'][0])
-        del st.session_state['plans'][delete_idx]
-        st.experimental_rerun()
-
 # Function to display the timeline
 def display_timeline(user_id):
     plans = getUserPlans(user_id)

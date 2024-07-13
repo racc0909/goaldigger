@@ -2,8 +2,8 @@ import streamlit as st
 import plotly.express as px
 from datetime import datetime, timedelta, date
 from financial_plan import display_timeline
-from db import getUserInfo, getUserPlans, createSaving, getTotalSavings, getSavings, logout
-from db import authenticate, signup, logout, deletePlan, getPlan
+from db import getUserInfo, getUserPlans, getTotalSavings, logout
+from db import authenticate, signup, logout, deletePlan
 import time
 
 # Way one
@@ -93,7 +93,6 @@ def main():
          st.title(f"Overview of All Financial Plans for {profile.user_nickname}")
 
          for plan in plans:
-               #savings = getSavings(user_id, plan.plan_id)
                savings_distribution = {plan.goal_name: plan.goal_target_monthly for plan in plans}
 
          # Rearrange plans
@@ -142,9 +141,6 @@ def main():
                   if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}_{i}"):
                      deletePlan(plan.plan_id)
                      st.experimental_rerun()
-
-      # Handle edit plan
-      #if 'edit_plan_id' in st.session_state:
 
     else:
          login_page()
