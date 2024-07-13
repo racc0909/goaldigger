@@ -9,6 +9,14 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import base64
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# 加载 CSS 文件
+css_file_path = "data/titlestyle.css"
+load_css(css_file_path)
+
 # Custom color palette extracted from the provided image
 custom_colors = ['#7FDBFF', '#2ECC40', '#39CCCC', '#3D9970', '#FFDC00']
 
@@ -182,7 +190,13 @@ def filter_plans_by_date(plans, selected_month):
 
 # Overview page
 if page == "Overview":
-    st.title(f"Overview of All Financial Plans for {user_name}")
+    st.markdown(
+        f"""
+        <h1>Overview of All Financial Plans for {user_name}</h1>
+        """,
+        unsafe_allow_html=True
+    )
+    st.divider()
 
     if st.session_state['plans']:
 
@@ -289,7 +303,12 @@ if page == "Overview":
         st.plotly_chart(fig)
 
         # Plans with loans
-        st.subheader(" Saving Plans Summary")
+        st.markdown(
+            f"""
+            <h2 class="custom-subheader">Saving Plans Summary</h2>
+            """,
+            unsafe_allow_html=True
+        )
         col1, col2 = st.columns(2)
         for i, plan in enumerate([p for p in st.session_state['plans'] if 'monthly_loan_payment' in p]):      
             with col1 if i % 2 == 0 else col2:
@@ -341,7 +360,13 @@ if page == "Overview":
         st.write("No financial plans found. Please add a plan first.")
 # House Buyer Savings Plan
 if page == "House Buyer Savings Plan":
-    st.title("House Buyer Savings Plan")
+    st.markdown(
+        f"""
+        <h1>House Buyer Savings Plan</h1>
+        """,
+        unsafe_allow_html=True
+    )
+    st.divider()
 
     house_price = st.number_input(f'House price ({currency_symbol}):', min_value=0.0, format="%.2f", key='house_price')
     house_down_payment_percent = st.slider('Down payment percentage:', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='house_down_payment_percent')
@@ -423,7 +448,12 @@ if page == "House Buyer Savings Plan":
                 )
                 st.plotly_chart(fig)
 
-                st.subheader("Your Local Mortgage Providers")
+                st.markdown(
+                    f"""
+                    <h2 class="custom-subheader">Your Local Mortgage Providers"</h2>
+                    """,
+                    unsafe_allow_html=True
+                )
                 ads = [
                     {
                         "company":" ",
