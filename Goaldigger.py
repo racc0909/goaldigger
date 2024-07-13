@@ -22,7 +22,7 @@ def login_page():
    # 使用 HTML 和 CSS 更改标题颜色
    st.markdown(
        f"""
-       <h1 style="color: #478CCF;">Welcome to Goaldiggers</h1>
+       <h1 style="color: #4535C1;">Welcome to Goaldiggers</h1>
        """,
        unsafe_allow_html=True
    )
