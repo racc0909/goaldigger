@@ -21,7 +21,7 @@ def planning_page():
 
         # SHOW PLAN OPTIONS
         st.sidebar.title("Choose a plan")
-        page = st.sidebar.radio("Go to", ["House Buyer Savings Plan", "Car Buyer Savings Plan", "Retirement Savings Plan", "Customized Financial Plan"])
+        page = st.sidebar.radio("Go to", ["House Buyer Savings Plan 🏡", "Car Buyer Savings Plan", "Retirement Savings Plan", "Customized Financial Plan"])
         
         # SHOW PERSONAL INFORMATION
         st.sidebar.header(f'Your Personal Information')
