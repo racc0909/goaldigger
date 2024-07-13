@@ -51,7 +51,12 @@ def planning_page():
 
         # --- HOUSE BUYER SAVINGS PLAN ---
         if page == "🏡 House Buyer Savings Plan":
-            st.title("🏡 House Buyer Savings Plan")
+            st.markdown(
+                f"""
+                <h1>🏡 House Buyer Savings Plan</h1>
+                """,
+                unsafe_allow_html=True
+            )
             goal_type = "House Buyer Savings Plan"
             goal_name = st.text_input("Name of the plan", value = "Buy a House")
             house_price = st.number_input(f'House price ({currency_symbol}):', min_value=0.0, format="%.2f", key='house_price', value=250000.00)
@@ -105,7 +110,12 @@ def planning_page():
 
         # --- CAR BUYER SAVINGS PLAN ----
         if page == "🚘 Car Buyer Savings Plan":
-            st.title("🚘 Car Buyer Savings Plan")
+            st.markdown(
+                f"""
+                <h1>🚘 Car Buyer Savings Plan</h1>
+                """,
+                unsafe_allow_html=True
+            )
             goal_type = "Car Buyer Savings Plan"
             # Enter goal name
             goal_name = st.text_input("Name of the plan", value = "Buy a Car")
@@ -185,7 +195,12 @@ def planning_page():
 
         # --- RETIREMENT SAVINGS PLAN ----
         if page == "👵🏼 Retirement Savings Plan":
-            st.title('👵🏼 Retirement Savings Plan')
+            st.markdown(
+                f"""
+                <h1>👵🏼 Retirement Savings Plan</h1>
+                """,
+                unsafe_allow_html=True
+            )
             goal_type = "Retirement Savings Plan"
 
             # Enter goal name
@@ -220,7 +235,12 @@ def planning_page():
 
         # --- CUSTOMIZED FINANCIAL PLAN ---
         if page == "🔧 Customized Financial Plan":
-            st.title("🔧 Customized Financial Plan")
+            st.markdown(
+                f"""
+                <h1>🔧 Customized Financial Plan</h1>
+                """,
+                unsafe_allow_html=True
+            )
             goal_type = "Customized Financial Plan"
 
             # Inputs for custom financial plan
