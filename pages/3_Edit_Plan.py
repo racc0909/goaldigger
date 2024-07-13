@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview
 from financial_plan import calculate_amortization_schedule, generate_data_and_plot
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
+import base64
 
 # Function to encode images in base64
 def get_base64_image(image_path):
