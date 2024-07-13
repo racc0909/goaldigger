@@ -7,9 +7,16 @@ import plotly.express as px
 from datetime import datetime, date
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+import base64
 
 # Custom color palette extracted from the provided image
 custom_colors = ['#7FDBFF', '#2ECC40', '#39CCCC', '#3D9970', '#FFDC00']
+
+# Function to encode images in base64
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode()
+    return encoded_image
 
 # Initialize session state for plans if not already set
 if 'plans' not in st.session_state:
@@ -423,33 +430,39 @@ if page == "House Buyer Savings Plan":
                         "description": "We have been assisting Expats for more than 20 years to secure their German mortgage. An easy English speaking step-by-step service which is free of charge. Blue-Card holders welcome. Five star Google Reviews from our clients prove our services.",
                         "link_text": "View more",
                         "link": "https://www.yourgermanmortgage.com"
+                        "image_path": "img/image-removebg-preview (19).png"
                     },
                     {
                         "company": "Baufi24",
                         "description": "Baufi24 is Germany’s first digital mortgage broker. Baufi24 combines smart technology and certified mortgage advice to help clients save time and money while making property purchasing in Germany transparent and hassle-free.",
                         "link_text": "View more",
                         "link": "https://www.baufi24.de"
+                        "image_path": "img/image-removebg-preview (19).png"
                     },
                     {
                         "company": "Hypofriend",
                         "description": "Hypofriend is Germany’s smartest mortgage broker, built by PhDs and engineers they calculate the optimal mortgage for your situation. Their English-speaking mortgage experts will guide you through the entire process giving you insights along the way, free of charge.",
                         "link_text": "View more",
                         "link": "https://www.hypofriend.de"
+                        "image_path": "img/image-removebg-preview (19).png"
                     },
                     {
                         "company": "finbird.digital",
                         "description": "finbird digital provides English mortgage and property consulting for international professionals throughout Germany. We help with checking your property budget and affordability at an early stage and with guiding you along the purchase process until transaction close. We educate about the buying process and mortgage financing options with recurring events and comprehensive educational guides.",
                         "link_text": "View more",
                         "link": "https://www.finbird.digital"
+                        "image_path": "img/image-removebg-preview (19).png"
                     }
                 ]
 
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
+                    encoded_image = get_base64_image(ad["image_path"])
                     with col1 if i % 2 == 0 else col2:
                         st.markdown(f"""
                         <div style="background-color:#f4f4f4; padding: 10px; margin: 10px; border-radius: 10px;">
                             <h3>{ad['company']}</h3>
+                            <img src="data:image/png;base64,{encoded_image}" width="100%" style="margin: 10px 0;">
                             <p>{ad['description']}</p>
                             <a href="{ad['link']}" target="_blank">{ad['link_text']}</a>
                         </div>
