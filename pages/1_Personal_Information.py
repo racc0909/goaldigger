@@ -18,7 +18,7 @@ def user_info_page():
         """,
         unsafe_allow_html=True
     )
-    
+    st.divider()
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         user_id = st.session_state.user_id
 
