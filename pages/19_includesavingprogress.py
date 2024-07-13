@@ -896,7 +896,7 @@ if page == "Track Your Savings Progress":
     fig_savings.add_trace(go.Scatter(x=savings_df['Date'], y=savings_df['Actual Savings'], mode='lines+markers', name='Actual Savings'))
     fig_savings.add_trace(go.Scatter(x=savings_df['Date'], y=savings_df['Expected Savings'], mode='lines+markers', name='Expected Savings'))
     fig_savings.update_layout(
-        title='Actual Savings vs. Expected Savings Over Time',
+        title='Actual Savings vs. Expected Savings Over Time 📈',
         xaxis_title='Date',
         yaxis_title=f'Savings ({currency_symbol})',
         xaxis=dict(tickmode='linear', dtick="M1", tickformat="%Y-%m"),
