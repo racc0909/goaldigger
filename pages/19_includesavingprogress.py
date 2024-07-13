@@ -471,7 +471,9 @@ if page == "House Buyer Savings Plan":
                             <h3 style="color: {text_color};">{ad['company']}</h3>
                             <img src="data:image/png;base64,{encoded_image}" width="100%" style="margin: 10px 0;">
                             <p style="color: {text_color};">{ad['description']}</p>
-                            <a href="{ad['link']}" target="_blank" style="color: {text_color};">{ad['link_text']}</a>
+                            <a href="{ad['link']}" target="_blank" style="color: {text_color}; text-decoration: none;">
+                                <button style="background-color: {text_color}; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 10px 2px; cursor: pointer; border-radius: 5px;">Click to Apply</button>
+                            </a>
                         </div>
                         """, unsafe_allow_html=True)
 # Car Buyer Savings Plan
