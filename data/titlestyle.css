@@ -1,0 +1,13 @@
+/* styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Montserrat+Alternates:wght@400&display=swap');
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    color: #4535C1;
+}
+
+.custom-subheader {
+    font-family: 'Montserrat', sans-serif;
+    color: #478CCF;
+    font-size: 24px;
+}
