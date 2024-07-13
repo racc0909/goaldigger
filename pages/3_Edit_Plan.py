@@ -193,7 +193,7 @@ def editing_page():
                     button_text_color = ad.get("button_text_color", "#ffffff")    
                     with col1 if i % 2 == 0 else col2:
                         st.markdown(f"""
-                         <div style="background-color:{background_color}; padding: 10px; margin: 10px; border-radius: 10px; border: 2px solid {border_color}; color: {text_color};">
+                         <div style="background-color:{background_color}; padding: 10px; margin: 10px; border-radius: 10px; color: {text_color};">
                             <h3 style="color: {text_color};">{ad['company']}</h3>
                             <img src="data:image/png;base64,{encoded_image}" width="100%" style="margin: 10px 0;">
                             <p style="color: {text_color};">{ad['description']}</p>
