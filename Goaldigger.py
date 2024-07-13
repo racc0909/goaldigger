@@ -13,6 +13,13 @@ st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img
 # Set page title and icon
 st.set_page_config(page_title="Goaldigger", page_icon=":moneybag:")
 
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+css_file_path = "data/titlestyle.css"
+load_css(css_file_path)
+
 def login_page():
     # 引入 Google Fonts
     st.markdown(
@@ -77,7 +84,7 @@ def login_page():
         # Sign up
         st.markdown(
             f"""
-            <h2 class="custom-subheaader">Sign Up</h2>
+            <h2 class="custom-subheader">Sign Up</h2>
             """,
             unsafe_allow_html=True
         )
