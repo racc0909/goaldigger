@@ -456,7 +456,7 @@ if page == "House Buyer Savings Plan":
                 ]
                 colors = ["#ffffff", "#0c2c4c", "#24243c", "#ffffff", "#fff3e0"] 
                 border_colors = ["#000000", "#ffffff", "#d81b60", "#8e24aa", "#ffb300"]  # Border colors
-                text_colors = ["#333333", "#ffffff", "#ffffff", "#6a1b9a", "#ff6f00"]
+                text_colors = ["#333333", "#ffffff", "#ffffff", "##547e8c", "#ff6f00"]
                 
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
