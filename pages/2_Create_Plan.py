@@ -24,7 +24,7 @@ def planning_page():
         page = st.sidebar.radio("Go to 👉", ["🏡 House Buyer Savings Plan", "🚘 Car Buyer Savings Plan", "👵🏼 Retirement Savings Plan", "🔧 Customized Financial Plan"])
         
         # SHOW PERSONAL INFORMATION
-        st.sidebar.header(f'Your Personal Information')
+        st.sidebar.header(f'📝 Your Personal Information')
         st.sidebar.number_input('Age', value = current_age)
 
         # Country selection
