@@ -441,20 +441,22 @@ if page == "House Buyer Savings Plan":
                     },
                     {
                         "company":" ",
-                        "description": "Hypofriend is Germany’s smartest mortgage broker, built by PhDs and engineers they calculate the optimal mortgage for your situation. Their English-speaking mortgage experts will guide you through the entire process giving you insights along the way, free of charge.",
-                        "link_text": "View more",
-                        "link": "https://www.hypofriend.de",
-                        "image_path": "img/hypofriend.png"
-                    },
-                    {
-                        "company":" ",
                         "description": "finbird digital provides English mortgage and property consulting for international professionals throughout Germany. We help with checking your property budget and affordability at an early stage and with guiding you along the purchase process until transaction close. We educate about the buying process and mortgage financing options with recurring events and comprehensive educational guides.",
                         "link_text": "View more",
                         "link": "https://www.finbird.digital",
                         "image_path": "img/finbird.png"
-                    }
+                    },
+                    {
+                        "company":" ",
+                        "description": "Hypofriend is Germany’s smartest mortgage broker, built by PhDs and engineers they calculate the optimal mortgage for your situation. Their English-speaking mortgage experts will guide you through the entire process giving you insights along the way, free of charge.",
+                        "link_text": "View more",
+                        "link": "https://www.hypofriend.de",
+                        "image_path": "img/hypofriend.png"
+                    } 
                 ]
-                colors = ["#ffffff", "#0c2c4c", "#ffffff", "#24243c", "#fff3e0"] 
+                colors = ["#ffffff", "#0c2c4c", "#24243c", "#ffffff", "#fff3e0"] 
+                border_colors = ["#000000", "#ffffff", "#d81b60", "#8e24aa", "#ffb300"]  # Border colors
+                text_colors = ["#333333", "#ffffff", "#ffffff", "#6a1b9a", "#ff6f00"]
                 
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
