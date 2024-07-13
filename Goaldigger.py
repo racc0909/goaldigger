@@ -14,7 +14,7 @@ st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img
 #st.sidebar.logo("img/Logo_Without_Text.png", icon_image="img/Logo_Without_Text.png", link="https://fiepdemoapp.streamlit.app/")
 
 # Set page title and icon
-st.set_page_config(page_title="Goaldiggers", page_icon=":moneybag:")
+st.set_page_config(page_title="Goaldigger", page_icon=":moneybag:")
 # Function to display the logout button
 
 def login_page():
@@ -22,7 +22,7 @@ def login_page():
    # 使用 HTML 和 CSS 更改标题颜色
    st.markdown(
        f"""
-       <h1 style="color: #4535C1;">Welcome to Goaldiggers</h1>
+       <h1 style="color: #4535C1;">Welcome to Goaldigger</h1>
        """,
        unsafe_allow_html=True
    )
