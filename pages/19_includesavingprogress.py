@@ -456,7 +456,7 @@ if page == "House Buyer Savings Plan":
                 ]
                 colors = ["#ffffff", "#0c2c4c", "#24243c", "#ffffff", "#fff3e0"] 
                 border_colors = ["#000000", "#ffffff", "#d81b60", "#8e24aa", "#ffb300"]  # Border colors
-                text_colors = ["#333333", "#ffffff", "#ffffff", "##547e8c", "#ff6f00"]
+                text_colors = ["#333333", "#ffffff", "#ffffff", "##547e8c", "#333333"]
                 
                 col1, col2 = st.columns(2)
                 for i, ad in enumerate(ads):
@@ -472,7 +472,7 @@ if page == "House Buyer Savings Plan":
                             <img src="data:image/png;base64,{encoded_image}" width="100%" style="margin: 10px 0;">
                             <p style="color: {text_color};">{ad['description']}</p>
                             <a href="{ad['link']}" target="_blank" style="color: {text_color}; text-decoration: none;">
-                                <button style="background-color: {text_color}; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 10px 2px; cursor: pointer; border-radius: 5px;">Click to Apply</button>
+                                <button style="background-color: {text_color}; color: red; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 10px 2px; cursor: pointer; border-radius: 5px;">Click to Apply</button>
                             </a>
                         </div>
                         """, unsafe_allow_html=True)
