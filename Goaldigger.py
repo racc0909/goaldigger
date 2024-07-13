@@ -15,7 +15,6 @@ st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img
 
 # Set page title and icon
 st.set_page_config(page_title="Goaldigger", page_icon=":moneybag:")
-# Function to display the logout button
 
 def login_page():
     # 引入 Google Fonts
@@ -41,7 +40,7 @@ def login_page():
         unsafe_allow_html=True
     )
 
-   st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
+    st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
    # Signup and Login Page
    if "signup_mode" not in st.session_state:
