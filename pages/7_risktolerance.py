@@ -49,7 +49,7 @@ st.markdown(
 
 # 下拉菜单
 risk_tolerance_options = [
-    'Select your risk tolerance level',  # Placeholder
+    'Select your risk tolerance level 👉',  # Placeholder
     '🟢 Low risk: I prefer to limit my exposure to risk, even if it means lower possible returns.',
     '🟡 Medium risk: I am open to more risk in pursuit of higher returns.',
     '🔴 High risk: I am comfortable with a higher level of risk to maximize potential returns.'
