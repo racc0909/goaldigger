@@ -180,7 +180,6 @@ def editing_page():
                     } 
                 ]
                 colors = ["#ffffff", "#0c2c4c", "#24243c", "#ffffff", "#fff3e0"] 
-                border_colors = ["#000000", "#ffffff", "#d81b60", "#8e24aa", "#ffb300"]  # Border colors
                 text_colors = ["#333333", "#ffffff", "#ffffff", "##547e8c", "#333333"]
                 button_text_color = ["#24243c", "#ffffff", "#24243c", "#ffffff", "#24243c"] 
                 
@@ -189,7 +188,6 @@ def editing_page():
                     encoded_image = get_base64_image(ad["image_path"])
                     background_color = colors[i % len(colors)]
                     button_text_color = colors[i % len(button_text_color)]
-                    border_color = border_colors[i % len(border_colors)]  # Cycle through the list of border colors
                     text_color = text_colors[i % len(text_colors)]
                     button_background_color = ad.get("button_background_color", "#000000")  # Default to black if not provided
                     button_text_color = ad.get("button_text_color", "#ffffff")    
