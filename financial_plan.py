@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 from datetime import datetime, timedelta, date
 import matplotlib.pyplot as plt
-from db import getUserPlans
+from db import getUserPlans, getUserInfo
 
 # Helper function to calculate monthly savings
 def calculate_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_months, inflation_rate):
@@ -24,6 +24,68 @@ def calculate_monthly_saving(target_amount, current_savings, current_savings_ret
         return 0
     monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
     return float(monthly_saving)
+
+# Custom color palette extracted from the provided image
+custom_colors = [
+    '#7FDBFF',  # Light blue
+    '#2ECC40',  # Green
+    '#39CCCC',  # Teal
+    '#3D9970',  # Dark green
+    '#FFDC00',  # Yellow
+    '#FF851B',  # Orange
+    '#FF4136',  # Red
+    '#85144b',  # Maroon
+    '#B10DC9',  # Purple
+    '#F012BE',  # Pink
+    '#001f3f',  # Navy
+    '#0074D9',  # Blue
+    '#7FDBFF',  # Aqua
+    '#3D9970',  # Olive
+    '#2ECC40',  # Lime
+    '#01FF70'   # Bright green
+    ]
+
+def create_custom_legend(user_id, savings_distribution, custom_colors):
+    profile = getUserInfo(user_id)
+    st.markdown("   ")
+    for i, (name, value) in enumerate(savings_distribution.items()):
+        color = custom_colors[i % len(custom_colors)]
+        st.markdown(
+                f"<p style='color:{color};'><strong>{name}:</strong> {profile.user_currency}{value:,.2f}</p>", 
+                unsafe_allow_html=True
+        )
+
+def display_piechart(user_id, savings_distribution):
+    profile = getUserInfo(user_id)
+    # Pie chart for savings distribution
+    fig_pie = px.pie(
+    values=list(savings_distribution.values()), 
+    names=list(savings_distribution.keys()), 
+    title='Monthly Savings Distribution', 
+    hole=0.4
+    )
+
+    fig_pie.update_traces(
+    textinfo='none', 
+    insidetextorientation='radial',
+    marker=dict(colors=custom_colors[:len(savings_distribution)])
+    )
+
+    fig_pie.update_layout(
+    annotations=[dict(
+        text=f'{profile.user_currency}{sum(savings_distribution.values()):,.2f}', 
+        x=0.5, y=0.5, font_size=20, showarrow=False
+    )],
+    showlegend=False
+    )
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        st.plotly_chart(fig_pie)
+
+    with col2:
+        create_custom_legend(user_id, savings_distribution, custom_colors)
 
 # Function to display the timeline
 def display_timeline(user_id):
@@ -43,14 +105,15 @@ def display_timeline(user_id):
     events_df = pd.DataFrame(events).sort_values(by='end_date')
 
     fig_timeline = go.Figure()
-    for _, event in events_df.iterrows():
+    for i, event in events_df.iterrows():
         fig_timeline.add_trace(go.Scatter(
             x=[event['end_date']],
             y=[1],
             mode='markers+text',
             name=event['event'],
             text=[f"{event['event']} - {event['end_date']}"],
-            textposition='top center'
+            textposition=["top center"],
+            marker=dict(color=custom_colors[i % len(custom_colors)], size=15)  # Increase marker size
         ))
 
     fig_timeline.update_layout(
@@ -65,8 +128,8 @@ def display_timeline(user_id):
             showticklabels=False
         ),
         showlegend=False
-    )
-
+        )
+    
     st.plotly_chart(fig_timeline)
 
 # Calculate mortization schedule
@@ -184,3 +247,18 @@ def generate_data_and_plot(current_savings, savings_term_months, down_payment_am
     )
 
     st.plotly_chart(fig)
+
+# Function to filter plans based on the selected date range
+def filter_plans_by_date(plans, selected_month):
+    filtered_plans = []
+    for plan in plans:
+        plan_due_date = plan.goal_date if isinstance(plan.goal_date, datetime) else datetime.combine(plan.goal_date, datetime.min.time())
+        if plan_due_date >= selected_month:
+            filtered_plans.append(plan)
+        if plan.goal_target_monthly:
+            loan_start_date = plan.loan_startdate.date() if isinstance(plan.loan_startdate, datetime) else plan.loan_startdate
+            loan_end_date = loan_start_date + timedelta(days=plan.loan_duration*365)
+            if loan_start_date <= selected_month.date() <= loan_end_date:
+                if plan not in filtered_plans:
+                    filtered_plans.append(plan)
+    return filtered_plans
