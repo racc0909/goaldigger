@@ -357,7 +357,7 @@ if page == "Overview":
                 )
 
     else:
-        st.write("No financial plans found. Please add a plan first.")
+        st.write("No financial plans found. Please add a plan first. 🐕")
 # House Buyer Savings Plan
 if page == "House Buyer Savings Plan":
     st.markdown(
