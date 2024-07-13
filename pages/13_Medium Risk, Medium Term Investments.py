@@ -17,7 +17,7 @@ load_css(css_file_path)
 # 页面标题
 st.markdown(
     f"""
-    <h1>Recommended Investment Options for Medium Risk and Medium Term"</h1>
+    <h1>Recommended Investment Options for Medium Risk and Medium Term</h1>
     """,
     unsafe_allow_html=True
 )
