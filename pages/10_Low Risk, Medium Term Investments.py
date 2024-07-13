@@ -20,7 +20,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
+st.divider()
 # 描述
 st.markdown(
     """
