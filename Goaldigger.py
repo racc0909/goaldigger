@@ -74,7 +74,7 @@ def login_page():
                 st.session_state.logged_in = True
                 st.session_state.user_id = user.user_id
                 st.success("Login successfully!")
-                time.sleep(0.3)
+                time.sleep(0.1)
                 st.experimental_rerun()
             else:
                 st.error("Invalid username or password.")
