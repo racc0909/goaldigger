@@ -82,7 +82,7 @@ def planning_page():
             # SAVING PLAN OPTION 
             if st.button('Calculate House Buyer Saving Plan'):  
                 # Add plan to database
-                createPlan(user_id, goal_type, goal_name, target_age, due_date, 
+                plan_id = createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                             house_price, down_payment_amount, monthly_saving, 
                             current_savings, current_savings_return, savings_term_months,
                             down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
@@ -91,7 +91,9 @@ def planning_page():
                 # Write result
                 st.success("Plan created!")
                 time.sleep(0.8)
-                st.switch_page("Goaldigger.py")
+                # Save the plan_id in session
+                st.session_state.edit_plan_id = plan_id                
+                st.switch_page("pages/3_Edit_Plan.py")
 
         # --- CAR BUYER SAVINGS PLAN ----
         if page == "Car Buyer Savings Plan":
@@ -159,7 +161,7 @@ def planning_page():
 
             if st.button('Calculate Car Plan'):
                 # Save plan to DB
-                createPlan(user_id, goal_type, goal_name, target_age, due_date, 
+                plan_id = createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                             car_price_input, down_payment_amount, monthly_saving, 
                             current_savings, current_savings_return, savings_term_months,
                             down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
@@ -168,7 +170,9 @@ def planning_page():
                 # Write result
                 st.success("Plan created!")
                 time.sleep(0.8)
-                st.switch_page("Goaldigger.py")
+                # Save the plan_id in session
+                st.session_state.edit_plan_id = plan_id                
+                st.switch_page("pages/3_Edit_Plan.py")
 
 
         # --- RETIREMENT SAVINGS PLAN ----
@@ -193,7 +197,7 @@ def planning_page():
 
             if st.button('Calculate Retirement Plan'):
                 # Save plan to DB
-                createPlan(user_id, goal_type, goal_name, target_age, due_date, 
+                plan_id = createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                             retirement_amount, retirement_amount, monthly_saving, 
                             current_savings, current_savings_return, savings_term_months,
                             0, savings_term_months, 0, 0, 
@@ -202,7 +206,9 @@ def planning_page():
                 # Write result
                 st.success("Plan created!")
                 time.sleep(0.8)
-                st.switch_page("Goaldigger.py")
+                # Save the plan_id in session
+                st.session_state.edit_plan_id = plan_id                
+                st.switch_page("pages/3_Edit_Plan.py")
 
         # --- CUSTOMIZED FINANCIAL PLAN ---
         if page == "Customized Financial Plan":
@@ -248,7 +254,7 @@ def planning_page():
 
             if st.button('Calculate Custom Plan'):
                 # Add plan to database
-                createPlan(user_id, goal_type, goal_name, target_age, due_date, 
+                plan_id = createPlan(user_id, goal_type, goal_name, target_age, due_date, 
                             goal_total, down_payment_amount, monthly_saving, 
                             current_savings, current_savings_return, savings_term_months,
                             down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
@@ -257,8 +263,9 @@ def planning_page():
                 # Write result
                 st.success("Plan created!")
                 time.sleep(0.8)
-                st.switch_page("Goaldigger.py")
-
+                # Save the plan_id in session
+                st.session_state.edit_plan_id = plan_id                
+                st.switch_page("pages/3_Edit_Plan.py")
 
     else:
         st.warning("Please log in to access this page.")

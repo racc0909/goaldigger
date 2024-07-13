@@ -200,7 +200,7 @@ def createPlan(user_id, goal_type, goal_name, goal_age, goal_date,
                 )
     session.add(plan)
     session.commit()
-    return True
+    return plan.plan_id
 
 def getUserPlans(user_id):
     return session.query(Plan).filter_by(user_id=user_id).all()
