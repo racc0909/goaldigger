@@ -184,8 +184,8 @@ def planning_page():
 
 
         # --- RETIREMENT SAVINGS PLAN ----
-        if page == "Retirement Savings Plan":
-            st.title('Retirement Savings Plan')
+        if page == "👵🏼 Retirement Savings Plan":
+            st.title('👵🏼 Retirement Savings Plan')
             goal_type = "Retirement Savings Plan"
 
             # Enter goal name
