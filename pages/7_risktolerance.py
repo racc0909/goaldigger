@@ -42,7 +42,7 @@ with st.expander("You want to adjust the amount and time? Input your saving deta
 # 使用自定义样式的子标题
 st.markdown(
     f"""
-    <p class="custom-subheader">So, you're planning to save {saving_amount} euros over {saving_time} months, huh? That's great! Now, let's talk about your risk tolerance. How bold are you feeling today? :)</p>
+    <p class="custom-subheader">So, you're planning to save <span style="text-decoration: underline;">{saving_amount}</span> euros over <span style="text-decoration: underline;">{saving_time}</span> months, huh? That's great! Now, let's talk about your risk tolerance. How bold are you feeling today? :)</p>
     """,
     unsafe_allow_html=True
 )
