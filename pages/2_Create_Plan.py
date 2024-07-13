@@ -57,6 +57,7 @@ def planning_page():
                 """,
                 unsafe_allow_html=True
             )
+            st.divider()
             goal_type = "House Buyer Savings Plan"
             goal_name = st.text_input("Name of the plan", value = "Buy a House")
             house_price = st.number_input(f'House price ({currency_symbol}):', min_value=0.0, format="%.2f", key='house_price', value=250000.00)
@@ -116,6 +117,7 @@ def planning_page():
                 """,
                 unsafe_allow_html=True
             )
+            st.divider()
             goal_type = "Car Buyer Savings Plan"
             # Enter goal name
             goal_name = st.text_input("Name of the plan", value = "Buy a Car")
@@ -201,6 +203,7 @@ def planning_page():
                 """,
                 unsafe_allow_html=True
             )
+            st.divider()
             goal_type = "Retirement Savings Plan"
 
             # Enter goal name
@@ -241,6 +244,7 @@ def planning_page():
                 """,
                 unsafe_allow_html=True
             )
+            st.divider()
             goal_type = "Customized Financial Plan"
 
             # Inputs for custom financial plan
