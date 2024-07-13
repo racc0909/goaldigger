@@ -118,6 +118,61 @@ def editing_page():
                 # Call the function to generate data and plot
                 generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
 
+                # Mortgage ads
+                st.subheader("Your Local Mortgage Providers")
+                ads = [
+                    {
+                        "company":" ",
+                        "description": "We have been assisting Expats for more than 20 years to secure their German mortgage. An easy English speaking step-by-step service which is free of charge. Blue-Card holders welcome. Five star Google Reviews from our clients prove our services.",
+                        "link_text": "View more",
+                        "link": "https://www.yourgermanmortgage.com",
+                        "image_path": "img/image_removebg_preview.png"
+                    },
+                    {
+                        "company":" ",
+                        "description": "Baufi24 is Germany’s first digital mortgage broker. Baufi24 combines smart technology and certified mortgage advice to help clients save time and money while making property purchasing in Germany transparent and hassle-free.",
+                        "link_text": "View more",
+                        "link": "https://www.baufi24.de",
+                        "image_path": "img/baufi.png"
+                    },
+                    {
+                        "company":" ",
+                        "description": "finbird digital provides English mortgage and property consulting for international professionals throughout Germany. We help with checking your property budget and affordability at an early stage and with guiding you along the purchase process until transaction close. We educate about the buying process and mortgage financing options with recurring events and comprehensive educational guides.",
+                        "link_text": "View more",
+                        "link": "https://www.finbird.digital",
+                        "image_path": "img/finbird.png"
+                    },
+                    {
+                        "company":" ",
+                        "description": "Hypofriend is Germany’s smartest mortgage broker, built by PhDs and engineers they calculate the optimal mortgage for your situation. Their English-speaking mortgage experts will guide you through the entire process giving you insights along the way, free of charge.",
+                        "link_text": "View more",
+                        "link": "https://www.hypofriend.de",
+                        "image_path": "img/hypofriend.png"
+                    } 
+                ]
+                colors = ["#ffffff", "#0c2c4c", "#24243c", "#ffffff", "#fff3e0"] 
+                border_colors = ["#000000", "#ffffff", "#d81b60", "#8e24aa", "#ffb300"]  # Border colors
+                text_colors = ["#333333", "#ffffff", "#ffffff", "##547e8c", "#333333"]
+                
+                col1, col2 = st.columns(2)
+                for i, ad in enumerate(ads):
+                    encoded_image = get_base64_image(ad["image_path"])
+                    background_color = colors[i % len(colors)]
+                    border_color = border_colors[i % len(border_colors)]  # Cycle through the list of border colors
+                    text_color = text_colors[i % len(text_colors)]
+                    with col1 if i % 2 == 0 else col2:
+                        st.markdown(f"""
+                         <div style="background-color:{background_color}; padding: 10px; margin: 10px; border-radius: 10px;">
+            <h3>{ad['company']}</h3>
+                            <h3 style="color: {text_color};">{ad['company']}</h3>
+                            <img src="data:image/png;base64,{encoded_image}" width="100%" style="margin: 10px 0;">
+                            <p style="color: {text_color};">{ad['description']}</p>
+                            <a href="{ad['link']}" target="_blank" style="color: {text_color}; text-decoration: none;">
+                                <button style="background-color: {text_color}; color: red; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 10px 2px; cursor: pointer; border-radius: 5px;">Click to Apply</button>
+                            </a>
+                        </div>
+                        """, unsafe_allow_html=True)
+
             # --- CAR BUYER SAVINGS PLAN ----
             if page == "Car Buyer Savings Plan":
                 st.title(plan.goal_name)
