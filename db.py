@@ -96,6 +96,12 @@ def logout():
         st.switch_page("Goaldigger.py")
         st.experimental_rerun()
 
+def backToOverview():
+    # Button to backToOverview
+      if st.sidebar.button("Back to Overview"):
+        #del st.session_state.edit_plan_id
+        st.switch_page("Goaldigger.py")
+
 ### --- USER INFO ---
 def getUserInfo(user_id):
     info = session.query(Userinfo).filter_by(user_id=user_id).first()

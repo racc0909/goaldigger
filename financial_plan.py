@@ -123,3 +123,64 @@ def calculate_pension_monthly_saving(target_amount, current_savings, current_sav
             return 0
         monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
         return monthly_saving
+
+
+# Define your function to create the graph
+def generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol):
+    savings_term_years = savings_term_months // 12
+    yearly_saving = monthly_saving * 12
+    yearly_loan_payment = monthly_loan_payment * 12
+
+    # Generate data for plotting
+    years = np.arange(savings_term_years + loan_term_years)
+    cumulative_savings = np.zeros_like(years, dtype=float)
+    yearly_payments = np.zeros_like(years, dtype=float)
+
+    for i in range(savings_term_years):
+        cumulative_savings[i] = current_savings + i * yearly_saving
+        yearly_payments[i] = yearly_saving
+
+    for i in range(savings_term_years, len(years)):
+        cumulative_savings[i] = down_payment_amount + (i - savings_term_years) * yearly_loan_payment
+        yearly_payments[i] = yearly_loan_payment
+
+    data = pd.DataFrame({
+        'Year': years,
+        'Cumulative Savings': cumulative_savings,
+        'Yearly Payments': yearly_payments,
+        'Yearly Savings': np.where(years < savings_term_years, yearly_saving, np.nan),
+        'Monthly Savings': np.where(years < savings_term_years, monthly_saving, np.nan),
+        'Monthly Loan Payments': np.where(years >= savings_term_years, monthly_loan_payment, np.nan)
+    })
+
+    # Create the cumulative savings line plot
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=data['Year'],
+        y=data['Cumulative Savings'],
+        mode='lines+markers',
+        name='Cumulative Savings',
+        marker=dict(size=5),
+        hovertemplate='Year: %{x}<br>Cumulative Savings: %{y:,.2f} ' + currency_symbol
+    ))
+
+    # Create the yearly payments bar plot
+    fig.add_trace(go.Bar(
+        x=data['Year'],
+        y=data['Yearly Payments'],
+        name='Yearly Payments',
+        opacity=0.6,
+        hovertemplate='Year: %{x}<br>Yearly Payments: %{y:,.2f} ' + currency_symbol
+    ))
+
+    fig.update_layout(
+        title='Savings and Mortgage Plan',
+        xaxis_title='Years',
+        yaxis_title=f'Cumulative Savings ({currency_symbol})',
+        legend_title='',
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        showlegend=True
+    )
+
+    st.plotly_chart(fig)

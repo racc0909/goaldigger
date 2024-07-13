@@ -7,13 +7,12 @@ import plotly.express as px
 from datetime import datetime, timedelta, date
 import time
 import matplotlib.pyplot as plt
-from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge
-from financial_plan import calculate_amortization_schedule
+from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview
+from financial_plan import calculate_amortization_schedule, generate_data_and_plot
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 
 def editing_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
-        logout()
         user_id = st.session_state.user_id
 
         if 'edit_plan_id' in st.session_state:
@@ -28,6 +27,7 @@ def editing_page():
 
             # Calculate birthday
             current_age = calculateUserAge(profile.user_birthday)
+            current_date = datetime.now().date()
 
             # PLAN OPTIONS
             page = plan.goal_type
@@ -50,6 +50,10 @@ def editing_page():
             # Save life expectancy for later use
             life_expectancy = country_data[selected_country]['LifeExpectancy']
 
+            # Buttons
+            backToOverview()
+            logout()
+
             # --- HOUSE BUYER SAVINGS PLAN ---
             if page == "House Buyer Savings Plan":
                 st.title(plan.goal_name)
@@ -60,9 +64,11 @@ def editing_page():
                 current_savings = st.number_input(f'Current savings for the house ({currency_symbol}, optional):', min_value=0.0, format="%.2f", key='current_savings', value=float(plan.saving_initial))
                 if current_savings > 0:
                     current_savings_return = st.slider('Annual return on current savings (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='current_savings_return', value=float(plan.saving_interest))
+                else: 
+                    current_savings_return = 0.0
 
                 due_date = calculateGoalDate(profile.user_birthday, target_age)
-                current_date = datetime.now().date()
+                
                 down_payment_amount = house_price * (down_payment_percent / 100)     
                 # Placeholder todo
                 payment_last_percent = 0
@@ -78,15 +84,15 @@ def editing_page():
                 take_house_loan = st.radio("Do you want to take a mortgage loan?", ("Yes", "No"), index=loan_index)
                 if take_house_loan == "Yes":
                     loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_house_loan == "No" else house_price - down_payment_amount - current_savings)
-                    loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=0.0 if take_house_loan == "No" else float(plan.loan_interest))
-                    loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=0 if take_house_loan == "No" else plan.loan_duration)
-                    loan_start_date = st.date_input("Mortgage start date:", min_value=date.today(), key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_house_loan == "No" else plan.loan_startdate)  
+                    loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value= float(plan.loan_interest))
+                    loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value= plan.loan_duration)
+                    loan_start_date = st.date_input("Mortgage start date:", key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_house_loan == "No" else plan.loan_startdate)  
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                 else:
                     loan_amount = 0.0
                     loan_interest_rate = 0.0
                     loan_term_years = 0
-                    loan_start_date = "01.01.1990"
+                    loan_start_date = date.today()
                     monthly_loan_payment = 0.0
 
                 # SAVING PLAN OPTION 
@@ -97,115 +103,111 @@ def editing_page():
                                 current_savings, current_savings_return, savings_term_months,
                                 down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
                                 loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
-                    
                     # Write result
-                    st.success("Plan updated successfully!")
+                    st.success("Plan updated successfully!")                
+                
+                st.write(f"**Plan Name:** {goal_name}")
+                st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
+                st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Savings Term:** {savings_term_months} months")
+
+                if take_house_loan == "Yes":
+                    st.write(f"**Monthly Mortgage Payment:** <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    st.write(f"**Total Mortgage Payment:** {loan_amount:,.2f} {currency_symbol}")
+                
+                # Call the function to generate data and plot
+                generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
 
             # --- CAR BUYER SAVINGS PLAN ----
             if page == "Car Buyer Savings Plan":
                 st.title(plan.goal_name)
                 # Enter goal name
                 goal_name = st.text_input("Name of the plan", value = plan.goal_name)
-                # Calculator option
-                option = st.radio("Select Option", ["Savings Plan", "Car Loan Calculator"])
 
-                #@st.cache_data
                 df = pd.read_excel("data/car_prices.xlsx")
 
-                if option == "Savings Plan":
-                    st.subheader('Choose an Option:')
-                    savings_option = st.radio('', ('See Available Suggested Car Prices', 'Input Your Car Price'))
+                st.subheader('Choose an Option:')
+                savings_option = st.radio('', ('See Available Suggested Car Prices', 'Input Your Car Price'))
 
-                    if savings_option == 'See Available Suggested Car Prices':
-                        st.subheader('See Available Suggested Car Prices')
+                if savings_option == 'See Available Suggested Car Prices':
+                    st.subheader('See Available Suggested Car Prices')
 
-                        selected_make = st.selectbox('Select Car Brand', df['make'].unique())
+                    col1, col2, col3 = st.columns(3)
+                    selected_make = col1.selectbox('Select Car Make', df['make'].unique())
+                    selected_model = None
 
-                        if selected_make:
-                            models = filter_models(df, selected_make)
-                            selected_model = st.selectbox('Select Car Model', models)
+                    if selected_make:
+                        models = filter_models(df, selected_make)
+                        selected_model = col2.selectbox('Select Car Model', models)
 
-                            if selected_model:
-                                selected_car_details = df[(df['make'] == selected_make) & (df['model'] == selected_model)]
-                                full_name = selected_car_details['make'].values[0] + ' ' + selected_car_details['model'].values[0]
-                                price = selected_car_details['sellingprice'].values[0]
-                                st.write(f"Full Name: {full_name}")
-                                st.write(f"Suggested price: {currency_symbol}{price:.2f}")
-                                # Option to input the price
-                                car_price_input = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(price), key='car_price_input')
-                                
+                        if selected_model:
+                            selected_car_details = df[(df['make'] == selected_make) & (df['model'] == selected_model)]
+                            price = selected_car_details['sellingprice'].values[0]
+                            col3.write(f"Suggested price: {currency_symbol}{price:.2f}")
 
-                    elif savings_option == 'Input Your Car Price':
-                        st.subheader('Input Your Car Price')
-                        car_price_input = st.number_input('Enter the total cost of the car:', min_value=0.0, step=1000.0, format="%.2f", value=float(plan.goal_total))
+                    car_price_input = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(price) if selected_model else 0.0, key='adjusted_car_price')
+                else:
+                    st.subheader('Input Your Car Price')
+                    car_price_input = st.number_input('Enter the total cost of the car:', min_value=0.0, format="%.2f", key='adjusted_car_price')
+                
+                down_payment_percent = st.slider('Enter your down payment percentage:', min_value=0.0, max_value=100.0, step=1.0, key='car_down_payment_percent', value=float(plan.payment_first_percent))
+                down_payment_amount = car_price_input * (down_payment_percent / 100) 
+                # Placeholder todo
+                payment_last_percent = 0
+                payment_last = car_price_input * (payment_last_percent / 100) 
+                # Calculate age and date
+                target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, key='car_target_age', value=plan.goal_age)
+                due_date = calculateGoalDate(profile.user_birthday, target_age)
+                savings_term_months = (target_age - current_age) * 12
+                current_savings = st.number_input(f'Current savings for the car ({currency_symbol}, optional):', min_value=0.0, format="%.2f", key='current_savings', value=float(plan.saving_initial))
+                # Option to enter savings return
+                current_savings_return = 0
+                if current_savings > 0:
+                    current_savings_return = st.slider('Annual return on current savings (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='current_savings_return', value=float(plan.saving_interest))
+                else: 
+                    current_savings_return = 0.0
+
+                # Calculate monthly saving
+                monthly_saving = calculate_car_savings(car_price_input, down_payment_percent, current_age, target_age, current_savings, current_savings_return, inflation_rate)
+
+                # Car loan
+                if plan.loan_amount > 0:
+                    loan_index = 0
+                else:
+                    loan_index = 1
+                take_car_loan = st.radio("Do you want to take a car loan?", ("Yes", "No"), index=loan_index)
+                if take_car_loan == "Yes":
+                    loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_car_loan == "No" else car_price_input - down_payment_amount - current_savings)
+                    loan_interest_rate = st.slider('Car loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest))
+                    loan_term_years = st.number_input('Car loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
+                    loan_start_date = st.date_input("Car loan start date:", key='loan_start_date', format="DD.MM.YYYY", value=date.today() if take_car_loan == "No" else plan.loan_startdate)  
+                    monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
+                else:
+                    loan_amount = 0.0
+                    loan_interest_rate = 0.0
+                    loan_term_years = 0
+                    loan_start_date = date.today()
+                    monthly_loan_payment = 0.0
+
+                if st.button('Calculate Car Plan'):
+                    # Save plan to DB
+                    updatePlan(plan.plan_id, goal_name, target_age, due_date, 
+                                car_price_input, down_payment_amount, monthly_saving, 
+                                current_savings, current_savings_return, savings_term_months,
+                                down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
+                                loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
                     
-                    down_payment_percent = st.slider('Enter your down payment percentage:', min_value=0.0, max_value=100.0, step=1.0, key='car_down_payment_percent', value=float(plan.payment_first_percent))
-                    down_payment_amount = car_price_input * (down_payment_percent / 100) 
-                    # Placeholder todo
-                    payment_last_percent = 0
-                    payment_last = car_price_input * (payment_last_percent / 100) 
-                    # Calculate age and date
-                    target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, key='car_target_age', value=plan.goal_age)
-                    due_date = calculateGoalDate(profile.user_birthday, target_age)
-                    savings_term_months = (target_age - current_age) * 12
-                    current_savings = st.number_input(f'Current savings for the car ({currency_symbol}, optional):', min_value=0.0, format="%.2f", key='current_savings', value=float(plan.saving_initial))
-                    # Option to enter savings return
-                    current_savings_return = 0
-                    if current_savings > 0:
-                        current_savings_return = st.slider('Annual return on current savings (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='current_savings_return', value=float(plan.saving_interest))
-
-                    # Calculate monthly saving
-                    monthly_saving = calculate_car_savings(car_price_input, down_payment_percent, current_age, target_age, current_savings, current_savings_return, inflation_rate)
-
-                    if st.button('Calculate Car Plan'):
-                        # Save plan to DB
-                        updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                    car_price_input, down_payment_amount, monthly_saving, 
-                                    current_savings, current_savings_return, savings_term_months,
-                                    down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                    0, '1900-01-01', 0, 0, 0)
-                        
-                        # Write result
-                        st.success("Plan updated successfully!")
-                            
-                if option == "Car Loan Calculator":
-                    st.subheader("Car Loan Calculator")
-
-                    car_price_input = st.number_input(f'Car price ({currency_symbol}):', min_value=0.0, format="%.2f", value=float(plan.goal_total), key='car_price_input')
-                    down_payment_percent = st.slider('Enter your down payment percentage:', min_value=0.0, max_value=100.0, step=1.0, key='car_down_payment_percent', value=float(plan.payment_first_percent))
-                    down_payment_amount = car_price_input * (down_payment_percent / 100) 
-                    # Placeholder todo
-                    payment_last_percent = 0
-                    payment_last = car_price_input * (payment_last_percent / 100) 
-                    # Calculate age and date
-                    target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, key='car_target_age', value=plan.goal_age)
-                    due_date = calculateGoalDate(profile.user_birthday, target_age)
-                    savings_term_months = (target_age - current_age) * 12
-                    current_savings = st.number_input(f'Current savings for the car ({currency_symbol}, optional):', min_value=0.0, format="%.2f", key='current_savings', value=float(plan.saving_initial))
-                    # Option to enter savings return
-                    current_savings_return = 0
-                    if current_savings > 0:
-                        current_savings_return = st.slider('Annual return on current savings (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='current_savings_return', value=float(plan.saving_interest))
-
-                    # Calculate monthly saving
-                    monthly_saving = calculate_car_savings(car_price_input, down_payment_percent, current_age, target_age, current_savings, current_savings_return, inflation_rate)
-
-                    loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if car_price_input == 0 else car_price_input - down_payment_amount - current_savings)
-                    loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='car_loan_interest_rate', value = float(plan.loan_interest))
-                    loan_term_years = st.number_input('Loan term (years):', min_value=0, max_value=30, step=1, key='car_loan_term_years', value = plan.loan_duration)
-                    loan_start_date = st.date_input("Loan start date:", min_value=date.today(), key='car_loan_start_date', value = plan.loan_startdate)
-
-                    if st.button('Calculate Loan Payment'):
-                        monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                        # Add plan to database
-                        updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                    car_price_input, down_payment_amount, monthly_saving, 
-                                    current_savings, current_savings_return, savings_term_months,
-                                    down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                    loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
-                        
-                        # Write result
-                        st.success("Plan updated successfully!")
+                    # Write result
+                    st.success("Plan updated successfully!")
+                    
+                st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
+                st.write(f"To afford your dream car, you'll need to save: {monthly_saving:.2f} {currency_symbol} each month")
+                st.write(f"**Savings Term:** {savings_term_months} months")
+                if take_car_loan == "Yes":
+                    st.write(f"**Monthly Car Loan Payment:** <span style='color: blue;'>{currency_symbol}{monthly_loan_payment:,.2f}</span>", unsafe_allow_html=True)
+                    st.write(f"**Total Car Loan Payment:** {currency_symbol}{loan_amount:,.2f}")
+                # Call the function to generate data and plot
+                generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
 
 
             # --- RETIREMENT SAVINGS PLAN ----
@@ -221,10 +223,14 @@ def editing_page():
                 current_savings_return = 0
                 if current_savings > 0:
                     current_savings_return = st.slider('Annual return on current savings (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='current_savings_return', value=float(plan.saving_interest))
-                    
+                else: 
+                    current_savings_return = 0.0
+
                 due_date = calculateGoalDate(profile.user_birthday, target_age)
-                current_date = datetime.now().date()
+                
                 savings_term_months = (target_age - current_age) * 12
+                savings_term_years = target_age - current_age
+
                 monthly_saving = calculate_pension_monthly_saving(retirement_amount, current_savings, current_savings_return, savings_term_months)
 
                 if st.button('Calculate Retirement Plan'):
@@ -237,6 +243,14 @@ def editing_page():
                     
                     # Write result
                     st.success("Plan updated successfully!")
+
+                st.write(f"**Plan Name:** {goal_name}")
+                st.write(f"**Target Amount:** {retirement_amount:,.2f} {currency_symbol}")
+                st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Savings Term:** {savings_term_years} years")
+
+                # Call the function to generate data and plot
+                generate_data_and_plot(current_savings, savings_term_months, retirement_amount, 0, monthly_saving, 0, currency_symbol)
 
             # --- CUSTOMIZED FINANCIAL PLAN ---
             if page == "Customized Financial Plan":
@@ -257,7 +271,9 @@ def editing_page():
                 current_savings_return = 0
                 if current_savings > 0:
                     current_savings_return = st.slider('Annual return on current savings (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value=float(plan.saving_interest))
-
+                else: 
+                    current_savings_return = 0.0
+                    
                 if plan.loan_amount > 0:
                     loan_index = 1
                 else:
@@ -268,7 +284,7 @@ def editing_page():
                     loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - current_savings)
                     loan_term_years = st.number_input('Loan term (years):', min_value=1, max_value=30, step=1, value = plan.loan_duration)
                     loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value = float(plan.loan_interest))
-                    loan_start_date = st.date_input("Loan start date:", value=plan.loan_startdate, format="DD.MM.YYYY")
+                    loan_start_date = st.date_input("Loan start date:", min_value=current_date,value=plan.loan_startdate, format="DD.MM.YYYY")
                 else: 
                     loan_amount = 0
                     loan_term_years = 0
@@ -276,35 +292,35 @@ def editing_page():
                     loan_start_date = None
                     
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
+                savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
+                if down_payment_amount > 0:
+                    goal_target = down_payment_amount - current_savings
+                else:
+                    goal_target = goal_total - current_savings
+                monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
 
-                current_date = datetime.now().date()
 
                 if st.button('Calculate Custom Plan'):
-                    if due_date <= current_date:
-                        st.error("Target date must be in the future.")
-                    else:
-                        savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
-                        if down_payment_amount > 0:
-                            goal_target = down_payment_amount - current_savings
-                        else:
-                            goal_target = goal_total - current_savings
-                        monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
+                    # Add plan to database
+                    updatePlan(plan.plan_id, goal_name, target_age, due_date, 
+                                goal_total, down_payment_amount, monthly_saving, 
+                                current_savings, current_savings_return, savings_term_months,
+                                down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
+                                loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
+                    
+                    # Write result
+                    st.success("Plan updated successfully!")
 
-                        if loan_option == "Yes":
-                            # Add plan to database
-                            updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                        goal_total, down_payment_amount, monthly_saving, 
-                                        current_savings, current_savings_return, savings_term_months,
-                                        down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                        loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
-                            
-                            # Write result
-                            st.success("Plan updated successfully!")
-                
-            # Cancel
-            if st.button("Back to Overview"):
-                del st.session_state.edit_plan_id
-                st.switch_page("Goaldigger.py")
+                st.write(f"**Plan Name:** {goal_name}")
+                st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
+                st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Savings Term:** {savings_term_months} months")
+                if loan_option == "Yes":
+                    st.write(f"**Monthly Loan Payment:** {monthly_loan_payment:,.2f} {currency_symbol}")
+                    st.write(f"**Total Loan Payment:** {loan_amount:,.2f} {currency_symbol}")
+
+                # Call the function to generate data and plot
+                generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
         
         else: 
             st.error("No plan selected for editing.")
