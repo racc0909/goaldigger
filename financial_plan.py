@@ -283,6 +283,7 @@ def filter_plans_by_date(plans, selected_month):
     for plan in plans:
         plan_due_date = plan.goal_date if isinstance(plan.goal_date, datetime) else datetime.combine(plan.goal_date, datetime.min.time())
         if plan_due_date >= selected_month:
+            filtered_plans.append(plan)
     return filtered_plans
     
 # Function to filter loans based on the selected date range
