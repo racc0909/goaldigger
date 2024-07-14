@@ -70,9 +70,6 @@ def editing_page():
             currency_symbol = country_data[selected_country]['Currency']
             inflation_rate = st.sidebar.slider('Annual inflation rate (%)', min_value=0.0, max_value=10.0, value=country_data[selected_country]['Inflation rate'], step=0.1, key='annual_inflation_rate')
 
-            # Save life expectancy for later use
-            life_expectancy = country_data[selected_country]['LifeExpectancy']
-
             # Buttons
             backToOverview()
             logout()
