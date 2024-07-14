@@ -66,6 +66,7 @@ def user_info_page():
         if st.button("Save"):
             createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday, user_subscription)
             st.success("Profile saved successfully!")
+            st.balloons()
             time.sleep(0.5)
             if mode == "create":
                 st.switch_page("Goaldigger.py")
