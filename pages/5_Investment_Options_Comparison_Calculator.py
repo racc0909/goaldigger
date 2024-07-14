@@ -107,6 +107,16 @@ col1, col2 = st.columns([3, 1])
 with col1:
     selected_bank = st.selectbox("Choose Your Bank", list(banks.keys()))
 
+with col2:
+    st.markdown(
+        f"""
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+            <img src="data:image/png;base64,{encoded_logo}" style="max-width: 100%; max-height: 100px;">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 # Load and display the selected bank's logo
 logo_path = banks[selected_bank]["logo"]
 encoded_logo = get_base64_image(logo_path)
