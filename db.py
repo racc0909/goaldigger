@@ -392,15 +392,15 @@ def showChosenPages():
             Page("pages/18_options_comparison.py", "Investment Option Comparison", ":question:"),
             Page("pages/3_Edit_Plan.py", "Edit Plan"),
             Page("pages/8_Add_Saving.py", "Add Saving"),
-            Page("pages/9_Low Risk, Short Term Investments.py", "LowShort"),
-            Page("pages/10_Low Risk, Medium Term Investments.py", "LowMedium"),
-            Page("pages/11_Low Risk, Long Term Investments.py", "LowLong"),
-            Page("pages/12_Medium Risk, Short Term Investments.py", "MediumShort"),
-            Page("pages/13_Medium Risk, Medium Term Investments.py", "MediumMedium"),
-            Page("pages/14_Medium Risk, Long Term Investments.py", "MediumLong"),
-            Page("pages/15_High Risk, Short Term Investments.py", "HighShort"),
-            Page("pages/16_High Risk, Medium Term Investments.py", "HighMedium"),
-            Page("pages/17_High Risk, Long Term Investments.py", "HighLong")
+            Page("pages/9_Low Risk, Short Term Investments.py", "Low Risk, Short Term Investments"),
+            Page("pages/10_Low Risk, Medium Term Investments.py", "Low Risk, Medium Term Investments"),
+            Page("pages/11_Low Risk, Long Term Investments.py", "Low Risk, Long Term Investments"),
+            Page("pages/12_Medium Risk, Short Term Investments.py", "Medium Risk, Short Term Investments"),
+            Page("pages/13_Medium Risk, Medium Term Investments.py", "Medium Risk, Medium Term Investments"),
+            Page("pages/14_Medium Risk, Long Term Investments.py", "Medium Risk, Long Term Investments"),
+            Page("pages/15_High Risk, Short Term Investments.py", "High Risk, Short Term Investments"),
+            Page("pages/16_High Risk, Medium Term Investments.py", "High Risk, Medium Term Investments"),
+            Page("pages/17_High Risk, Long Term Investments.py", "High Risk, Long Term Investments")
         ]
     )
 
