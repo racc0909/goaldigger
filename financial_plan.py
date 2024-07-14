@@ -27,7 +27,7 @@ def calculate_monthly_saving(target_amount, current_savings, current_savings_ret
     else:
         monthly_saving = 0
         future_value_needed = 0
-    return float(monthly_saving), float(future_value_needed)
+    return float(round(monthly_saving, 2)), float(round(future_value_target_amount, 2))
 
 def calculateMonthlyFinalPayment(final_payment_amount, loan_term_years):
     loan_term_months = loan_term_years * 12
