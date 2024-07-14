@@ -107,12 +107,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown(
-    """
-    <h2 class="custom-subheader">Select your 🏦 bank, choose 🗓️ the deposit term, and input the 💸 amount to see your potential profit. Easily compare interest rates and find the best investment option for your needs.</h2>
-    """,
-    unsafe_allow_html=True
-)
+
 
 # Select bank
 col1, col2 = st.columns([3, 1])
