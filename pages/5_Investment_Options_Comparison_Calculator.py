@@ -103,7 +103,7 @@ st.markdown(
 st.divider()
 
 # Select bank
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([375.25, 68])
 with col1:
     selected_bank = st.selectbox("Choose Your Bank", list(banks.keys()))
 
@@ -115,7 +115,7 @@ with col2:
     st.markdown(
         f"""
         <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-            <img src="data:image/png;base64,{encoded_logo}" style="max-width: 100%; max-height: 100px;">
+            <img src="data:image/png;base64,{encoded_logo}" style="width: 68px; height: auto;">
         </div>
         """,
         unsafe_allow_html=True
