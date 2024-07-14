@@ -7,7 +7,7 @@ import plotly.express as px
 from datetime import datetime, timedelta, date
 import time
 import matplotlib.pyplot as plt
-from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview
+from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview, getSavings, getTotalSavings, deletePlan
 from financial_plan import calculate_amortization_schedule, generate_data_and_plot
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 import base64
@@ -31,14 +31,20 @@ def editing_page():
         user_id = st.session_state.user_id
 
         if 'edit_plan_id' in st.session_state:
+            # Get plan info
             plan_id = st.session_state.edit_plan_id
             plan = getPlan(plan_id)
 
-            # --- PERSONAL INFORMATION ---
-            # PREPARATION
             # Get user info
             user_id = st.session_state.user_id
             profile = getUserInfo(user_id)
+
+            # Get saving info
+            savings = getSavings(user_id, plan_id)
+            total_saving = getTotalSavings(user_id, plan_id)
+
+            # --- PERSONAL INFORMATION ---
+            # PREPARATION
 
             # Calculate birthday
             current_age = calculateUserAge(profile.user_birthday)
@@ -92,6 +98,7 @@ def editing_page():
                 # Calculate monthly saving
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
                 monthly_saving = calculate_monthly_saving(house_price * (down_payment_percent / 100), current_savings, current_savings_return, savings_term_months, inflation_rate)   
+                rest_saving = plan.goal_target - total_saving
 
                 if plan.loan_amount > 0:
                     loan_index = 0
@@ -112,19 +119,31 @@ def editing_page():
                     monthly_loan_payment = 0.0
 
                 # SAVING PLAN OPTION 
-                if st.button('Save changes'):  
-                    # Add plan to database
-                    updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                house_price, down_payment_amount, monthly_saving, 
-                                current_savings, current_savings_return, savings_term_months,
-                                down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
-                    # Write result
-                    st.success("Plan updated successfully!")                
+                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                with col1_1:
+                    if st.button('Save changes'):  
+                        # Add plan to database
+                        updatePlan(plan.plan_id, goal_name, target_age, due_date, 
+                                    house_price, down_payment_amount, monthly_saving, 
+                                    current_savings, current_savings_return, savings_term_months,
+                                    down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
+                                    loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
+                        # Write result
+                        st.success("Plan updated successfully!")     
+                with col1_2:
+                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
+                        st.session_state.add_saving_plan_id = plan.plan_id
+                        st.switch_page("pages/8_Add_Saving.py")
+                with col1_3:
+                    if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
+                        deletePlan(plan.plan_id)
+                        st.experimental_rerun()           
                 
                 st.write(f"**Plan Name:** {goal_name}")
                 st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
                 st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Savings Term:** {savings_term_months} months")
 
                 if take_house_loan == "Yes":
@@ -270,6 +289,7 @@ def editing_page():
 
                 # Calculate monthly saving
                 monthly_saving = calculate_car_savings(car_price_input, down_payment_percent, current_age, target_age, current_savings, current_savings_return, inflation_rate)
+                rest_saving = plan.goal_target - total_saving
 
                 # Car loan
                 if plan.loan_amount > 0:
@@ -290,19 +310,31 @@ def editing_page():
                     loan_start_date = date.today()
                     monthly_loan_payment = 0.0
 
-                if st.button('Calculate Car Plan'):
-                    # Save plan to DB
-                    updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                car_price_input, down_payment_amount, monthly_saving, 
-                                current_savings, current_savings_return, savings_term_months,
-                                down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
-                    
-                    # Write result
-                    st.success("Plan updated successfully!")
+                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                with col1_1:
+                    if st.button('Save changes'):
+                        # Save plan to DB
+                        updatePlan(plan.plan_id, goal_name, target_age, due_date, 
+                                    car_price_input, down_payment_amount, monthly_saving, 
+                                    current_savings, current_savings_return, savings_term_months,
+                                    down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
+                                    loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
+                        
+                        # Write result
+                        st.success("Plan updated successfully!")
+                with col1_2:
+                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
+                        st.session_state.add_saving_plan_id = plan.plan_id
+                        st.switch_page("pages/8_Add_Saving.py")
+                with col1_3:
+                    if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
+                        deletePlan(plan.plan_id)
+                        st.experimental_rerun()
                     
                 st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
                 st.write(f"To afford your dream car, you'll need to save: {monthly_saving:.2f} {currency_symbol} each month")
+                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Savings Term:** {savings_term_months} months")
                 if take_car_loan == "Yes":
                     st.write(f"**Monthly Car Loan Payment:** <span style='color: blue;'>{currency_symbol}{monthly_loan_payment:,.2f}</span>", unsafe_allow_html=True)
@@ -333,21 +365,35 @@ def editing_page():
                 savings_term_years = target_age - current_age
 
                 monthly_saving = calculate_pension_monthly_saving(retirement_amount, current_savings, current_savings_return, savings_term_months)
+                rest_saving = plan.goal_target - total_saving
 
-                if st.button('Calculate Retirement Plan'):
-                    # Save plan to DB
-                    updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                retirement_amount, retirement_amount, monthly_saving, 
-                                current_savings, current_savings_return, savings_term_months,
-                                0, savings_term_months, 0, 0, 
-                                0, '1900-01-01', 0, 0, 0)
-                    
-                    # Write result
-                    st.success("Plan updated successfully!")
+                # SAVING PLAN OPTION 
+                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                with col1_1:
+                    if st.button('Save changes'):  
+                        # Save plan to DB
+                        updatePlan(plan.plan_id, goal_name, target_age, due_date, 
+                                    retirement_amount, retirement_amount, monthly_saving, 
+                                    current_savings, current_savings_return, savings_term_months,
+                                    0, savings_term_months, 0, 0, 
+                                    0, '1900-01-01', 0, 0, 0)
+                        
+                        # Write result
+                        st.success("Plan updated successfully!")
+                with col1_2:
+                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
+                        st.session_state.add_saving_plan_id = plan.plan_id
+                        st.switch_page("pages/8_Add_Saving.py")
+                with col1_3:
+                    if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
+                        deletePlan(plan.plan_id)
+                        st.experimental_rerun()     
 
                 st.write(f"**Plan Name:** {goal_name}")
                 st.write(f"**Target Amount:** {retirement_amount:,.2f} {currency_symbol}")
                 st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Savings Term:** {savings_term_years} years")
 
                 # Call the function to generate data and plot
@@ -374,7 +420,9 @@ def editing_page():
                     current_savings_return = st.slider('Annual return on current savings (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value=float(plan.saving_interest))
                 else: 
                     current_savings_return = 0.0
-                    
+                     
+                rest_saving = plan.goal_target - total_saving
+
                 if plan.loan_amount > 0:
                     loan_index = 1
                 else:
@@ -385,7 +433,7 @@ def editing_page():
                     loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - current_savings)
                     loan_term_years = st.number_input('Loan term (years):', min_value=1, max_value=30, step=1, value = plan.loan_duration)
                     loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value = float(plan.loan_interest))
-                    loan_start_date = st.date_input("Loan start date:", min_value=current_date,value=plan.loan_startdate, format="DD.MM.YYYY")
+                    loan_start_date = st.date_input("Loan start date:", value=plan.loan_startdate, format="DD.MM.YYYY")
                 else: 
                     loan_amount = 0
                     loan_term_years = 0
@@ -400,21 +448,33 @@ def editing_page():
                     goal_target = goal_total - current_savings
                 monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
 
-
-                if st.button('Calculate Custom Plan'):
-                    # Add plan to database
-                    updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                goal_total, down_payment_amount, monthly_saving, 
-                                current_savings, current_savings_return, savings_term_months,
-                                down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
-                                loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
-                    
-                    # Write result
-                    st.success("Plan updated successfully!")
+                # SAVING PLAN OPTION 
+                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                with col1_1:
+                    if st.button('Save changes'):  
+                        # Save plan to DB
+                        updatePlan(plan.plan_id, goal_name, target_age, due_date, 
+                                    goal_total, down_payment_amount, monthly_saving, 
+                                    current_savings, current_savings_return, savings_term_months,
+                                    down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
+                                    loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
+                        
+                        # Write result
+                        st.success("Plan updated successfully!")
+                with col1_2:
+                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
+                        st.session_state.add_saving_plan_id = plan.plan_id
+                        st.switch_page("pages/8_Add_Saving.py")
+                with col1_3:
+                    if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
+                        deletePlan(plan.plan_id)
+                        st.experimental_rerun()     
 
                 st.write(f"**Plan Name:** {goal_name}")
                 st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
                 st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Savings Term:** {savings_term_months} months")
                 if loan_option == "Yes":
                     st.write(f"**Monthly Loan Payment:** {monthly_loan_payment:,.2f} {currency_symbol}")

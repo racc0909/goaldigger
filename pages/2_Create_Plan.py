@@ -273,7 +273,7 @@ def planning_page():
                 loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - current_savings)
                 loan_term_years = st.number_input('Loan term (years):', min_value=1, max_value=30, step=1)
                 loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f")
-                loan_start_date = st.date_input("Loan start date:", min_value=current_date, value=date.today(), format="DD.MM.YYYY")
+                loan_start_date = st.date_input("Loan start date:", value=date.today(), format="DD.MM.YYYY")
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
 
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
