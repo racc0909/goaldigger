@@ -23,8 +23,8 @@ st.markdown(
 st.divider()
 # 描述
 st.markdown(
-    """
-    Based on your <u>low</u> risk tolerance and preference for <u>short-term</u> investments, we recommend the following options:
+    f"""
+    <h2 class="custom-subheader">Based on your <u>low</u> risk tolerance and preference for <u>short-term</u> investments, we recommend the following options:</h2>
     """,
     unsafe_allow_html=True
 )
@@ -129,6 +129,7 @@ with col4:
         </p>
     </div>
     """, unsafe_allow_html=True)
+st.write("Please note, these are general recommendations and not personalized advice.")
 st.divider()
 if st.button("Back to Assessment"):
     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
