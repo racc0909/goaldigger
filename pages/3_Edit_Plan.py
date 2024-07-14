@@ -190,7 +190,7 @@ def editing_page():
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.experimental_rerun()   
+                        st.switch_page("Goaldigger.py")
                 
                 st.divider()
             
@@ -449,7 +449,7 @@ def editing_page():
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.experimental_rerun()
+                        st.switch_page("Goaldigger.py")
                    
                 st.divider()
                 
@@ -540,7 +540,7 @@ def editing_page():
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.experimental_rerun()   
+                        st.switch_page("Goaldigger.py")
 
                 st.divider()
 
@@ -686,7 +686,7 @@ def editing_page():
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.experimental_rerun()    
+                        st.switch_page("Goaldigger.py")  
 
                 st.divider()
             
