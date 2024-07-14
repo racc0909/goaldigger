@@ -123,10 +123,12 @@ def main():
       
       logout()
 
-      @st.experimental_dialog("Add Saving")
+      @st.experimental_dialog("📊 Add Saving Progress")
       def add_saving(user_id, plan):
-         savings_amount = st.number_input("Amount", value=float(plan.goal_target_monthly))
-         savings_date = st.date_input("Saving's date", value=datetime.today(), format="DD.MM.YYYY")
+         profile = getUserInfo(user_id)
+         st.header(f"Plan: {plan.goal_name}")
+         savings_date = st.date_input("📅 Select Date", value=datetime.today(), format="DD.MM.YYYY")
+         savings_amount = st.number_input(f"🪙 Saving Amount for {savings_date.strftime('%B %Y')} ({profile.user_currency})", value=float(plan.goal_target_monthly))
 
          col1_1, col1_2 = st.columns([1, 1])
          with col1_1:
@@ -343,7 +345,7 @@ def main():
                with col1_1:
                   if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}_{i}"):
                      st.session_state.add_saving_plan_id = plan.plan_id
-                     st.switch_page("pages/8_Add_Saving.py")
+                     add_saving(user_id, plan)
                with col1_2:
                   if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}_{i}"):
                      st.session_state.invest_plan_id = plan.plan_id

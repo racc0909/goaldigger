@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, date, timedelta
 import time
-from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview, getSavings, getTotalSavings, deletePlan, showChosenPages
+from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, createSaving, backToOverview, getSavings, getTotalSavings, deletePlan, showChosenPages
 from financial_plan import generate_data_and_plot, calculateMonthlyFinalPayment
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_pension_monthly_saving
 import base64
@@ -28,6 +28,30 @@ def editing_page():
         user_id = st.session_state.user_id
 
         if 'edit_plan_id' in st.session_state:
+
+            @st.experimental_dialog("📊 Add Saving Progress")
+            def add_saving(user_id, plan):
+                profile = getUserInfo(user_id)
+                st.header(f"Plan: {plan.goal_name}")
+                savings_date = st.date_input("📅 Select Date", value=datetime.today(), format="DD.MM.YYYY")
+                savings_amount = st.number_input(f"🪙 Saving Amount for {savings_date.strftime('%B %Y')} ({profile.user_currency})", value=float(plan.goal_target_monthly))
+
+                col1_1, col1_2 = st.columns([1, 1])
+                with col1_1:
+                    if st.button("✅ Submit"):
+                        createSaving(user_id, plan.plan_id, savings_date, savings_amount)
+                        st.success("Saving added successfully!")
+                        time.sleep(0.3)
+                        del st.session_state.add_saving_plan_id
+                        st.rerun()
+                        
+                with col1_2:
+                    if st.button("❌ Cancel"):
+                        st.info("Saving canceled.")
+                        time.sleep(0.3)
+                        del st.session_state.add_saving_plan_id
+                        st.rerun()
+
             # Get plan info
             plan_id = st.session_state.edit_plan_id
             plan = getPlan(plan_id)
@@ -186,7 +210,7 @@ def editing_page():
                 with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
-                        st.switch_page("pages/8_Add_Saving.py")
+                        add_saving(user_id, plan)
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
@@ -445,7 +469,7 @@ def editing_page():
                 with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
-                        st.switch_page("pages/8_Add_Saving.py")
+                        add_saving(user_id, plan)
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
@@ -536,7 +560,7 @@ def editing_page():
                 with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
-                        st.switch_page("pages/8_Add_Saving.py")
+                        add_saving(user_id, plan)
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
@@ -682,7 +706,7 @@ def editing_page():
                 with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
-                        st.switch_page("pages/8_Add_Saving.py")
+                        add_saving(user_id, plan)
                 with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
