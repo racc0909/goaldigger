@@ -5,15 +5,17 @@ from db import showChosenPages
 
 showChosenPages()
 
+
 # 自定义CSS样式
 st.markdown("""
     <style>
     .custom-box {
-        border: 2px solid #cccccc;
+        border: 2px solid #478CCF; /* 边框颜色与主题一致 */
         border-radius: 10px;
         padding: 15px;
         margin: 10px;
         transition: all 0.3s ease-in-out;
+        background-color: #f8f9fa; /* 背景颜色与主题一致 */
     }
     .custom-box:hover {
         transform: translateY(-5px);
@@ -30,6 +32,19 @@ st.markdown("""
     }
     .return-bar {
         background-color: #2196F3; /* 蓝色 */
+    }
+    h2.custom-subheader {
+        font-family: 'Montserrat', sans-serif;
+        color: #478CCF;
+        font-size: 24px;
+    }
+    h2 {
+        font-size: 20px; /* 调整h2的字体大小 */
+        color: #4535C1;
+    }
+    p, ul {
+        font-family: 'sans serif';
+        color: #3a4b53;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -111,6 +126,8 @@ st.plotly_chart(fig, use_container_width=True)
 # 返回按钮
 if st.button("Back to Assessment"):
     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+    
+st.divider()
 
 st.markdown(
     f"""
@@ -122,12 +139,14 @@ st.markdown(
 st.markdown("""
     <div class="custom-box">
         <h2>Thanks for using our Investment Options Comparison tool! 🎉 We will work hard to bring you even better features in the future:</h2>
-        <p>
         <ul>
             <li><b>Real-Time Data</b>: Get the latest market updates and stay ahead.</li>
-            <li><b>Personalized Recommendations</b>: Tailored suggestions just for you. </li>
+            <li><b>Personalized Recommendations</b>: Tailored suggestions just for you.</li>
         </ul>
-            <p>We'd love to hear your thoughts! 💬 What features would you like to see? Let us know and help us make this tool even better.</p>
-        </p>
+        <p>We'd love to hear your thoughts! 💬 What features would you like to see? Let us know and help us make this tool even better.</p>
     </div>
     """, unsafe_allow_html=True)
+
+if st.button("I want to write some Feedback"):
+    st.switch_page("pages/20_Share_Your_Feedback.py")
+
