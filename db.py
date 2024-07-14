@@ -400,8 +400,7 @@ def showChosenPages():
             Page("pages/14_Medium Risk, Long Term Investments.py", "MediumLong"),
             Page("pages/15_High Risk, Short Term Investments.py", "HighShort"),
             Page("pages/16_High Risk, Medium Term Investments.py", "HighMedium"),
-            Page("pages/17_High Risk, Long Term Investments.py", "HighLong"),
-            page("pages/20_Share_Your_Feedback.py", "Share Your Feedback")
+            Page("pages/17_High Risk, Long Term Investments.py", "HighLong")
         ]
     )
 
