@@ -31,6 +31,7 @@ class Userinfo(Base):
     user_birthday = Column(Date, nullable=False)
     user_country = Column(String(255), nullable=False)
     user_currency = Column(String(10), nullable=False)
+    user_subscription = Column(String(255), nullable=False)
 
 # Plan information model
 class Plan(Base):
@@ -130,7 +131,7 @@ def getUserInfo(user_id):
     finally:
         session.close()
 
-def createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday):
+def createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday, user_subscription):
     session = Session()
     try:
         info = session.query(Userinfo).filter_by(user_id=user_id).first()
@@ -139,9 +140,10 @@ def createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, 
             info.user_country = user_country
             info.user_currency = user_currency
             info.user_birthday = user_birthday
+            info.user_subscription = user_subscription
         else:
             info = Userinfo(
-                user_id=user_id, user_nickname=user_nickname, user_country=user_country, user_currency=user_currency, user_birthday=user_birthday
+                user_id=user_id, user_nickname=user_nickname, user_country=user_country, user_currency=user_currency, user_birthday=user_birthday, user_subscription=user_subscription
             )
             session.add(info)
         session.commit()

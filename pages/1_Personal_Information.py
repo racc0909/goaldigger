@@ -47,6 +47,7 @@ def user_info_page():
             user_birthday = st.date_input("Your Birthday", profile.user_birthday, format="DD.MM.YYYY")
             user_country = st.selectbox("Your Country", list(country_data.keys()), index=list(country_data.keys()).index(profile.user_country) if profile.user_country else 0)
             user_currency = st.selectbox("Currency", country_data[user_country]['Currency'], index=0)
+            user_subscription = st.selectbox("Choose subscription:", ("Standard", "Premium"), index=0 if profile.user_subscription == "Standard" else 1)
             mode = "edit"
         else:
             st.markdown(
@@ -59,10 +60,11 @@ def user_info_page():
             user_birthday = st.date_input("When is your birthday?", format="DD.MM.YYYY")
             user_country = st.selectbox("Which country are you in?", list(country_data.keys()))
             user_currency = st.selectbox("Which currency are you using?", country_data[user_country]['Currency'])
+            user_subscription = st.selectbox("Choose subscription:", ("Standard", "Premium"), index=0)
             mode = "create"
 
         if st.button("Save"):
-            createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday)
+            createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday, user_subscription)
             st.success("Profile saved successfully!")
             time.sleep(0.5)
             if mode == "create":
