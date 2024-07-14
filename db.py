@@ -1,5 +1,5 @@
 import streamlit as st
-from sqlalchemy import create_engine, extract, func, Column, Integer, String, Date, ForeignKey, Numeric
+from sqlalchemy import create_engine, extract, func, Column, Integer, String, Date, ForeignKey, Numeric, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
@@ -67,6 +67,16 @@ class Saving(Base):
     saving_id = Column(Integer, unique=True, primary_key=True)
     saving_date = Column(Date, primary_key=True)
     saving_amount = Column(Numeric(10, 2), primary_key=True)
+
+# Feedback
+class Feedback(Base):
+    __tablename__ = 'feedback'
+    feedback_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    overall_experience = Column(Integer, nullable=False)
+    positive_feedback = Column(Text, nullable=True)
+    improvements = Column(Text, nullable=True)
+    additional_comments = Column(Text, nullable=True)
 
 Base.metadata.create_all(engine)
 
@@ -383,6 +393,26 @@ def getTotalSavingsByYear(plan_id):
     finally:
         session.close()
 
+### FEEDBACK
+def createFeedback(user_id, overall_experience, positive_feedback, improvements, additional_comments):
+    session = Session()
+    try:
+        feedback = Feedback(user_id=user_id, 
+                            overall_experience=overall_experience, 
+                            positive_feedback=positive_feedback, 
+                            improvements=improvements, 
+                            additional_comments=additional_comments)
+        session.add(feedback)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return False
+    finally:
+        session.close()
+
+### PAGES
 def showChosenPages():
     show_pages(
         [

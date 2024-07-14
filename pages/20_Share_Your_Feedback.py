@@ -1,5 +1,5 @@
 import streamlit as st
-from db import showChosenPages, logout
+from db import showChosenPages, logout, createFeedback, backToOverview
 
 showChosenPages()
 
@@ -15,6 +15,7 @@ def feedback_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         user_id = st.session_state.user_id
         logout()
+        backToOverview()
         st.markdown(
             f"""
             <h1>We Value Your Feedback</h1>
@@ -41,10 +42,10 @@ def feedback_page():
         additional_comments = st.text_area("Enter any additional comments here")
 
         if st.button("Submit Feedback"):
+            createFeedback(user_id, overall_experience, likes, improvements, additional_comments)
             # Simulating feedback submission process
             st.success("Thank you for your feedback! We appreciate your input.")
             st.balloons()
-            # Here you would typically save the feedback to a database or send it to an email
 
     else:
         st.warning("Please log in to access this page.")
