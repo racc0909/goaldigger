@@ -184,32 +184,22 @@ def main():
 
          # Date selection
          selected_date = st.date_input("Select month and year to view savings distribution", date.today(), min_value=date.today(), format="DD.MM.YYYY")
+         selected_date = datetime.combine(selected_date, datetime.min.time())  # Ensure selected_date is datetime
 
          # Filter plans based on the selected date
-         filtered_plans = []
-         for plan in plans:
-            due_date = plan.goal_date.date() if isinstance(plan.goal_date, datetime) else plan.goal_date
-            if due_date >= selected_date:
-                filtered_plans.append(plan)       
-        
-        # Filter loans based on the selected date
-         total_monthly_loans = 0
-         for plan in plans:
-            if 'monthly_loan_payment' in plan:
-                loan_start_date = plan.loan_startdate.date() if isinstance(plan.loan_startdate, datetime) else plan.loan_startdate
-                loan_end_date = loan_start_date + timedelta(days=plan.loan_duration * 365)
-                if loan_start_date <= selected_month.date() <= loan_end_date:
-                    total_monthly_loans += plan.loan_monthly
-         
-         for plan in filtered_plans:
-               total_monthly_savings = sum(plan.goal_target_monthly for plan in filtered_plans)
-               total_monthly_loans = sum(plan.loan_monthly for plan in filtered_plans)
-               total_amount = total_monthly_savings + total_monthly_loans
+         filtered_plans = filter_plans_by_date(plans, selected_date)
 
-               savings_distribution = {plan.goal_name: plan.goal_target_monthly for plan in filtered_plans}
-               # Adding loan/mortgage amounts to savings distribution
-               if total_monthly_loans > 0:
-                  savings_distribution['Loans/Mortgages'] = total_monthly_loans
+         # Calculate savings distribution
+         total_monthly_savings = sum(plan.goal_target_monthly for plan in filtered_plans)
+         savings_distribution = {plan.goal_name: plan.goal_target_monthly for plan in filtered_plans}
+
+         # Filter loans based on the selected date and calculate total monthly loans
+         total_monthly_loans = filter_loans_by_date(plans, selected_date)
+         if total_monthly_loans > 0:
+               savings_distribution['Loans/Mortgages'] = total_monthly_loans
+
+         # Calculate the total amount
+         total_amount = total_monthly_savings + total_monthly_loans
 
          # Display Pie chart
          display_piechart(user_id, savings_distribution)

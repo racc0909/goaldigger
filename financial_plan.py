@@ -290,7 +290,7 @@ def filter_plans_by_date(plans, selected_month):
 def filter_loans_by_date(plans, selected_month):
     total_monthly_loans = 0
     for plan in plans:
-        if 'monthly_loan_payment' in plan:
+        if plan.goal_target_monthly:
             loan_start_date = plan.loan_startdate.date() if isinstance(plan.loan_startdate, datetime) else plan.loan_startdate
             loan_end_date = loan_start_date + timedelta(days=plan.loan_duration * 365)
             if loan_start_date <= selected_month.date() <= loan_end_date:
