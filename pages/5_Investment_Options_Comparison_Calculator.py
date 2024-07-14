@@ -111,16 +111,6 @@ with col1:
 logo_path = banks[selected_bank]["logo"]
 encoded_logo = get_base64_image(logo_path)
 
-with col2:
-    st.markdown(
-        f"""
-        <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-            <img src="data:image/png;base64,{encoded_logo}" style="width: 500px; height: auto;">
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
 # Display deposit conditions
 if selected_bank == "ING Bank":
     st.write(f"For {selected_bank} deposits, the amount must be more than {banks[selected_bank]['min_amounts']['<=12 months']} and no more than {banks[selected_bank]['max_amounts']['<=12 months']} for terms up to 12 months.")
