@@ -14,8 +14,6 @@ DATABASE_URL = f"postgresql+psycopg2://{db_config['username']}:{db_config['passw
 # Database setup
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
-session = Session()
-
 Base = declarative_base()
 
 # User credential model
@@ -71,20 +69,27 @@ class Saving(Base):
 
 Base.metadata.create_all(engine)
 
-# Error handling example
-try:
-    # Helper functions
-    ### --- SIGN UP / LOG IN / LOG OUT ---
-    def hash_password(password):
-        return hashlib.sha256(password.encode()).hexdigest()
+# Helper functions
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
-    def authenticate(username, password):
+def authenticate(username, password):
+    session = Session()
+    try:
         user = session.query(Credential).filter_by(username=username).first()
         if user and user.password == hash_password(password):
             return user
         return None
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        session.close()
 
-    def signup(username, password):
+def signup(username, password):
+    session = Session()
+    try:
         if session.query(Credential).filter_by(username=username).first():
             return False
         # Add user credential to Credential
@@ -92,27 +97,43 @@ try:
         session.add(credential)
         session.commit()
         return True
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return False
+    finally:
+        session.close()
 
-    def logout():
-        # Button to logout
-        if st.sidebar.button("Logout"):
-            st.session_state.logged_in = False
-            st.switch_page("Goaldigger.py")
-            st.experimental_rerun()
+def logout():
+    # Button to logout
+    if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
+        st.switch_page("Goaldigger.py")
+        st.experimental_rerun()
 
-    def backToOverview():
-        # Button to backToOverview
-        if st.sidebar.button("Back to Overview"):
-            #del st.session_state.edit_plan_id
-            st.switch_page("Goaldigger.py")
+def backToOverview():
+    # Button to backToOverview
+    if st.sidebar.button("Back to Overview"):
+        #del st.session_state.edit_plan_id
+        st.switch_page("Goaldigger.py")
 
-    ### --- USER INFO ---
-    def getUserInfo(user_id):
+### --- USER INFO ---
+def getUserInfo(user_id):
+    session = Session()
+    try:
         info = session.query(Userinfo).filter_by(user_id=user_id).first()
         return info
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        session.close()
 
-    def createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday):
-        info = getUserInfo(user_id)
+def createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, user_birthday):
+    session = Session()
+    try:
+        info = session.query(Userinfo).filter_by(user_id=user_id).first()
         if info:
             info.user_nickname = user_nickname
             info.user_country = user_country
@@ -125,64 +146,71 @@ try:
             session.add(info)
         session.commit()
         return info
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        session.close()
 
-    # Calculate date function
-    def calculateGoalDate(user_birthday, goal_age):
-        """
-        Calculate the goal date by adding goal_age years to the user's birthday.
-        """
-        # Calculate the goal date
-        goal_date = user_birthday + timedelta(days=goal_age * 365.25)  # Approximately accounts for leap years
-        return goal_date
+# Calculate date function
+def calculateGoalDate(user_birthday, goal_age):
+    """
+    Calculate the goal date by adding goal_age years to the user's birthday.
+    """
+    # Calculate the goal date
+    goal_date = user_birthday + timedelta(days=goal_age * 365.25)  # Approximately accounts for leap years
+    return goal_date
 
-    def calculateSavingDuration(goal_date):
-        """
-        Calculate the number of days from today until the goal date.
-        """
-        today = datetime.today()
-        # Calculate the duration in days
-        duration_days = (goal_date - today).days
-        return duration_days
+def calculateSavingDuration(goal_date):
+    """
+    Calculate the number of days from today until the goal date.
+    """
+    today = datetime.today()
+    # Calculate the duration in days
+    duration_days = (goal_date - today).days
+    return duration_days
 
-    def calculateGoalAge(user_birthday, goal_date):
-        """
-        Calculate the goal age by substracting goal_date to the user's birthday and get the lower number
-        """
-        # Calculate the difference in years
-        goal_age = goal_date.year - user_birthday.year
-        
-        # Adjust for cases where the goal date is before the birthday in the year
-        if (goal_date.month, goal_date.day) < (user_birthday.month, user_birthday.day):
-            goal_age -= 1
-        
-        return goal_age
+def calculateGoalAge(user_birthday, goal_date):
+    """
+    Calculate the goal age by subtracting goal_date from the user's birthday and get the lower number
+    """
+    # Calculate the difference in years
+    goal_age = goal_date.year - user_birthday.year
+    
+    # Adjust for cases where the goal date is before the birthday in the year
+    if (goal_date.month, goal_date.day) < (user_birthday.month, user_birthday.day):
+        goal_age -= 1
+    
+    return goal_age
 
-    def calculateUserAge(user_birthday):
-        """
-        Calculate the user age by substracting today to the user's birthday and get the lower number
-        """
-        # Calculate the difference in years
-        today = date.today()
-        user_age = today.year - user_birthday.year
-        
-        # Adjust for cases where the goal date is before the birthday in the year
-        if (today.month, today.day) < (user_birthday.month, user_birthday.day):
-            user_age -= 1
-        
-        return user_age
+def calculateUserAge(user_birthday):
+    """
+    Calculate the user age by subtracting today from the user's birthday and get the lower number
+    """
+    # Calculate the difference in years
+    today = date.today()
+    user_age = today.year - user_birthday.year
+    
+    # Adjust for cases where the goal date is before the birthday in the year
+    if (today.month, today.day) < (user_birthday.month, user_birthday.day):
+        user_age -= 1
+    
+    return user_age
 
 
-    ### --- PLANS ---
-    def createPlan(user_id, goal_type, goal_name, goal_age, goal_date, 
-                    goal_total, goal_target, goal_target_monthly, 
-                    saving_initial, saving_interest, saving_duration,
-                    payment_first_percent, payment_first, payment_last_percent, payment_last, 
-                    loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
-
-        # Add plan to to the SQL table
+### --- PLANS ---
+def createPlan(user_id, goal_type, goal_name, goal_age, goal_date, 
+                goal_total, goal_target, goal_target_monthly, 
+                saving_initial, saving_interest, saving_duration,
+                payment_first_percent, payment_first, payment_last_percent, payment_last, 
+                loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
+    session = Session()
+    try:
+        # Add plan to the SQL table
         plan = Plan(
                     user_id=user_id, 
-                    created_on = datetime.now(),
+                    created_on=datetime.now(),
                     goal_type=goal_type, 
                     goal_name=goal_name, 
                     goal_age=goal_age, 
@@ -206,66 +234,132 @@ try:
         session.add(plan)
         session.commit()
         return plan.plan_id
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        session.close()
 
-    def getUserPlans(user_id):
-        return session.query(Plan).filter_by(user_id=user_id).all()
+def getUserPlans(user_id):
+    session = Session()
+    try:
+        plans = session.query(Plan).filter_by(user_id=user_id).all()
+        return plans
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return []
+    finally:
+        session.close()
 
-    def getPlan(plan_id):
-        return session.query(Plan).filter_by(plan_id=plan_id).first()
+def getPlan(plan_id):
+    session = Session()
+    try:
+        plan = session.query(Plan).filter_by(plan_id=plan_id).first()
+        return plan
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        session.close()
 
-    def updatePlan(plan_id, goal_name, goal_age, goal_date, 
-                    goal_total, goal_target, goal_target_monthly, 
-                    saving_initial, saving_interest, saving_duration,
-                    payment_first_percent, payment_first, payment_last_percent, payment_last, 
-                    loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
-        plan = getPlan(plan_id)
+def updatePlan(plan_id, goal_name, goal_age, goal_date, 
+                goal_total, goal_target, goal_target_monthly, 
+                saving_initial, saving_interest, saving_duration,
+                payment_first_percent, payment_first, payment_last_percent, payment_last, 
+                loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
+    session = Session()
+    try:
+        plan = session.query(Plan).filter_by(plan_id=plan_id).first()
         if plan:
-            plan.plan_id = plan_id,
-            plan.goal_name=goal_name, 
-            plan.goal_age=goal_age, 
-            plan.goal_date=goal_date, 
-            plan.goal_total=round(goal_total, 2), 
-            plan.goal_target=round(goal_target, 2), 
-            plan.goal_target_monthly=round(goal_target_monthly, 2),
-            plan.saving_initial=round(saving_initial, 2), 
-            plan.saving_interest=round(saving_interest, 2), 
-            plan.saving_duration=saving_duration,
-            plan.payment_first_percent=round(payment_first_percent, 2), 
-            plan.payment_first=round(payment_first, 2), 
-            plan.payment_last_percent=round(payment_last_percent, 2), 
-            plan.payment_last=round(payment_last, 2), 
-            plan.loan_duration=loan_duration, 
-            plan.loan_startdate=loan_startdate, 
-            plan.loan_amount=round(loan_amount, 2), 
-            plan.loan_interest=round(loan_interest, 2), 
-            plan.loan_monthly=round(loan_monthly, 2)
+            plan.goal_name = goal_name
+            plan.goal_age = goal_age
+            plan.goal_date = goal_date
+            plan.goal_total = round(goal_total, 2)
+            plan.goal_target = round(goal_target, 2)
+            plan.goal_target_monthly = round(goal_target_monthly, 2)
+            plan.saving_initial = round(saving_initial, 2)
+            plan.saving_interest = round(saving_interest, 2)
+            plan.saving_duration = saving_duration
+            plan.payment_first_percent = round(payment_first_percent, 2)
+            plan.payment_first = round(payment_first, 2)
+            plan.payment_last_percent = round(payment_last_percent, 2)
+            plan.payment_last = round(payment_last, 2)
+            plan.loan_duration = loan_duration
+            plan.loan_startdate = loan_startdate
+            plan.loan_amount = round(loan_amount, 2)
+            plan.loan_interest = round(loan_interest, 2)
+            plan.loan_monthly = round(loan_monthly, 2)
             session.commit()
             return True
         return False
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return False
+    finally:
+        session.close()
 
-    def deletePlan(plan_id):
-        plan = getPlan(plan_id)
+def deletePlan(plan_id):
+    session = Session()
+    try:
+        plan = session.query(Plan).filter_by(plan_id=plan_id).first()
         if plan:
             session.delete(plan)
             session.commit()
             return True
         return False
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return False
+    finally:
+        session.close()
 
-    ### --- SAVINGS ---
-    def createSaving(user_id, plan_id, saving_date, saving_amount):
+### --- SAVINGS ---
+def createSaving(user_id, plan_id, saving_date, saving_amount):
+    session = Session()
+    try:
         saving = Saving(user_id=user_id, plan_id=plan_id, saving_date=saving_date, saving_amount=saving_amount)
         session.add(saving)
         session.commit()
         return True
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return False
+    finally:
+        session.close()
 
-    def getSavings(user_id, plan_id):
-        return session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
+def getSavings(user_id, plan_id):
+    session = Session()
+    try:
+        savings = session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
+        return savings
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return []
+    finally:
+        session.close()
 
-    def getTotalSavings(user_id, plan_id):
+def getTotalSavings(user_id, plan_id):
+    session = Session()
+    try:
         total_savings = session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
         return sum([saving.saving_amount for saving in total_savings])
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return 0
+    finally:
+        session.close()
 
-    def getTotalSavingsByYear(plan_id):
+def getTotalSavingsByYear(plan_id):
+    session = Session()
+    try:
         # Query the total savings by year
         total_savings_by_year = (
             session.query(extract('year', Saving.saving_date).label('year'), 
@@ -279,16 +373,13 @@ try:
         # Convert the result to a dictionary
         savings_by_year = {int(row.year): float(row.total_saving) for row in total_savings_by_year}
 
-        session.close()
         return savings_by_year
-    pass
-except SQLAlchemyError as e:
-    session.rollback()
-    print(f"An error occurred: {e}")
-finally:
-    session.close()
-
-
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return {}
+    finally:
+        session.close()
 
 def showChosenPages():
     show_pages(
