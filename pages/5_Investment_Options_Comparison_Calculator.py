@@ -1,9 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from db import showChosenPages
-
-showChosenPages()
 
 def load_css(file_path):
     with open(file_path) as f:
@@ -20,10 +17,20 @@ banks = {
         "rates": {
             "3 months": 1.75,
             "6 months": 2.25,
-            "12 months": 2.75
+            "12 months": 2.75,
+            "2 years": {"<=500000": 2.25},
+            "3 years": {"<=500000": 2.00},
+            "4 years": {"<=500000": 2.00},
+            "5 years": {"<=500000": 2.00}
         },
-        "min_amount": 10000,
-        "max_amount": 1000000,
+        "min_amounts": {
+            "<=12 months": 10000,
+            ">12 months": 2500
+        },
+        "max_amounts": {
+            "<=12 months": 1000000,
+            ">12 months": 500000
+        },
         "link": "https://www.ing.de/sparen-anlegen/sparen/festgeld/"
     },
     "Commerzbank": {
@@ -100,12 +107,16 @@ st.divider()
 bank = st.selectbox("Choose Your Bank", list(banks.keys()))
 
 # Display deposit conditions
-min_amount = banks[bank]["min_amount"]
-max_amount = banks[bank]["max_amount"]
-if max_amount == float('inf'):
-    st.write(f"For {bank} deposits, the amount must be more than {min_amount} with no upper limit.")
+if bank == "ING Bank":
+    st.write(f"For {bank} deposits, the amount must be more than {banks[bank]['min_amounts']['<=12 months']} and no more than {banks[bank]['max_amounts']['<=12 months']} for terms up to 12 months.")
+    st.write(f"For {bank} deposits, the amount must be more than {banks[bank]['min_amounts']['>12 months']} and no more than {banks[bank]['max_amounts']['>12 months']} for terms over 12 months.")
 else:
-    st.write(f"For {bank} deposits, the amount must be more than {min_amount} and no more than {max_amount}")
+    min_amount = banks[bank]["min_amount"]
+    max_amount = banks[bank]["max_amount"]
+    if max_amount == float('inf'):
+        st.write(f"For {bank} deposits, the amount must be more than {min_amount} with no upper limit.")
+    else:
+        st.write(f"For {bank} deposits, the amount must be more than {min_amount} and no more than {max_amount}")
 
 # Show bank's tarif table
 if bank == "Commerzbank":
@@ -117,13 +128,13 @@ elif bank == "Deutsche Bank":
     rates_df = pd.DataFrame(data, columns=["Term", "Interest Rate (%)"])
     st.table(rates_df)
 elif bank in ["VR Bank", "Sparkasse", "ING Bank"]:
-    if bank == "VR Bank" or bank == "ING Bank":
-        rates_df = pd.DataFrame(list(banks[bank]["rates"].items()), columns=["Term", "Interest Rate (%)"])
-    else:
-        data = []
-        for term, rates in banks[bank]["rates"].items():
-            data.append([term, f"{rates['<=250000']}%", f"{rates['>250000']}%"])
-        rates_df = pd.DataFrame(data, columns=["Term", "Interest Rate (<=250000 EUR) %", "Interest Rate (>250000 EUR) %"])
+    data = []
+    for term, rate in banks[bank]["rates"].items():
+        if isinstance(rate, dict):  # Handle tiered rates
+            data.append([term, f"{rate['<=500000']}%"])
+        else:
+            data.append([term, f"{rate}%"])
+    rates_df = pd.DataFrame(data, columns=["Term", "Interest Rate (%)"])
     st.table(rates_df)
 else:
     rates_df = pd.DataFrame(list(banks[bank]["rates"].items()), columns=["Currency", "Interest Rate (%)"])
@@ -139,8 +150,8 @@ if bank in ["VR Bank", "Sparkasse", "ING Bank"]:
         else:
             years = int(term.split()[0])
     elif bank == "ING Bank":
-        term = st.selectbox("Select Deposit Term", ["3 months", "6 months", "12 months"])
-        years = int(term.split()[0]) / 12
+        term = st.selectbox("Select Deposit Term", ["3 months", "6 months", "12 months", "2 years", "3 years", "4 years", "5 years"])
+        years = {"3 months": 3/12, "6 months": 6/12, "12 months": 1, "2 years": 2, "3 years": 3, "4 years": 4, "5 years": 5}[term]
     else:
         term = st.selectbox("Select Deposit Term", ["3 months", "6 months", "12 months", "2 years", "3 years", "4 years"])
         years = {"3 months": 3/12, "6 months": 6/12, "12 months": 1, "2 years": 2, "3 years": 3, "4 years": 4}[term]
@@ -155,12 +166,27 @@ else:
     currency = st.selectbox("Select Currency", banks[bank]["currencies"])
 
 # Input deposit amount
+if bank == "ING Bank":
+    if years <= 1:
+        min_amount = banks[bank]['min_amounts']['<=12 months']
+        max_amount = banks[bank]['max_amounts']['<=12 months']
+    else:
+        min_amount = banks[bank]['min_amounts']['>12 months']
+        max_amount = banks[bank]['max_amounts']['>12 months']
+else:
+    min_amount = banks[bank]["min_amount"]
+    max_amount = banks[bank]["max_amount"]
+
 amount = st.number_input(f"Enter Deposit Amount ({currency})", min_value=min_amount, max_value=None if max_amount == float('inf') else int(max_amount), value=min_amount)
 
 # Calculate profit
 if st.button("Compute Profit"):
     if bank == "VR Bank" or bank == "ING Bank":
-        interest_rate = banks[bank]["rates"][term]
+        if isinstance(banks[bank]["rates"][term], dict):
+            rate_category = "<=500000"
+            interest_rate = banks[bank]["rates"][term][rate_category]
+        else:
+            interest_rate = banks[bank]["rates"][term]
     elif bank == "Sparkasse":
         rate_category = "<=250000" if amount <= 250000 else ">250000"
         interest_rate = banks[bank]["rates"][term][rate_category]
@@ -188,9 +214,10 @@ if selected_banks:
     for selected_bank in selected_banks:
         if "EUR" in banks[selected_bank]["currencies"]:  # Only consider EUR currency
             for term, rate in banks[selected_bank]["rates"].items():
-                if isinstance(rate, dict):  # For Sparkasse
-                    comparison_data.append([selected_bank, term, rate["<=250000"]])
-                    comparison_data.append([selected_bank, term, rate[">250000"]])
+                if isinstance(rate, dict):  # For Sparkasse and ING Bank with tiered rates
+                    comparison_data.append([selected_bank, term, rate["<=250000"] if "<=250000" in rate else rate["<=500000"]])
+                    if ">250000" in rate:
+                        comparison_data.append([selected_bank, term, rate[">250000"]])
                 elif selected_bank in ["Deutsche Bank", "Commerzbank"]:
                     # Ensure constant rates are plotted across common terms for straight lines
                     for common_term in ["3 months", "6 months", "12 months", "2 years", "3 years", "4 years"]:
@@ -201,7 +228,7 @@ if selected_banks:
     comparison_df = pd.DataFrame(comparison_data, columns=["Bank", "Term", "Interest Rate (%)"])
     
     # Filter terms to ensure they are valid time units
-    valid_terms = ["3 months", "6 months", "12 months", "2 years", "3 years", "4 years"]
+    valid_terms = ["3 months", "6 months", "12 months", "2 years", "3 years", "4 years", "5 years"]
     comparison_df = comparison_df[comparison_df["Term"].isin(valid_terms)]
     
     colors = {
@@ -219,4 +246,3 @@ if selected_banks:
     fig.update_traces(connectgaps=False)
 
     st.plotly_chart(fig)
-
