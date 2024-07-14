@@ -384,7 +384,7 @@ def editing_page():
                         final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), index=0 if plan.payment_last_percent > 0 else 1)
                     if final_payment_radio == "Yes":
                         with col1_2:
-                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_first_percent))
+                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent))
                             final_payment_amount = round(car_price_input * (final_payment_percent / 100), 2)  
                             st.write(f"👉 Final payment: {final_payment_amount:.2f} {profile.user_currency}")
                     else:
