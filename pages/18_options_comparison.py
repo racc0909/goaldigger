@@ -33,18 +33,6 @@ st.markdown("""
         transform: translateY(-5px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    .duration-bar, .return-bar {
-        height: 10px;
-        border-radius: 5px;
-        margin-top: 5px;
-        margin-left: 20px; /* 缩进与项目符号对齐 */
-    }
-    .duration-bar {
-        background-color: #4CAF50; /* 绿色 */
-    }
-    .return-bar {
-        background-color: #2196F3; /* 蓝色 */
-    }
     h2.custom-subheader {
         font-family: 'Montserrat', sans-serif;
         color: #478CCF;
