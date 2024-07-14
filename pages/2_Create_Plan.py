@@ -115,16 +115,17 @@ def planning_page():
                     final_payment_amount = 0.0
 
                 st.divider()
+                loan_amount_input = house_price - down_payment_amount - final_payment_amount if down_payment_amount > 0 else house_price - current_savings
                 # Loan rate
                 col1_1, col1_2 = st.columns([1, 3])
                 with col1_1:
-                    loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_house_loan == "No" else house_price - down_payment_amount - final_payment_amount)
+                    loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=loan_amount_input)
                 with col1_2:
                     loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=0.0 if take_house_loan == "No" else 5.7)
                 loan_term_years = st.number_input('Mortgage loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=0 if take_house_loan == "No" else 20)
                 loan_start_date = st.date_input("Mortgage start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_house_loan == "No" else due_date)  
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else house_price - current_savings - loan_amount
+                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else house_price - loan_amount
                 
             else:
                 down_payment_percent = 0.0
@@ -258,16 +259,17 @@ def planning_page():
 
                 st.divider()
 
+                loan_amount_input = car_price_input - down_payment_amount - final_payment_amount if down_payment_amount > 0 else car_price_input - current_savings
                 # Loan rate
                 col1_1, col1_2 = st.columns([1, 3])
                 with col1_1:
-                    loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_car_loan == "No" else car_price_input - down_payment_amount - final_payment_amount)
+                    loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=loan_amount_input)
                 with col1_2:
                     loan_interest_rate = st.slider('Car interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=0.0 if take_car_loan == "No" else 5.7)
                 loan_term_years = st.number_input('Car loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=0 if take_car_loan == "No" else 2)
                 loan_start_date = st.date_input("Car start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_car_loan == "No" else due_date)  
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else car_price_input - current_savings - loan_amount
+                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else car_price_input - loan_amount
                 
             else:
                 down_payment_percent = 0.0
@@ -423,16 +425,17 @@ def planning_page():
 
                 st.divider()
 
+                loan_amount_input = goal_total - down_payment_amount - final_payment_amount if down_payment_amount > 0 else goal_total - current_savings
                 # Loan option
                 col1_1, col1_2 = st.columns([1, 3])
                 with col1_1:
-                    loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - final_payment_amount)
+                    loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=loan_amount_input)
                 with col1_2:
                     loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=0.0 if loan_option == "No" else 5.7)
                 loan_term_years = st.number_input('Loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=0 if loan_option == "No" else 20)
                 loan_start_date = st.date_input("Loan start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if loan_option == "No" else due_date)  
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - current_savings - loan_amount
+                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - loan_amount
                 
             else:
                 down_payment_percent = 0.0

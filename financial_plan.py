@@ -11,7 +11,7 @@ from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan
 # Helper function to calculate monthly savings
 def calculate_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_months, inflation_rate):
     # Adjust the target amount for inflation
-    if target_amount != 0:
+    if target_amount > 0:
         future_value_target_amount = target_amount * ((1 + inflation_rate / 100) ** (savings_term_months / 12))
 
         monthly_interest_rate = current_savings_return / 100 / 12
