@@ -131,10 +131,10 @@ elif bank in ["VR Bank", "Sparkasse", "ING Bank"]:
     data = []
     for term, rate in banks[bank]["rates"].items():
         if isinstance(rate, dict):  # Handle tiered rates
-            data.append([term, f"{rate['<=500000']}%"])
+            data.append([term, f"{rate['<=500000']}%"] if bank != "Sparkasse" else [term, f"{rate['<=250000']}%", f"{rate['>250000']}%"])
         else:
             data.append([term, f"{rate}%"])
-    rates_df = pd.DataFrame(data, columns=["Term", "Interest Rate (%)"])
+    rates_df = pd.DataFrame(data, columns=["Term", "Interest Rate (%)"] if bank != "Sparkasse" else ["Term", "Interest Rate (<=250000 EUR) %", "Interest Rate (>250000 EUR) %"])
     st.table(rates_df)
 else:
     rates_df = pd.DataFrame(list(banks[bank]["rates"].items()), columns=["Currency", "Interest Rate (%)"])
