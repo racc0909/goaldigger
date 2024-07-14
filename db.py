@@ -282,8 +282,8 @@ def getTotalSavingsByYear(plan_id):
 def showChosenPages():
     show_pages(
         [
-            Page("pages/1_Personal_Information.py", "Personal Information", "📝"),
             Page("Goaldigger.py", "Overview", "🏠"),
+            Page("pages/1_Personal_Information.py", "Personal Information", "📝"),
             Page("pages/2_Create_Plan.py", "Create Plan", "✨"),
             Page("pages/5_Investment_Options_Comparison_Calculator.py", "Bank Term Deposit Profit Calculator", ":chart_with_upwards_trend:"),
             Page("pages/7_Risk_Tolerance_Assessment.py", "Risk Tolerance Assessment", ":moneybag:"),
