@@ -23,7 +23,12 @@ def calculate_monthly_saving(target_amount, current_savings, current_savings_ret
     if future_value_needed <= 0:
         return 0
     monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
-    return float(monthly_saving)
+    return float(monthly_saving), float(future_value_needed)
+
+def calculateMonthlyFinalPayment(final_payment_amount, loan_term_years):
+    loan_term_months = loan_term_years * 12
+    monthly_final_payment = final_payment_amount // loan_term_months if loan_term_years > 0 else 0
+    return monthly_final_payment
 
 # Custom color palette extracted from the provided image
 custom_colors = [
@@ -189,11 +194,12 @@ def calculate_pension_monthly_saving(target_amount, current_savings, current_sav
 
 
 # Define your function to create the graph
-def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol):
+def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol):
     plan = getPlan(plan_id)
     savings_term_years = savings_term_months // 12
     yearly_saving = monthly_saving * 12
     yearly_loan_payment = monthly_loan_payment * 12
+    yearly_final_payment = monthly_final_payment * 12
 
     # Generate data for plotting
     plan_year = plan.created_on.year
@@ -217,10 +223,11 @@ def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_p
         cumulative_savings[i] = cumulative_savings[i-1] + yearly_saving
         yearly_payments[i] = yearly_saving
         actual_savings[i] = actual_savings[i-1] + total_savings_by_year.get(plan_year + i, 0)
+    savings_before_loan = cumulative_savings[range(savings_term_years)][-1] + yearly_loan_payment
 
     for i in range(savings_term_years, total_years):
-        cumulative_savings[i] = down_payment_amount + (i - savings_term_years) * yearly_loan_payment
-        yearly_payments[i] = yearly_loan_payment
+        cumulative_savings[i] = savings_before_loan + (i - savings_term_years) * yearly_loan_payment
+        yearly_payments[i] = yearly_loan_payment + yearly_final_payment
         actual_savings[i] = actual_savings[i - 1]  # Savings stop accumulating after the savings term
 
     data = pd.DataFrame({
@@ -265,7 +272,7 @@ def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_p
     ))
 
     fig.update_layout(
-        title='Savings and Mortgage Plan',
+        title='Plan for Savings and Loan Payment',
         xaxis_title='Years',
         yaxis_title=f'Cumulative Savings ({currency_symbol})',
         legend_title='',

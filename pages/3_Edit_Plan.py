@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import time
 from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview, getSavings, getTotalSavings, deletePlan, showChosenPages
-from financial_plan import generate_data_and_plot
-from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
+from financial_plan import generate_data_and_plot, calculateMonthlyFinalPayment
+from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_pension_monthly_saving
 import base64
 
 showChosenPages()
@@ -136,12 +136,13 @@ def editing_page():
                     # Loan rate
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_house_loan == "No" else house_price - down_payment_amount - current_savings)
+                        loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_house_loan == "No" else house_price - down_payment_amount - final_payment_amount)
                     with col1_2:
                         loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest))
                     loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
                     loan_start_date = st.date_input("Mortgage start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_house_loan == "No" else plan.loan_startdate)  
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
+                    goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else house_price - current_savings - loan_amount
                 else:
                     down_payment_percent = 0.0
                     down_payment_amount = 0.0
@@ -152,11 +153,14 @@ def editing_page():
                     loan_term_years = 0
                     loan_start_date = current_date
                     monthly_loan_payment = 0.0
+                    goal_target = house_price - current_savings
 
                 # Calculate monthly saving
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
-                monthly_saving = calculate_monthly_saving(house_price * (down_payment_percent / 100), current_savings, current_savings_return, savings_term_months, inflation_rate)   
+                monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)   
                 rest_saving = plan.goal_target - total_saving
+                monthly_final_payment = calculateMonthlyFinalPayment(final_payment_amount, loan_term_years)
+                combined_monthly_payment = monthly_loan_payment + monthly_final_payment
 
                 st.divider()
             
@@ -166,7 +170,7 @@ def editing_page():
                     if st.button("💾 Save changes"):  
                         # Add plan to database
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                    house_price, down_payment_amount, monthly_saving, 
+                                    house_price, goal_target, monthly_saving, 
                                     current_savings, current_savings_return, savings_term_months,
                                     down_payment_percent, down_payment_amount, final_payment_percent, final_payment_amount, 
                                     loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
@@ -187,19 +191,23 @@ def editing_page():
                 
                 st.divider()
             
-                st.write(f"**Plan Name:** {goal_name}")
-                st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
-                st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Savings Term:** {savings_term_months} months")
+                st.write(f"### Financial Goal Summary")
+
+                st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')}", unsafe_allow_html=True)
+                st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
                 if take_house_loan == "Yes":
-                    st.write(f"**Monthly Mortgage Payment:** <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                    st.write(f"**Total Mortgage Payment:** {loan_amount:,.2f} {currency_symbol}")
-                
+                    st.write(f"### Mortgage Loan Details")
+                    st.write(f"**Loan Start Date**: {loan_start_date.strftime('%d.%m.%Y')}")
+                    st.write(f"**Monthly Loan Payment**: <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    if final_payment_percent > 0:
+                        st.write(f"**Additional Savings Needed for Final Payment**: {monthly_final_payment:,.2f} {currency_symbol}")
+                        st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+
                 # Call the function to generate data and plot
-                generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
 
                 st.divider()
             
@@ -385,12 +393,14 @@ def editing_page():
                     # Loan rate
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_car_loan == "No" else car_price_input - down_payment_amount - current_savings)
+                        loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_car_loan == "No" else car_price_input - down_payment_amount - final_payment_amount)
                     with col1_2:
-                        loan_interest_rate = st.slider('Car interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest))
+                        loan_interest_rate = st.slider('Car loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest))
                     loan_term_years = st.number_input('Car loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
-                    loan_start_date = st.date_input("Car start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value=current_date if take_car_loan == "No" else plan.loan_startdate)  
+                    loan_start_date = st.date_input("Car loan start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value=current_date if take_car_loan == "No" else plan.loan_startdate)  
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
+                    goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else car_price_input - current_savings - loan_amount
+                
                 else:
                     down_payment_percent = 0.0
                     down_payment_amount = 0.0
@@ -401,10 +411,13 @@ def editing_page():
                     loan_term_years = 0
                     loan_start_date = current_date
                     monthly_loan_payment = 0.0
+                    goal_target = car_price_input - current_savings
 
                 # Calculate monthly saving
-                monthly_saving = calculate_car_savings(car_price_input, down_payment_percent, current_age, target_age, current_savings, current_savings_return, inflation_rate)
+                monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
                 rest_saving = plan.goal_target - total_saving
+                monthly_final_payment = calculateMonthlyFinalPayment(final_payment_amount, loan_term_years)
+                combined_monthly_payment = monthly_loan_payment + monthly_final_payment
 
                 st.divider()
             
@@ -413,7 +426,7 @@ def editing_page():
                     if st.button("💾 Save changes"):
                         # Save plan to DB
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                    car_price_input, down_payment_amount, monthly_saving, 
+                                    car_price_input, goal_target, monthly_saving, 
                                     current_savings, current_savings_return, savings_term_months,
                                     down_payment_percent, down_payment_amount, final_payment_percent, final_payment_amount, 
                                     loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
@@ -434,17 +447,34 @@ def editing_page():
                         st.experimental_rerun()
                    
                 st.divider()
-             
-                st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
-                st.write(f"To afford your dream car, you'll need to save: {monthly_saving:.2f} {currency_symbol} each month")
-                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Savings Term:** {savings_term_months} months")
+                
+                st.write(f"### Financial Goal Summary")
+
+                st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')}", unsafe_allow_html=True)
+                st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+
                 if take_car_loan == "Yes":
-                    st.write(f"**Monthly Car Loan Payment:** <span style='color: blue;'>{currency_symbol}{monthly_loan_payment:,.2f}</span>", unsafe_allow_html=True)
-                    st.write(f"**Total Car Loan Payment:** {currency_symbol}{loan_amount:,.2f}")
+                    st.write(f"### Car Loan Details")
+                    st.write(f"**Loan Start Date**: {loan_start_date.strftime('%d.%m.%Y')}")
+                    st.write(f"**Monthly Loan Payment**: <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    if final_payment_percent > 0:
+                        st.write(f"**Additional Savings Needed for Final Payment**: {monthly_final_payment:,.2f} {currency_symbol}")
+                        st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+
+             
+                # st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
+                # st.write(f"To afford your dream car, you'll need to save: {monthly_saving:.2f} {currency_symbol} each month")
+                # st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Savings Term:** {savings_term_months} months")
+                # if take_car_loan == "Yes":
+                #     st.write(f"**Monthly Car Loan Payment:** <span style='color: blue;'>{currency_symbol}{monthly_loan_payment:,.2f}</span>", unsafe_allow_html=True)
+                #     st.write(f"**Total Car Loan Payment:** {currency_symbol}{loan_amount:,.2f}")
+                
                 # Call the function to generate data and plot
-                generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
 
             # --- RETIREMENT SAVINGS PLAN ----
             if page == "Retirement Savings Plan":
@@ -476,6 +506,8 @@ def editing_page():
 
                 monthly_saving = calculate_pension_monthly_saving(retirement_amount, current_savings, current_savings_return, savings_term_months)
                 rest_saving = plan.goal_target - total_saving
+                monthly_final_payment = 0
+                combined_monthly_payment = 0
 
                 st.divider()
             
@@ -506,16 +538,23 @@ def editing_page():
                         st.experimental_rerun()   
 
                 st.divider()
-            
-                st.write(f"**Plan Name:** {goal_name}")
-                st.write(f"**Target Amount:** {retirement_amount:,.2f} {currency_symbol}")
-                st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Savings Term:** {savings_term_years} years")
+
+                st.write(f"### Financial Goal Summary")
+
+                st.write(f"**Saving Target**: <span style='color: blue;'>{retirement_amount:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')}", unsafe_allow_html=True)
+                st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+
+                # st.write(f"**Plan Name:** {goal_name}")
+                # st.write(f"**Target Amount:** {retirement_amount:,.2f} {currency_symbol}")
+                # st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Savings Term:** {savings_term_years} years")
 
                 # Call the function to generate data and plot
-                generate_data_and_plot(plan_id, current_savings, savings_term_months, retirement_amount, 0, monthly_saving, 0, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, retirement_amount, 0, monthly_saving, 0, 0, currency_symbol)
 
             # --- CUSTOMIZED FINANCIAL PLAN ---
             if page == "Customized Financial Plan":
@@ -529,8 +568,8 @@ def editing_page():
                 # Inputs for custom financial plan
                 goal_name = st.text_input("Enter the name of your plan:", value = plan.goal_name)
                 goal_total = st.number_input(f"Enter the target amount ({currency_symbol}):", min_value=0.0, format="%.2f", value=float(plan.goal_total))
-                due_date = st.date_input("Enter the date by which you want to achieve this plan:", format="DD.MM.YYYY", value=plan.goal_date)
-                target_age = calculateGoalAge(profile.user_birthday, due_date)
+                target_age = st.number_input("Enter the age by which you want to achieve this goal:", min_value=current_age + 1, max_value=100, step=1, key='target_age', value=plan.goal_age)
+                due_date = calculateGoalDate(profile.user_birthday, target_age)
                 
                 # Current saving
                 col1_1, col1_2 = st.columns([1, 3])
@@ -589,30 +628,30 @@ def editing_page():
                     # Loan option
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - current_savings)
+                        loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - final_payment_amount)
                     with col1_2:
                         loan_term_years = st.number_input('Loan term (years):', min_value=0, max_value=30, step=1, value=plan.loan_duration)
                     loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value = float(plan.loan_interest))
                     loan_start_date = st.date_input("Loan start date:", value=plan.loan_startdate, format="DD.MM.YYYY")
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                    
+                    goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else car_price_input - current_savings - loan_amount
+                
                 else:
                     down_payment_percent = 0.0
                     down_payment_amount = 0.0
                     final_payment_percent = 0.0
                     final_payment_amount = 0.0
                     loan_amount = 0.0
-                    loan_term_years = 0
                     loan_interest_rate = 0.0
+                    loan_term_years = 0
                     loan_start_date = current_date
                     monthly_loan_payment = 0.0
+                    goal_target = car_price_input - current_savings
                     
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
-                if down_payment_amount > 0:
-                    goal_target = down_payment_amount - current_savings
-                else:
-                    goal_target = goal_total - current_savings
-                monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
+                monthly_final_payment = calculateMonthlyFinalPayment(final_payment_amount, loan_term_years)
+                combined_monthly_payment = monthly_loan_payment + monthly_final_payment
+                monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
 
                 st.divider()
             
@@ -622,7 +661,7 @@ def editing_page():
                     if st.button("💾 Save changes"):  
                         # Save plan to DB
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                    goal_total, down_payment_amount, monthly_saving, 
+                                    goal_total, goal_target, monthly_saving, 
                                     current_savings, current_savings_return, savings_term_months,
                                     down_payment_percent, down_payment_amount, final_payment_percent, final_payment_amount, 
                                     loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
@@ -644,18 +683,34 @@ def editing_page():
 
                 st.divider()
             
-                st.write(f"**Plan Name:** {goal_name}")
-                st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
-                st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Savings Term:** {savings_term_months} months")
+                st.write(f"### Financial Goal Summary")
+
+                st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')}", unsafe_allow_html=True)
+                st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+
                 if loan_option == "Yes":
-                    st.write(f"**Monthly Loan Payment:** {monthly_loan_payment:,.2f} {currency_symbol}")
-                    st.write(f"**Total Loan Payment:** {loan_amount:,.2f} {currency_symbol}")
+                    st.write(f"### Loan Details")
+                    st.write(f"**Loan Start Date**: {loan_start_date.strftime('%d.%m.%Y')}")
+                    st.write(f"**Monthly Loan Payment**: <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    if final_payment_percent > 0:
+                        st.write(f"**Additional Savings Needed for Final Payment**: {monthly_final_payment:,.2f} {currency_symbol}")
+                        st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+
+
+                # st.write(f"**Plan Name:** {goal_name}")
+                # st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
+                # st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                # st.write(f"**Savings Term:** {savings_term_months} months")
+                # if loan_option == "Yes":
+                #     st.write(f"**Monthly Loan Payment:** {monthly_loan_payment:,.2f} {currency_symbol}")
+                #     st.write(f"**Total Loan Payment:** {loan_amount:,.2f} {currency_symbol}")
 
                 # Call the function to generate data and plot
-                generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
         
         else: 
             st.error("No plan selected for editing.")
