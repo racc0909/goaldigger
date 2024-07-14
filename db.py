@@ -1,5 +1,5 @@
 import streamlit as st
-from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey, Numeric
+from sqlalchemy import create_engine, extract, func, Column, Integer, String, Date, ForeignKey, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta, date
@@ -178,6 +178,7 @@ def createPlan(user_id, goal_type, goal_name, goal_age, goal_date,
     # Add plan to to the SQL table
     plan = Plan(
                 user_id=user_id, 
+                created_on = datetime.now(),
                 goal_type=goal_type, 
                 goal_name=goal_name, 
                 goal_age=goal_age, 
@@ -253,9 +254,26 @@ def createSaving(user_id, plan_id, saving_date, saving_amount):
     session.commit()
     return True
 
+def getSavings(user_id, plan_id):
+    return session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
+
 def getTotalSavings(user_id, plan_id):
     total_savings = session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
     return sum([saving.saving_amount for saving in total_savings])
 
-def getSavings(user_id, plan_id):
-    return session.query(Saving).filter_by(user_id=user_id, plan_id=plan_id).all()
+def getTotalSavingsByYear(plan_id):
+    # Query the total savings by year
+    total_savings_by_year = (
+        session.query(extract('year', Saving.saving_date).label('year'), 
+                      func.sum(Saving.saving_amount).label('total_saving'))
+        .filter(Saving.plan_id == plan_id)
+        .group_by(extract('year', Saving.saving_date))
+        .order_by('year')
+        .all()
+    )
+
+    # Convert the result to a dictionary
+    savings_by_year = {int(row.year): float(row.total_saving) for row in total_savings_by_year}
+
+    session.close()
+    return savings_by_year

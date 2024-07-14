@@ -167,10 +167,10 @@ def planning_page():
 
             take_car_loan = st.radio("Do you want to take a car loan?", ("Yes", "No"), index=1)
             if take_car_loan == "Yes":
-                loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_car_loan == "No" else car_price_input - down_payment_amount - current_savings)
-                loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=0.0 if take_car_loan == "No" else 5.7)
-                loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=0 if take_car_loan == "No" else 20)
-                loan_start_date = st.date_input("Mortgage start date:", min_value=date.today(), key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_car_loan == "No" else current_date)  
+                loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_car_loan == "No" else car_price_input - down_payment_amount - current_savings)
+                loan_interest_rate = st.slider('Car interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=0.0 if take_car_loan == "No" else 5.7)
+                loan_term_years = st.number_input('Car loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=0 if take_car_loan == "No" else 2)
+                loan_start_date = st.date_input("Car start date:", min_value=date.today(), key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_car_loan == "No" else current_date)  
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
             else:
                 loan_amount = 0.0

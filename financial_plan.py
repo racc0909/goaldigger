@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 from datetime import datetime, timedelta, date
 import matplotlib.pyplot as plt
-from db import getUserPlans, getUserInfo
+from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan
 
 # Helper function to calculate monthly savings
 def calculate_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_months, inflation_rate):
@@ -189,31 +189,46 @@ def calculate_pension_monthly_saving(target_amount, current_savings, current_sav
 
 
 # Define your function to create the graph
-def generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol):
+def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol):
+    plan = getPlan(plan_id)
     savings_term_years = savings_term_months // 12
     yearly_saving = monthly_saving * 12
     yearly_loan_payment = monthly_loan_payment * 12
 
     # Generate data for plotting
-    years = np.arange(savings_term_years + loan_term_years)
+    plan_year = plan.created_on.year
+    years = plan_year + np.arange(savings_term_years + loan_term_years)
     cumulative_savings = np.zeros_like(years, dtype=float)
     yearly_payments = np.zeros_like(years, dtype=float)
+    actual_savings = np.zeros_like(years, dtype=float)
 
-    for i in range(savings_term_years):
-        cumulative_savings[i] = current_savings + i * yearly_saving
+    # Get actual savings data by year
+    total_savings_by_year = getTotalSavingsByYear(plan_id)
+
+    # Initialize cumulative savings and actual savings for the first year
+    yearly_payments[0] = yearly_saving
+    cumulative_savings[0] = yearly_payments[0]
+    actual_savings[0] = current_savings + total_savings_by_year.get(plan_year, 0)
+
+    # Calculate cumulative savings and actual savings for subsequent years
+    for i in range(1, savings_term_years):
+        cumulative_savings[i] = cumulative_savings[i-1] + yearly_saving
         yearly_payments[i] = yearly_saving
+        actual_savings[i] = actual_savings[i-1] + total_savings_by_year.get(plan_year + i, 0)
 
     for i in range(savings_term_years, len(years)):
-        cumulative_savings[i] = down_payment_amount + (i - savings_term_years) * yearly_loan_payment
+        cumulative_savings[i] = down_payment_amount + (i - 1) * yearly_loan_payment
         yearly_payments[i] = yearly_loan_payment
+        actual_savings[i] = actual_savings[savings_term_years - 1]  # Savings stop accumulating after the savings term
 
     data = pd.DataFrame({
         'Year': years,
         'Cumulative Savings': cumulative_savings,
         'Yearly Payments': yearly_payments,
-        'Yearly Savings': np.where(years < savings_term_years, yearly_saving, np.nan),
-        'Monthly Savings': np.where(years < savings_term_years, monthly_saving, np.nan),
-        'Monthly Loan Payments': np.where(years >= savings_term_years, monthly_loan_payment, np.nan)
+        'Yearly Savings': yearly_saving,
+        'Monthly Savings': monthly_saving,
+        'Monthly Loan Payments': monthly_loan_payment,
+        'Actual Savings': actual_savings
     })
 
     # Create the cumulative savings line plot
@@ -236,6 +251,17 @@ def generate_data_and_plot(current_savings, savings_term_months, down_payment_am
         hovertemplate='Year: %{x}<br>Yearly Payments: %{y:,.2f} ' + currency_symbol
     ))
 
+    # Create the actual savings line plot
+    fig.add_trace(go.Scatter(
+        x=data['Year'],
+        y=data['Actual Savings'],
+        mode='lines+markers',
+        name='Actual Savings',
+        marker=dict(size=5),
+        line=dict(dash='dash'),
+        hovertemplate='Year: %{x}<br>Actual Savings: %{y:,.2f} ' + currency_symbol
+    ))
+
     fig.update_layout(
         title='Savings and Mortgage Plan',
         xaxis_title='Years',
@@ -247,6 +273,7 @@ def generate_data_and_plot(current_savings, savings_term_months, down_payment_am
     )
 
     st.plotly_chart(fig)
+    #st.write(data)
 
 # Function to filter plans based on the selected date range
 def filter_plans_by_date(plans, selected_month):

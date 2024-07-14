@@ -108,7 +108,7 @@ def editing_page():
                 if take_house_loan == "Yes":
                     loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_house_loan == "No" else house_price - down_payment_amount - current_savings)
                     loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value= float(plan.loan_interest))
-                    loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value= plan.loan_duration)
+                    loan_term_years = st.number_input('Mortgage loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
                     loan_start_date = st.date_input("Mortgage start date:", key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if take_house_loan == "No" else plan.loan_startdate)  
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                 else:
@@ -119,7 +119,7 @@ def editing_page():
                     monthly_loan_payment = 0.0
 
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
                 with col1_1:
                     if st.button('Save changes'):  
                         # Add plan to database
@@ -151,7 +151,7 @@ def editing_page():
                     st.write(f"**Total Mortgage Payment:** {loan_amount:,.2f} {currency_symbol}")
                 
                 # Call the function to generate data and plot
-                generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
 
                 # Mortgage ads
                 st.markdown(
@@ -300,7 +300,7 @@ def editing_page():
                 if take_car_loan == "Yes":
                     loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if take_car_loan == "No" else car_price_input - down_payment_amount - current_savings)
                     loan_interest_rate = st.slider('Car loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest))
-                    loan_term_years = st.number_input('Car loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
+                    loan_term_years = st.number_input('Car loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
                     loan_start_date = st.date_input("Car loan start date:", key='loan_start_date', format="DD.MM.YYYY", value=date.today() if take_car_loan == "No" else plan.loan_startdate)  
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                 else:
@@ -310,7 +310,7 @@ def editing_page():
                     loan_start_date = date.today()
                     monthly_loan_payment = 0.0
 
-                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
                 with col1_1:
                     if st.button('Save changes'):
                         # Save plan to DB
@@ -336,11 +336,13 @@ def editing_page():
                 st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Savings Term:** {savings_term_months} months")
+                from db import getTotalSavingsByYear
+                st.write(f"**Total saving by year:** {getTotalSavingsByYear(plan_id).get(2025, 0)} €")
                 if take_car_loan == "Yes":
                     st.write(f"**Monthly Car Loan Payment:** <span style='color: blue;'>{currency_symbol}{monthly_loan_payment:,.2f}</span>", unsafe_allow_html=True)
                     st.write(f"**Total Car Loan Payment:** {currency_symbol}{loan_amount:,.2f}")
                 # Call the function to generate data and plot
-                generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
 
 
             # --- RETIREMENT SAVINGS PLAN ----
@@ -368,7 +370,7 @@ def editing_page():
                 rest_saving = plan.goal_target - total_saving
 
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
                 with col1_1:
                     if st.button('Save changes'):  
                         # Save plan to DB
@@ -397,7 +399,7 @@ def editing_page():
                 st.write(f"**Savings Term:** {savings_term_years} years")
 
                 # Call the function to generate data and plot
-                generate_data_and_plot(current_savings, savings_term_months, retirement_amount, 0, monthly_saving, 0, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, retirement_amount, 0, monthly_saving, 0, currency_symbol)
 
             # --- CUSTOMIZED FINANCIAL PLAN ---
             if page == "Customized Financial Plan":
@@ -431,7 +433,7 @@ def editing_page():
                 loan_option = st.radio("Do you want to take a loan to cover this goal?", ("No", "Yes"), index = loan_index)
                 if loan_option == "Yes":
                     loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - current_savings)
-                    loan_term_years = st.number_input('Loan term (years):', min_value=1, max_value=30, step=1, value = plan.loan_duration)
+                    loan_term_years = st.number_input('Loan term (years):', min_value=0, max_value=30, step=1, value=plan.loan_duration)
                     loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value = float(plan.loan_interest))
                     loan_start_date = st.date_input("Loan start date:", value=plan.loan_startdate, format="DD.MM.YYYY")
                 else: 
@@ -449,7 +451,7 @@ def editing_page():
                 monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
 
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3 = st.columns([1, 1, 1])
+                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
                 with col1_1:
                     if st.button('Save changes'):  
                         # Save plan to DB
@@ -481,7 +483,7 @@ def editing_page():
                     st.write(f"**Total Loan Payment:** {loan_amount:,.2f} {currency_symbol}")
 
                 # Call the function to generate data and plot
-                generate_data_and_plot(current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
+                generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, currency_symbol)
         
         else: 
             st.error("No plan selected for editing.")
