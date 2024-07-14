@@ -1,10 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from db import showChosenPages, logout
-
-showChosenPages()
-logout()
 
 def load_css(file_path):
     with open(file_path) as f:
@@ -35,21 +31,24 @@ banks = {
             "<=12 months": 1000000,
             ">12 months": 500000
         },
-        "link": "https://www.ing.de/sparen-anlegen/sparen/festgeld/"
+        "link": "https://www.ing.de/sparen-anlegen/sparen/festgeld/",
+        "logo": "img/ing_bank.jpg"
     },
     "Commerzbank": {
         "currencies": ["EUR"],
         "rates": {"EUR": 2.80},
         "min_amount": 1000,
         "max_amount": 100000,
-        "link": "https://www.commerzbank.de/sparen-anlegen/produkte/festgeld/"
+        "link": "https://www.commerzbank.de/sparen-anlegen/produkte/festgeld/",
+        "logo": "img/commerzbank.jpg"
     },
     "Deutsche Bank": {
         "currencies": ["EUR"],
         "rates": {"EUR": 3.00},
         "min_amount": 2500,
         "max_amount": 100000,
-        "link": "https://www.deutsche-bank.de/pk/sparen-und-anlegen/sparen/festzinssparen/festzinssparen-sea.html?kid=e.0400.03.80&gad_source=1&gclid=CjwKCAjw4ri0BhAvEiwA8oo6F_9bzXqmx1qT1LB6Qvc_OgI6W8wQ-7FapYnB0pOLkcA-Mb1OgAfyfxoCAa0QAvD_BwE"
+        "link": "https://www.deutsche-bank.de/pk/sparen-und-anlegen/sparen/festzinssparen/festzinssparen-sea.html?kid=e.0400.03.80&gad_source=1&gclid=CjwKCAjw4ri0BhAvEiwA8oo6F_9bzXqmx1qT1LB6Qvc_OgI6W8wQ-7FapYnB0pOLkcA-Mb1OgAfyfxoCAa0QAvD_BwE",
+        "logo": "img/deutsche_bank.jpg"
     },
     "VR Bank": {
         "currencies": ["EUR"],
@@ -62,7 +61,8 @@ banks = {
         },
         "min_amount": 100,
         "max_amount": float('inf'),
-        "link": "https://www.vrbanking.de/landingpage/lp-festgeld.landingpage.html?gad_source=1&gclid=CjwKCAjw4ri0BhAvEiwA8oo6F4zmhTdwZTwiVmYkXUQizk92MAHFdE7nQWpR08zEdsqk3y3kS-NxfRoCq3MQAvD_BwE"
+        "link": "https://www.vrbanking.de/landingpage/lp-festgeld.landingpage.html?gad_source=1&gclid=CjwKCAjw4ri0BhAvEiwA8oo6F4zmhTdwZTwiVmYkXUQizk92MAHFdE7nQWpR08zEdsqk3y3kS-NxfRoCq3MQAvD_BwE",
+        "logo": "img/volksbank.png"
     },
     "Sparkasse": {
         "currencies": ["EUR"],
@@ -76,14 +76,12 @@ banks = {
         },
         "min_amount": 1,
         "max_amount": float('inf'),
-        "link": "https://www.taunussparkasse.de/de/home/privatkunden/sparen-und-anlegen/festgeld.html?utm_campaign=Festgeld&utm_source=google&utm_medium=cpc&utm_campaign=Festgeld&utm_source=google&utm_medium=cpc&gad_source=1&pgs=direct&gclid=CjwKCAjw4ri0BhAvEiwA8oo6FxOoKSZE_e7gWYzShJEW8z_J_Jsot_uGGKU7I3cCnyQ5y4NOnVP6HhoCrxAQAvD_BwE&szsid=668e7ef0b74009548acd482b"
+        "link": "https://www.taunussparkasse.de/de/home/privatkunden/sparen-und-anlegen/festgeld.html?utm_campaign=Festgeld&utm_source=google&utm_medium=cpc&utm_campaign=Festgeld&utm_source=google&utm_medium=cpc&gad_source=1&pgs=direct&gclid=CjwKCAjw4ri0BhAvEiwA8oo6FxOoKSZE_e7gWYzShJEW8z_J_Jsot_uGGKU7I3cCnyQ5y4NOnVP6HhoCrxAQAvD_BwE&szsid=668e7ef0b74009548acd482b",
+        "logo": "img/sparkasse.png"
     }
 }
 
 # User interface
-# 定义图标路径 Define the icon path
-ICON_PATH_0_2 = "img/icon_0_2.png"
-
 # 使用 base64 编码嵌入图像 Embed images using base64 encoding
 import base64
 
@@ -92,14 +90,11 @@ def get_base64_image(image_path):
         encoded_image = base64.b64encode(image_file.read()).decode()
     return encoded_image
 
-encoded_image = get_base64_image(ICON_PATH_0_2)
-
 # 使用 HTML 和 CSS 在标题右侧添加图标 Add the icon to the right side of the title using HTML and CSS
 st.markdown(
     f"""
     <div style="display: flex; align-items: center;">
         <h1>Bank Term Deposit Profit Calculator</h1>
-        <img src="data:image/png;base64,{encoded_image}" width="40" style="margin-left: 10px;">
     </div>
     """,
     unsafe_allow_html=True
@@ -109,6 +104,25 @@ st.divider()
 
 # Select bank
 bank = st.selectbox("Choose Your Bank", list(banks.keys()))
+
+# Load and display the selected bank's logo
+logo_path = banks[bank]["logo"]
+encoded_logo = get_base64_image(logo_path)
+
+st.markdown(
+    f"""
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="flex: 1;">
+            <label style="font-weight: bold;">Choose Your Bank</label>
+            {st.selectbox("", list(banks.keys()), index=list(banks.keys()).index(bank))}
+        </div>
+        <div style="flex: 0;">
+            <img src="data:image/png;base64,{encoded_logo}" width="100">
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Display deposit conditions
 if bank == "ING Bank":
