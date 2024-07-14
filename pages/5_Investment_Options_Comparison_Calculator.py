@@ -49,7 +49,7 @@ banks = {
         "min_amount": 2500,
         "max_amount": 100000,
         "link": "https://www.deutsche-bank.de/pk/sparen-und-anlegen/sparen/festzinssparen/festzinssparen-sea.html?kid=e.0400.03.80&gad_source=1&gclid=CjwKCAjw4ri0BhAvEiwA8oo6F_9bzXqmx1qT1LB6Qvc_OgI6W8wQ-7FapYnB0pOLkcA-Mb1OgAfyfxoCAa0QAvD_BwE",
-        "logo": "img/deutsche_bank.jpg"
+        "logo": "img/deutsche_bank.png"
     },
     "VR Bank": {
         "currencies": ["EUR"],
