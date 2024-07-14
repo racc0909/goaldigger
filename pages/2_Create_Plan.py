@@ -91,7 +91,7 @@ def planning_page():
                 loan_amount = 0.0
                 loan_interest_rate = 0.0
                 loan_term_years = 0
-                loan_start_date = date.today()
+                loan_start_date = None
                 monthly_loan_payment = 0.0
 
               
@@ -178,7 +178,7 @@ def planning_page():
                 loan_amount = 0.0
                 loan_interest_rate = 0.0
                 loan_term_years = 0
-                loan_start_date = date.today()
+                loan_start_date = None
                 monthly_loan_payment = 0.0
 
             if st.button('Calculate Car Plan'):
@@ -267,10 +267,11 @@ def planning_page():
 
             # Option to take a loan
             loan_option = st.radio("Do you want to take a loan to cover this goal?", ("No", "Yes"))
-            loan_amount = 0
+            loan_amount = 0.0
             loan_term_years = 0
-            loan_interest_rate = 0
+            loan_interest_rate = 0.0
             loan_start_date = None
+            monthly_loan_payment = 0.0
             if loan_option == "Yes":
                 loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - current_savings)
                 loan_term_years = st.number_input('Loan term (years):', min_value=1, max_value=30, step=1)
@@ -278,12 +279,12 @@ def planning_page():
                 loan_start_date = st.date_input("Loan start date:", value=date.today(), format="DD.MM.YYYY")
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
 
-                savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
-                if down_payment_amount > 0:
-                    goal_target = down_payment_amount - current_savings
-                else:
-                    goal_target = goal_total - current_savings
-                monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
+            savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
+            if down_payment_amount > 0:
+                goal_target = down_payment_amount - current_savings
+            else:
+                goal_target = goal_total - current_savings
+            monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
 
 
             if st.button('Calculate Custom Plan'):

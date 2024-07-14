@@ -197,18 +197,20 @@ def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_p
 
     # Generate data for plotting
     plan_year = plan.created_on.year
-    years = plan_year + np.arange(savings_term_years + loan_term_years)
-    cumulative_savings = np.zeros_like(years, dtype=float)
-    yearly_payments = np.zeros_like(years, dtype=float)
-    actual_savings = np.zeros_like(years, dtype=float)
+    total_years = max(savings_term_years + loan_term_years, 1)
+    years = plan_year + np.arange(total_years)
+    cumulative_savings = np.zeros(total_years, dtype=float)
+    yearly_payments = np.zeros(total_years, dtype=float)
+    actual_savings = np.zeros(total_years, dtype=float)
 
     # Get actual savings data by year
     total_savings_by_year = getTotalSavingsByYear(plan_id)
 
     # Initialize cumulative savings and actual savings for the first year
-    yearly_payments[0] = yearly_saving
-    cumulative_savings[0] = yearly_payments[0]
-    actual_savings[0] = current_savings + total_savings_by_year.get(plan_year, 0)
+    if total_years > 0:
+        yearly_payments[0] = yearly_saving if savings_term_years > 0 else 0
+        cumulative_savings[0] = yearly_payments[0]
+        actual_savings[0] = current_savings + total_savings_by_year.get(plan_year, 0)
 
     # Calculate cumulative savings and actual savings for subsequent years
     for i in range(1, savings_term_years):
@@ -216,8 +218,8 @@ def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_p
         yearly_payments[i] = yearly_saving
         actual_savings[i] = actual_savings[i-1] + total_savings_by_year.get(plan_year + i, 0)
 
-    for i in range(savings_term_years, len(years)):
-        cumulative_savings[i] = down_payment_amount + (i - 1) * yearly_loan_payment
+    for i in range(savings_term_years, total_years):
+        cumulative_savings[i] = down_payment_amount + (i - savings_term_years) * yearly_loan_payment
         yearly_payments[i] = yearly_loan_payment
         actual_savings[i] = actual_savings[i - 1]  # Savings stop accumulating after the savings term
 
