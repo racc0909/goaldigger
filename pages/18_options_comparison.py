@@ -85,7 +85,7 @@ st.markdown(
 st.divider()
 st.markdown(
     f"""
-    <h2 class="custom-subheader">Discover and compare various investment options based on key factors like duration 🗓️, expected return 💰, and risk level 🔍.</h2>
+    <h2 class="custom-subheader">Discover and compare various investment options based on key factors like 🗓️ duration, 💰 expected return, and 🔍 risk level.</h2>
     """,
     unsafe_allow_html=True
 )
