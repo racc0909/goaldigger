@@ -2,9 +2,21 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 from db import showChosenPages
+import os
 
 showChosenPages()
 
+# 加载 CSS 文件
+def load_css(file_path):
+    try:
+        with open(file_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.error(f"CSS file not found: {file_path}")
+
+# 使用相对路径或绝对路径加载 CSS 文件
+css_file_path = os.path.join(os.getcwd(), "data/titlestyle.css")
+load_css(css_file_path)
 
 # 自定义CSS样式
 st.markdown("""
@@ -48,14 +60,6 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-
-def load_css(file_path):
-    with open(file_path) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-# 加载 CSS 文件
-css_file_path = "data/titlestyle.css"
-load_css(css_file_path)
 
 # 示例数据
 data = {
@@ -126,7 +130,7 @@ st.plotly_chart(fig, use_container_width=True)
 # 返回按钮
 if st.button("Back to Assessment"):
     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
-    
+
 st.divider()
 
 st.markdown(
@@ -149,4 +153,3 @@ st.markdown("""
 
 if st.button("I want to write some Feedback"):
     st.switch_page("pages/20_Share_Your_Feedback.py")
-
