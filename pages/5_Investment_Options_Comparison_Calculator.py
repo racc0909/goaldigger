@@ -116,7 +116,7 @@ with col2:
         st.markdown(
             f"""
             <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                <img src="data:image/png;base64,{encoded_logo}" style="max-width: 80%; height: auto;">
+                <img src="data:image/png;base64,{encoded_logo}" style="max-width: 70%; height: auto;">
             </div>
             """,
             unsafe_allow_html=True
