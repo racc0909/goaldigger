@@ -165,7 +165,7 @@ def calculate_car_savings(car_price, down_payment_percent, current_age, target_a
     savings_timeframe_months = savings_timeframe_years * 12
     monthly_savings_needed = calculate_monthly_saving(down_payment, current_savings, current_savings_return, savings_timeframe_months, inflation_rate)
 
-    return monthly_savings_needed
+    return float(monthly_savings_needed)
 
 # Calculate mortgage payment
 def calculate_loan_payment(loan_amount, annual_interest_rate, loan_term_years):
@@ -185,7 +185,7 @@ def calculate_pension_monthly_saving(target_amount, current_savings, current_sav
         if future_value_needed <= 0:
             return 0
         monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
-        return monthly_saving
+        return float(monthly_saving)
 
 
 # Define your function to create the graph
