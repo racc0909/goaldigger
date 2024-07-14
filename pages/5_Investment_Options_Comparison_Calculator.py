@@ -112,7 +112,14 @@ logo_path = banks[selected_bank]["logo"]
 encoded_logo = get_base64_image(logo_path)
 
 with col2:
-    st.image(f"data:image/png;base64,{encoded_logo}", width=100)
+    st.markdown(
+        f"""
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+            <img src="data:image/png;base64,{encoded_logo}" style="max-width: 100%; max-height: 100px;">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Display deposit conditions
 if selected_bank == "ING Bank":
