@@ -194,16 +194,16 @@ def main():
          return filtered_plans        
         
         # Filter loans based on the selected date
-        total_monthly_loans = 0
-        for plan in plans:
+         total_monthly_loans = 0
+         for plan in plans:
             if 'monthly_loan_payment' in plan:
                 loan_start_date = plan.loan_startdate.date() if isinstance(plan.loan_startdate, datetime) else plan.loan_startdate
                 loan_end_date = loan_start_date + timedelta(days=plan.loan_duration * 365)
                 if loan_start_date <= selected_month.date() <= loan_end_date:
                     total_monthly_loans += plan.loan_monthly
-        return total_monthly_loans
+         return total_monthly_loans
          
-        for plan in filtered_plans:
+         for plan in filtered_plans:
                total_monthly_savings = sum(plan.goal_target_monthly for plan in filtered_plans)
                total_monthly_loans = sum(plan.loan_monthly for plan in filtered_plans)
                total_amount = total_monthly_savings + total_monthly_loans
