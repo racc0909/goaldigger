@@ -336,8 +336,6 @@ def editing_page():
                 st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                 st.write(f"**Savings Term:** {savings_term_months} months")
-                from db import getTotalSavingsByYear
-                st.write(f"**Total saving by year:** {getTotalSavingsByYear(plan_id).get(2025, 0)} €")
                 if take_car_loan == "Yes":
                     st.write(f"**Monthly Car Loan Payment:** <span style='color: blue;'>{currency_symbol}{monthly_loan_payment:,.2f}</span>", unsafe_allow_html=True)
                     st.write(f"**Total Car Loan Payment:** {currency_symbol}{loan_amount:,.2f}")
