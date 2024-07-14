@@ -1,12 +1,7 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import numpy_financial as npf
-import plotly.graph_objs as go
-import plotly.express as px
-from datetime import datetime, timedelta, date
+from datetime import datetime, date
 import time
-import matplotlib.pyplot as plt
 from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview, getSavings, getTotalSavings, deletePlan, showChosenPages
 from financial_plan import generate_data_and_plot
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
