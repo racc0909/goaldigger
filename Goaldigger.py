@@ -15,7 +15,7 @@ showChosenPages()
 
 # Way one
 sidebar_logo = "img/Logo_Without_Text.png"
-st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img/Logo_Without_Text.png")
+st.logo(sidebar_logo, link="https://goaldigger.streamlit.app/", icon_image="img/Logo_Without_Text.png")
 
 def load_css(file_path):
     with open(file_path) as f:
