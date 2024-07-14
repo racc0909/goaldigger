@@ -193,7 +193,6 @@ def main():
                 filtered_plans.append(plan)
                 
         # Filter loans based on the selected date
-        total_monthly_loans = 0
         for plan in plans:
             if 'monthly_loan_payment' in plan:
                 loan_start_date = plan.loan_startdate.date() if isinstance(plan.loan_startdate, datetime) else plan.loan_startdate
