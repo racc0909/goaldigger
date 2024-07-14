@@ -404,4 +404,4 @@ def showChosenPages():
         ]
     )
 
-    hide_pages(["LowShort", "LowMedium", "LowLong", "LowShort", "MediumMedium", "MediumLong", "MediumShort", "HighMedium", "HighLong", "HighShort", "Edit Plan", "Add Saving"])
+    hide_pages(["Low Risk, Short Term Investments", "Low Risk, Medium Term Investments", "Low Risk, Long Term Investments", "Low Risk, Short Term Investments", "Medium Risk, Medium Term Investments", "Medium Risk, Long Term Investments", "Medium Risk, Short Term Investments", "High Risk, Medium Term Investments", "High Risk, Long Term Investments", "High Risk, Short Term Investments", "Edit Plan", "Add Saving"])
