@@ -33,7 +33,7 @@ banks = {
             ">12 months": 500000
         },
         "link": "https://www.ing.de/sparen-anlegen/sparen/festgeld/",
-        "logo": "img/ing_bank.jpg"
+        "logo": "img/ing_bank.png"
     },
     "Commerzbank": {
         "currencies": ["EUR"],
