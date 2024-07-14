@@ -119,9 +119,9 @@ def editing_page():
                     monthly_loan_payment = 0.0
 
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
+                col1_1, col1_2, col1_3, col1_4 = st.columns([2, 1, 1, 1])
                 with col1_1:
-                    if st.button('Save changes'):  
+                    if st.button("💾 Save changes"):  
                         # Add plan to database
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
                                     house_price, down_payment_amount, monthly_saving, 
@@ -129,15 +129,19 @@ def editing_page():
                                     down_payment_percent, down_payment_amount, payment_last_percent, payment_last, 
                                     loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
                         # Write result
-                        st.success("Plan updated successfully!")     
+                        st.success("Plan updated successfully!")  
                 with col1_2:
+                    if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}"):
+                        st.session_state.invest_plan_id = plan.plan_id
+                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+                with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
                         st.switch_page("pages/8_Add_Saving.py")
-                with col1_3:
+                with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.experimental_rerun()           
+                        st.experimental_rerun()   
                 
                 st.write(f"**Plan Name:** {goal_name}")
                 st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
@@ -310,9 +314,9 @@ def editing_page():
                     loan_start_date = date.today()
                     monthly_loan_payment = 0.0
 
-                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
+                col1_1, col1_2, col1_3, col1_4 = st.columns([2, 1, 1, 1])
                 with col1_1:
-                    if st.button('Save changes'):
+                    if st.button("💾 Save changes"):
                         # Save plan to DB
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
                                     car_price_input, down_payment_amount, monthly_saving, 
@@ -323,10 +327,14 @@ def editing_page():
                         # Write result
                         st.success("Plan updated successfully!")
                 with col1_2:
+                    if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}"):
+                        st.session_state.invest_plan_id = plan.plan_id
+                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+                with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
                         st.switch_page("pages/8_Add_Saving.py")
-                with col1_3:
+                with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
                         st.experimental_rerun()
@@ -368,9 +376,9 @@ def editing_page():
                 rest_saving = plan.goal_target - total_saving
 
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
+                col1_1, col1_2, col1_3, col1_4 = st.columns([2, 1, 1, 1])
                 with col1_1:
-                    if st.button('Save changes'):  
+                    if st.button("💾 Save changes"):  
                         # Save plan to DB
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
                                     retirement_amount, retirement_amount, monthly_saving, 
@@ -381,13 +389,17 @@ def editing_page():
                         # Write result
                         st.success("Plan updated successfully!")
                 with col1_2:
+                    if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}"):
+                        st.session_state.invest_plan_id = plan.plan_id
+                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+                with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
                         st.switch_page("pages/8_Add_Saving.py")
-                with col1_3:
+                with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.experimental_rerun()     
+                        st.experimental_rerun()   
 
                 st.write(f"**Plan Name:** {goal_name}")
                 st.write(f"**Target Amount:** {retirement_amount:,.2f} {currency_symbol}")
@@ -449,9 +461,9 @@ def editing_page():
                 monthly_saving = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
 
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3 = st.columns([3, 1, 1])
+                col1_1, col1_2, col1_3, col1_4 = st.columns([2, 1, 1, 1])
                 with col1_1:
-                    if st.button('Save changes'):  
+                    if st.button("💾 Save changes"):  
                         # Save plan to DB
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
                                     goal_total, down_payment_amount, monthly_saving, 
@@ -462,13 +474,17 @@ def editing_page():
                         # Write result
                         st.success("Plan updated successfully!")
                 with col1_2:
+                    if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}"):
+                        st.session_state.invest_plan_id = plan.plan_id
+                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+                with col1_3:
                     if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
                         st.session_state.add_saving_plan_id = plan.plan_id
                         st.switch_page("pages/8_Add_Saving.py")
-                with col1_3:
+                with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.experimental_rerun()     
+                        st.experimental_rerun()    
 
                 st.write(f"**Plan Name:** {goal_name}")
                 st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")

@@ -275,11 +275,11 @@ def main():
                      st.session_state.add_saving_plan_id = plan.plan_id
                      st.switch_page("pages/8_Add_Saving.py")
                with col1_2:
-                  if st.button(f"Invest", key=f"invest_{plan.plan_id}_{i}"):
+                  if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}_{i}"):
                      st.session_state.invest_plan_id = plan.plan_id
                      st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
                with col1_3:
-                  if st.button(f"✏️ Edit", key=f"edit_{plan.plan_id}_{i}"):
+                  if st.button(f"✏️ View", key=f"edit_{plan.plan_id}_{i}"):
                      st.session_state.edit_plan_id = plan.plan_id
                      st.switch_page("pages/3_Edit_Plan.py")
                with col1_4:
@@ -315,7 +315,7 @@ def main():
                      st.session_state.add_saving_plan_id = plan.plan_id
                      st.switch_page("pages/8_Add_Saving.py")
                with col1_2:
-                  if st.button(f"Invest", key=f"invest_{plan.plan_id}_{i}"):
+                  if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}_{i}"):
                      st.session_state.invest_plan_id = plan.plan_id
                      st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
                with col1_3:
