@@ -91,7 +91,7 @@ def planning_page():
                 loan_amount = 0.0
                 loan_interest_rate = 0.0
                 loan_term_years = 0
-                loan_start_date = None
+                loan_start_date = current_date
                 monthly_loan_payment = 0.0
 
               
@@ -178,7 +178,7 @@ def planning_page():
                 loan_amount = 0.0
                 loan_interest_rate = 0.0
                 loan_term_years = 0
-                loan_start_date = None
+                loan_start_date = current_date
                 monthly_loan_payment = 0.0
 
             if st.button('Calculate Car Plan'):
@@ -270,7 +270,7 @@ def planning_page():
             loan_amount = 0.0
             loan_term_years = 0
             loan_interest_rate = 0.0
-            loan_start_date = None
+            loan_start_date = current_date
             monthly_loan_payment = 0.0
             if loan_option == "Yes":
                 loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=0.0 if goal_total == 0 else goal_total - down_payment_amount - current_savings)

@@ -73,7 +73,7 @@ def display_piechart(user_id, savings_distribution):
 
     fig_pie.update_layout(
     annotations=[dict(
-        text=f'{profile.user_currency}{sum(savings_distribution.values()):,.2f}', 
+        text=f'{sum(savings_distribution.values()):,.2f} {profile.user_currency}', 
         x=0.5, y=0.5, font_size=20, showarrow=False
     )],
     showlegend=False

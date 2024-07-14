@@ -452,7 +452,7 @@ def editing_page():
                     loan_amount = 0
                     loan_term_years = 0
                     loan_interest_rate = 0
-                    loan_start_date = None
+                    loan_start_date = current_date
                     
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
