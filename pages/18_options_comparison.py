@@ -146,5 +146,5 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-if st.button("I want to write some Feedback"):
+if st.button("Tell Us What You Think!"):
     st.switch_page("pages/20_Share_Your_Feedback.py")
