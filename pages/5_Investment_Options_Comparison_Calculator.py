@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from db import showChosenPages, logout
+
+showChosenPages()
+logout()
 
 def load_css(file_path):
     with open(file_path) as f:
