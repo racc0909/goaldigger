@@ -102,6 +102,7 @@ def login_page():
         if st.button("Sign Up"):
             # Function to add user to database
             if signup(username, password):
+                st.balloons()
                 st.success("User created successfully!")
                 st.session_state.signup_mode = False
                 # Automatically logging in
