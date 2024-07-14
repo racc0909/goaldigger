@@ -203,7 +203,7 @@ def planning_page():
                 car_price_input = st.number_input('Enter the total cost of the car:', min_value=0.0, format="%.2f", key='adjusted_car_price')
             
             # Calculate age and date
-            target_age = st.number_input('Enter the age you wish to buy the car:', value=30, min_value=current_age + 1, max_value=100, step=1, key='car_target_age')
+            target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, key='car_target_age')
             due_date = calculateGoalDate(profile.user_birthday, target_age)
             savings_term_months = (target_age - current_age) * 12
             
