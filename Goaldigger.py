@@ -181,7 +181,7 @@ def main():
              unsafe_allow_html=True
          )
          plan_order = st.multiselect("Drag to reorder plans", options=[plan.goal_name for plan in plans], default=[plan.goal_name for plan in plans])
-         plans = [plan for name in plan_order for plan in plans if plan.goal_name == name]
+         #plans = [plan for name in plan_order for plan in plans if plan.goal_name == name]
 
          # Date selection
          selected_date = st.date_input("Select month and year to view savings distribution", date.today(), min_value=date.today(), format="DD.MM.YYYY")
