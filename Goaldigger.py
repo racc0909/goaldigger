@@ -191,7 +191,7 @@ def main():
             due_date = plan.goal_date.date() if isinstance(plan.goal_date, datetime) else plan.goal_date
             if due_date >= selected_date:
                 filtered_plans.append(plan)
-        return filtered_plans        
+         return filtered_plans        
         
         # Filter loans based on the selected date
         total_monthly_loans = 0
