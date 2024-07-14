@@ -50,13 +50,7 @@ def editing_page():
             unsafe_allow_html=True
         )
         st.divider()
-        # 使用st.expander隐藏特定部分
-        with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
-            # 获取用户输入的存款时间和金额
-            saving_time = st.slider("Select your saving time (in months):", min_value=1, max_value=360, value=saving_duration)
-            saving_amount = st.number_input(f"Enter your saving amount ({profile.user_currency}):", min_value=0.0, format="%.2f", value=goal_target)
-
-        # 描述
+       
         # 使用自定义样式的子标题
         st.markdown(
             f"""
@@ -64,6 +58,11 @@ def editing_page():
             """,
             unsafe_allow_html=True
         )
+        # 使用st.expander隐藏特定部分
+        with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
+            # 获取用户输入的存款时间和金额
+            saving_time = st.slider("Select your saving time (in months):", min_value=1, max_value=360, value=saving_duration)
+            saving_amount = st.number_input(f"Enter your saving amount ({profile.user_currency}):", min_value=0.0, format="%.2f", value=goal_target)
 
         # 下拉菜单
         risk_tolerance_options = [
