@@ -82,7 +82,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
+st.divider()
 st.markdown(
     f"""
     <h2 class="custom-subheader">Discover and compare various investment options based on key factors like duration, expected return, and risk level. Customize your selections to find the best fit for your financial goals. Stay informed with real-time data and personalized recommendations.</h2>
@@ -90,8 +90,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-st.divider()
 st.write("Select the investment options you want to compare:")
 
 # 多选框供用户选择投资选项
