@@ -1,5 +1,7 @@
 import streamlit as st
-from db import getPlan, getUserInfo, showChosenPages
+from db import getPlan, getUserInfo, showChosenPages, getTotalSavings
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 showChosenPages()
 
@@ -24,7 +26,7 @@ def get_base64_image(image_path):
 
 encoded_image = get_base64_image(ICON_PATH_0_5)
 
-def editing_page():
+def assessment_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         user_id = st.session_state.user_id
         profile = getUserInfo(user_id)
@@ -33,8 +35,9 @@ def editing_page():
             # Get plan info
             plan_id = st.session_state.invest_plan_id
             plan = getPlan(plan_id)
-            saving_duration = plan.saving_duration
-            goal_target = float(plan.goal_target)
+            difference = relativedelta(plan.goal_date, datetime.now().date())
+            saving_duration = difference.years * 12 + difference.months
+            goal_target = getTotalSavings(user_id, plan_id)
         else:
             saving_duration = 12
             goal_target = 10000.00
@@ -62,7 +65,7 @@ def editing_page():
         with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
             # 获取用户输入的存款时间和金额
             saving_time = st.slider("Select your saving time (in months):", min_value=1, max_value=360, value=saving_duration)
-            saving_amount = st.number_input(f"Enter your saving amount ({profile.user_currency}):", min_value=0.0, format="%.2f", value=goal_target)
+            saving_amount = st.number_input(f"Enter your saving amount ({profile.user_currency}):", min_value=0.0, format="%.2f", value=float(goal_target))
         # 使用自定义样式的子标题
         st.markdown(
             f"""
@@ -124,4 +127,4 @@ def editing_page():
         st.stop()
 
 if __name__ == "__main__":
-    editing_page()
+    assessment_page()
