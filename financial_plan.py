@@ -219,7 +219,7 @@ def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_p
     for i in range(savings_term_years, len(years)):
         cumulative_savings[i] = down_payment_amount + (i - 1) * yearly_loan_payment
         yearly_payments[i] = yearly_loan_payment
-        actual_savings[i] = actual_savings[savings_term_years - 1]  # Savings stop accumulating after the savings term
+        actual_savings[i] = actual_savings[i - 1]  # Savings stop accumulating after the savings term
 
     data = pd.DataFrame({
         'Year': years,
