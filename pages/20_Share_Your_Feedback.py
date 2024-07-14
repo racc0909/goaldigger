@@ -23,7 +23,7 @@ def feedback_page():
         )
         st.markdown(
             f"""
-            <h2 class="costum-subheader">Your feedback is important to us! Please take a moment to share your thoughts and suggestions about our web app.</h2>
+            <h2 class="custom-subheader">Your feedback is important to us! Please take a moment to share your thoughts and suggestions about our web app.</h2>
             """,
             unsafe_allow_html=True
         )
