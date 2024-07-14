@@ -391,7 +391,6 @@ def showChosenPages():
             Page("pages/7_Risk_Tolerance_Assessment.py", "Risk Tolerance Assessment", ":moneybag:"),
             Page("pages/18_options_comparison.py", "Investment Option Comparison", ":question:"),
             Page("pages/3_Edit_Plan.py", "Edit Plan"),
-            Page("pages/8_Add_Saving.py", "Add Saving"),
             Page("pages/9_Low Risk, Short Term Investments.py", "Low Risk, Short Term Investments"),
             Page("pages/10_Low Risk, Medium Term Investments.py", "Low Risk, Medium Term Investments"),
             Page("pages/11_Low Risk, Long Term Investments.py", "Low Risk, Long Term Investments"),
@@ -405,4 +404,5 @@ def showChosenPages():
         ]
     )
 
-    hide_pages(["Low Risk, Short Term Investments", "Low Risk, Medium Term Investments", "Low Risk, Long Term Investments", "Low Risk, Short Term Investments", "Medium Risk, Medium Term Investments", "Medium Risk, Long Term Investments", "Medium Risk, Short Term Investments", "High Risk, Medium Term Investments", "High Risk, Long Term Investments", "High Risk, Short Term Investments", "Edit Plan", "Add Saving"])
+    hide_pages(["Low Risk, Short Term Investments", "Low Risk, Medium Term Investments", "Low Risk, Long Term Investments", "Low Risk, Short Term Investments", "Medium Risk, Medium Term Investments", "Medium Risk, Long Term Investments", "Medium Risk, Short Term Investments", "High Risk, Medium Term Investments", "High Risk, Long Term Investments", "High Risk, Short Term Investments", "Edit Plan"])
+

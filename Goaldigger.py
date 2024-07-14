@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 import pandas as pd
 from datetime import datetime, timedelta, date
 from financial_plan import display_timeline, display_piechart, filter_plans_by_date, filter_loans_by_date
-from db import getUserInfo, getUserPlans, getTotalSavings, logout
+from db import getUserInfo, getUserPlans, getTotalSavings, logout, createSaving
 from db import authenticate, signup, logout, deletePlan, showChosenPages
 import time
 
@@ -122,6 +122,28 @@ def main():
     if st.session_state.logged_in:
       
       logout()
+
+      @st.experimental_dialog("Add Saving")
+      def add_saving(user_id, plan):
+         savings_amount = st.number_input("Amount", value=float(plan.goal_target_monthly))
+         savings_date = st.date_input("Saving's date", value=datetime.today(), format="DD.MM.YYYY")
+
+         col1_1, col1_2 = st.columns([1, 1])
+         with col1_1:
+            if st.button("✅ Submit"):
+               createSaving(user_id, plan.plan_id, savings_date, savings_amount)
+               st.success("Saving added successfully!")
+               time.sleep(0.3)
+               del st.session_state.add_saving_plan_id
+               st.rerun()
+                  
+         with col1_2:
+            if st.button("❌ Cancel"):
+               st.info("Saving canceled.")
+               time.sleep(0.3)
+               del st.session_state.add_saving_plan_id
+               st.rerun()
+
 
       # --- PERSONAL INFORMATION ---
       # PREPARATION
@@ -280,7 +302,8 @@ def main():
                with col1_1:
                   if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}_{i}"):
                      st.session_state.add_saving_plan_id = plan.plan_id
-                     st.switch_page("pages/8_Add_Saving.py")
+                     add_saving(user_id, plan)
+                        
                with col1_2:
                   if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}_{i}"):
                      st.session_state.invest_plan_id = plan.plan_id
