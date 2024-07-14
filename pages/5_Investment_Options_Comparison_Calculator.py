@@ -41,7 +41,7 @@ banks = {
         "min_amount": 1000,
         "max_amount": 100000,
         "link": "https://www.commerzbank.de/sparen-anlegen/produkte/festgeld/",
-        "logo": "img/commerzbank.jpg"
+        "logo": "img/commerzbank.png"
     },
     "Deutsche Bank": {
         "currencies": ["EUR"],
