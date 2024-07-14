@@ -3,7 +3,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 import pandas as pd
 from datetime import datetime, timedelta, date
-from financial_plan import display_timeline, display_piechart, filter_plans_by_date
+from financial_plan import display_timeline, display_piechart, filter_plans_by_date, filter_loans_by_date
 from db import getUserInfo, getUserPlans, getTotalSavings, logout
 from db import authenticate, signup, logout, deletePlan, showChosenPages
 import time
