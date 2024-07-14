@@ -20,13 +20,15 @@ def add_saving_page():
                 st.success("Saving added successfully!")
                 time.sleep(0.8)
                 del st.session_state.add_saving_plan_id
-                st.switch_page("Goaldigger.py")
+                st.session_state.edit_plan_id = add_saving_plan_id
+                st.switch_page("pages/3_Edit_Plan.py")
 
             if st.button("Cancel"):
                 st.info("Saving canceled.")
                 time.sleep(0.5)
                 del st.session_state.add_saving_plan_id
-                st.switch_page("Goaldigger.py")
+                st.session_state.edit_plan_id = add_saving_plan_id
+                st.switch_page("pages/3_Edit_Plan.py")
 
     else:
         st.warning("Please log in to access this page.")
