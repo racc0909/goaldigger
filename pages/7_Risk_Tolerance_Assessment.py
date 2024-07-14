@@ -57,7 +57,6 @@ def editing_page():
             """,
             unsafe_allow_html=True
         )
-        st.write("Please note, these are general recommendations and not personalized advice.")
        
         # 使用st.expander隐藏特定部分
         with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
