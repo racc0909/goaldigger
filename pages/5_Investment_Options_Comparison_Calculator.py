@@ -103,7 +103,13 @@ st.markdown(
 st.divider()
 st.markdown(
     """
-    <h2 class="custom-subheader">Use this tool to compare fixed deposit options from various banks. Select your bank, choose the deposit term, and input the amount to see your potential profit 💰. Easily compare interest rates and find the best investment option for your needs.</h2>
+    <h2 class="custom-subheader">Use this tool to 🔍 compare fixed deposit options from various banks.</h2>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown(
+    """
+    <h2 class="custom-subheader">Select your 🏦 bank, choose 🗓️ the deposit term, and input the 💸 amount to see your potential profit. Easily compare interest rates and find the best investment option for your needs.</h2>
     """,
     unsafe_allow_html=True
 )
