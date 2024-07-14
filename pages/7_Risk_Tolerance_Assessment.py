@@ -50,6 +50,14 @@ def editing_page():
             unsafe_allow_html=True
         )
         st.divider()
+
+        st.markdown(
+            f"""
+            <h2 class="custom-subheader">Based on your saving duration and risk tolerance, discover your tailored investment suggestions.</h2>
+            """,
+            unsafe_allow_html=True
+        )
+        st.write("Please note, these are general recommendations and not personalized advice.")
        
         # 使用st.expander隐藏特定部分
         with st.expander("You want to adjust the amount and time? Input your saving details here :)"):
