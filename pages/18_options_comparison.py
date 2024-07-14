@@ -5,6 +5,35 @@ from db import showChosenPages
 
 showChosenPages()
 
+# 自定义CSS样式
+st.markdown("""
+    <style>
+    .custom-box {
+        border: 2px solid #cccccc;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px;
+        transition: all 0.3s ease-in-out;
+    }
+    .custom-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .duration-bar, .return-bar {
+        height: 10px;
+        border-radius: 5px;
+        margin-top: 5px;
+        margin-left: 20px; /* 缩进与项目符号对齐 */
+    }
+    .duration-bar {
+        background-color: #4CAF50; /* 绿色 */
+    }
+    .return-bar {
+        background-color: #2196F3; /* 蓝色 */
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 def load_css(file_path):
     with open(file_path) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -83,3 +112,22 @@ st.plotly_chart(fig, use_container_width=True)
 if st.button("Back to Assessment"):
     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
 
+st.markdown(
+    f"""
+    <h2 class="custom-subheader">Exciting Updates Coming Soon!</h2>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("""
+    <div class="custom-box">
+        <h2>Thanks for using our Investment Options Comparison tool! 🎉 We will work hard to bring you even better features in the future:</h2>
+        <p>
+        <ul>
+            <li><b>Real-Time Data</b>: Get the latest market updates and stay ahead.</li>
+            <li><b>Personalized Recommendations</b>: Tailored suggestions just for you. </li>
+        </ul>
+            <p>We'd love to hear your thoughts! 💬 What features would you like to see? Let us know and help us make this tool even better.</p>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
