@@ -39,6 +39,7 @@ def feedback_page():
     if st.button("Submit Feedback"):
         # Simulating feedback submission process
         st.success("Thank you for your feedback! We appreciate your input.")
+        st.balloons()
         # Here you would typically save the feedback to a database or send it to an email
 
 if __name__ == "__main__":
