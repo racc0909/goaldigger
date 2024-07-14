@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, date
-from db import createPlan, getUserInfo, calculateUserAge, calculateGoalDate, calculateGoalAge, logout
+from db import createPlan, getUserInfo, calculateUserAge, calculateGoalDate, calculateGoalAge, logout, showChosenPages
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 import time
+
+showChosenPages()
 
 def load_css(file_path):
     with open(file_path) as f:

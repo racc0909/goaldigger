@@ -7,10 +7,12 @@ import plotly.express as px
 from datetime import datetime, timedelta, date
 import time
 import matplotlib.pyplot as plt
-from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview, getSavings, getTotalSavings, deletePlan
-from financial_plan import calculate_amortization_schedule, generate_data_and_plot
+from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, calculateGoalAge, backToOverview, getSavings, getTotalSavings, deletePlan, showChosenPages
+from financial_plan import generate_data_and_plot
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_car_savings, calculate_pension_monthly_saving
 import base64
+
+showChosenPages()
 
 def load_css(file_path):
     with open(file_path) as f:

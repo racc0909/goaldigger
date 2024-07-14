@@ -1,14 +1,11 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import streamlit as st
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import base64
 from datetime import datetime, timedelta
+from db import showChosenPages
+
+showChosenPages()
 
 
 # In[ ]:

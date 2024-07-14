@@ -1,5 +1,7 @@
 import streamlit as st
-from db import getPlan, getUserInfo
+from db import getPlan, getUserInfo, showChosenPages
+
+showChosenPages()
 
 def load_css(file_path):
     with open(file_path) as f:
@@ -35,7 +37,7 @@ def editing_page():
             goal_target = float(plan.goal_target)
         else:
             saving_duration = 12
-            goal_target = 10000
+            goal_target = 10000.00
 
         # 使用 HTML 和 CSS 在标题右侧添加图标 Add the icon to the right side of the title using HTML and CSS
         st.markdown(

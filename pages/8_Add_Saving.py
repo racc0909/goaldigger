@@ -1,7 +1,9 @@
 import streamlit as st
 from datetime import datetime
-from db import getPlan, createSaving, logout
+from db import getPlan, createSaving, logout, showChosenPages
 import time
+
+showChosenPages()
 
 def add_saving_page():
     if 'logged_in' in st.session_state and st.session_state.logged_in:

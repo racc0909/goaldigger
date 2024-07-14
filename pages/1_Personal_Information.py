@@ -1,7 +1,9 @@
 import streamlit as st
-from db import getUserInfo, createOrUpdateUserInfo, logout
+from db import getUserInfo, createOrUpdateUserInfo, logout, showChosenPages
 from datetime import datetime
 import time
+
+showChosenPages()
 
 def load_css(file_path):
     with open(file_path) as f:

@@ -1,12 +1,9 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from db import showChosenPages
+
+showChosenPages()
 
 def load_css(file_path):
     with open(file_path) as f:

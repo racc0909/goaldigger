@@ -5,15 +5,17 @@ import pandas as pd
 from datetime import datetime, timedelta, date
 from financial_plan import display_timeline, display_piechart, filter_plans_by_date
 from db import getUserInfo, getUserPlans, getTotalSavings, logout
-from db import authenticate, signup, logout, deletePlan
+from db import authenticate, signup, logout, deletePlan, showChosenPages
 import time
+
+# Set page title and icon
+st.set_page_config(page_title="Goaldigger", page_icon=":moneybag:")
+
+showChosenPages()
 
 # Way one
 sidebar_logo = "img/Logo_Without_Text.png"
 st.logo(sidebar_logo, link="https://fiepdemoapp.streamlit.app/", icon_image="img/Logo_Without_Text.png")
-
-# Set page title and icon
-st.set_page_config(page_title="Goaldigger", page_icon=":moneybag:")
 
 def load_css(file_path):
     with open(file_path) as f:

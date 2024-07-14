@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta, date
 import hashlib
+from st_pages import Page, show_pages, hide_pages
 
 # Read database credentials from Streamlit secrets
 db_config = st.secrets["postgresql"]
@@ -277,3 +278,28 @@ def getTotalSavingsByYear(plan_id):
 
     session.close()
     return savings_by_year
+
+def showChosenPages():
+    show_pages(
+        [
+            Page("pages/1_Personal_Information.py", "Personal Information", "📝"),
+            Page("Goaldigger.py", "Overview", "🏠"),
+            Page("pages/2_Create_Plan.py", "Create Plan", "✨"),
+            Page("pages/5_Investment_Options_Comparison_Calculator.py", "Bank Term Deposit Profit Calculator", ":chart_with_upwards_trend:"),
+            Page("pages/7_Risk_Tolerance_Assessment.py", "Risk Tolerance Assessment", ":moneybag:"),
+            Page("pages/18_options_comparison.py", "Investment Option Comparison", ":question:"),
+            Page("pages/3_Edit_Plan.py", "Edit Plan"),
+            Page("pages/8_Add_Saving.py", "Add Saving"),
+            Page("pages/9_Low Risk, Short Term Investments.py", "LowShort"),
+            Page("pages/10_Low Risk, Medium Term Investments.py", "LowMedium"),
+            Page("pages/11_Low Risk, Long Term Investments.py", "LowLong"),
+            Page("pages/12_Medium Risk, Short Term Investments.py", "MediumShort"),
+            Page("pages/13_Medium Risk, Medium Term Investments.py", "MediumMedium"),
+            Page("pages/14_Medium Risk, Long Term Investments.py", "MediumLong"),
+            Page("pages/15_High Risk, Short Term Investments.py", "HighShort"),
+            Page("pages/16_High Risk, Medium Term Investments.py", "HighMedium"),
+            Page("pages/17_High Risk, Long Term Investments.py", "HighLong")
+        ]
+    )
+
+    hide_pages(["LowShort", "LowMedium", "LowLong", "LowShort", "MediumMedium", "MediumLong", "MediumShort", "HighMedium", "HighLong", "HighShort", "Edit Plan", "Add Saving"])
