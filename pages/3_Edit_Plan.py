@@ -69,8 +69,8 @@ def editing_page():
             backToOverview()
             logout()
 
-            # --- st.title ---
-            if page == "st.title":
+            # --- House Buyer Savings Plan ---
+            if page == "House Buyer Savings Plan":
                 st.title(plan.goal_name)
                 st.divider()
                 goal_name = st.text_input("Name of the plan", value = plan.goal_name)
