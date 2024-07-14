@@ -27,7 +27,7 @@ st.markdown("""
         padding: 15px;
         margin: 10px;
         transition: all 0.3s ease-in-out;
-        background-color: #f8f9fa; /* 背景颜色与主题一致 */
+        background-color: #FFFFFF; /* 背景颜色与主题一致 */
     }
     .custom-box:hover {
         transform: translateY(-5px);
