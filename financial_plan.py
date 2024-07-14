@@ -283,11 +283,15 @@ def filter_plans_by_date(plans, selected_month):
     for plan in plans:
         plan_due_date = plan.goal_date if isinstance(plan.goal_date, datetime) else datetime.combine(plan.goal_date, datetime.min.time())
         if plan_due_date >= selected_month:
-            filtered_plans.append(plan)
-        if plan.goal_target_monthly:
-            loan_start_date = plan.loan_startdate.date() if isinstance(plan.loan_startdate, datetime) else plan.loan_startdate
-            loan_end_date = loan_start_date + timedelta(days=plan.loan_duration*365)
-            if loan_start_date <= selected_month.date() <= loan_end_date:
-                if plan not in filtered_plans:
-                    filtered_plans.append(plan)
     return filtered_plans
+    
+# Function to filter loans based on the selected date range
+def filter_loans_by_date(plans, selected_month):
+    total_monthly_loans = 0
+    for plan in plans:
+        if 'monthly_loan_payment' in plan:
+            loan_start_date = plan.loan_startdate.date() if isinstance(plan.loan_startdate, datetime) else plan.loan_startdate
+            loan_end_date = loan_start_date + timedelta(days=plan.loan_duration * 365)
+            if loan_start_date <= selected_month.date() <= loan_end_date:
+                total_monthly_loans += plan.loan_monthly
+    return total_monthly_loans
