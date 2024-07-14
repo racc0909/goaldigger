@@ -653,7 +653,7 @@ def editing_page():
                     loan_term_years = 0
                     loan_start_date = current_date
                     monthly_loan_payment = 0.0
-                    goal_target = car_price_input - current_savings
+                    goal_target = goal_total - current_savings
                     
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
                 monthly_final_payment = calculateMonthlyFinalPayment(final_payment_amount, loan_term_years)
