@@ -103,25 +103,16 @@ st.markdown(
 st.divider()
 
 # Select bank
-selected_bank = st.selectbox("Choose Your Bank", list(banks.keys()))
+col1, col2 = st.columns([3, 1])
+with col1:
+    selected_bank = st.selectbox("Choose Your Bank", list(banks.keys()))
 
 # Load and display the selected bank's logo
 logo_path = banks[selected_bank]["logo"]
 encoded_logo = get_base64_image(logo_path)
 
-st.markdown(
-    f"""
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-        <div>
-            <label style="font-weight: bold;">Choose Your Bank</label>
-        </div>
-        <div>
-            <img src="data:image/png;base64,{encoded_logo}" width="100">
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+with col2:
+    st.image(f"data:image/png;base64,{encoded_logo}", width=100)
 
 # Display deposit conditions
 if selected_bank == "ING Bank":
