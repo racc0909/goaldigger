@@ -11,18 +11,22 @@ from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan
 # Helper function to calculate monthly savings
 def calculate_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_months, inflation_rate):
     # Adjust the target amount for inflation
-    future_value_target_amount = target_amount * ((1 + inflation_rate / 100) ** (savings_term_months / 12))
+    if target_amount != 0:
+        future_value_target_amount = target_amount * ((1 + inflation_rate / 100) ** (savings_term_months / 12))
 
-    monthly_interest_rate = current_savings_return / 100 / 12
-    number_of_payments = savings_term_months
-    if current_savings > 0:
-        current_savings_future_value = current_savings * ((1 + monthly_interest_rate) ** number_of_payments)
-        future_value_needed = future_value_target_amount - current_savings_future_value
+        monthly_interest_rate = current_savings_return / 100 / 12
+        number_of_payments = savings_term_months
+        if current_savings > 0:
+            current_savings_future_value = current_savings * ((1 + monthly_interest_rate) ** number_of_payments)
+            future_value_needed = future_value_target_amount - current_savings_future_value
+        else:
+            future_value_needed = future_value_target_amount
+        if future_value_needed <= 0:
+            return 0
+        monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
     else:
-        future_value_needed = future_value_target_amount
-    if future_value_needed <= 0:
-        return 0
-    monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
+        monthly_saving = 0
+        future_value_needed = 0
     return float(monthly_saving), float(future_value_needed)
 
 def calculateMonthlyFinalPayment(final_payment_amount, loan_term_years):

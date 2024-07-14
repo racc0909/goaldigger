@@ -634,7 +634,7 @@ def editing_page():
                     loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value = float(plan.loan_interest))
                     loan_start_date = st.date_input("Loan start date:", value=plan.loan_startdate, format="DD.MM.YYYY")
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                    goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else car_price_input - current_savings - loan_amount
+                    goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - current_savings - loan_amount
                 
                 else:
                     down_payment_percent = 0.0
