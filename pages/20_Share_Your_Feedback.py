@@ -21,9 +21,12 @@ def feedback_page():
             """,
             unsafe_allow_html=True
         )
-        st.markdown("""
-        Your feedback is important to us! Please take a moment to share your thoughts and suggestions about our web app.
-        """)
+        st.markdown(
+            f"""
+            <h2 class="costum-subheader">Your feedback is important to us! Please take a moment to share your thoughts and suggestions about our web app.</h2>
+            """,
+            unsafe_allow_html=True
+        )
 
         st.subheader("How would you rate your overall experience?")
         overall_experience = st.slider("Rate from 1 to 5", 1, 5)
