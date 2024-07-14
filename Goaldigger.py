@@ -269,16 +269,20 @@ def main():
                   """, unsafe_allow_html=True
                )
             
-               col1_1, col1_2, col1_3 = st.columns([2, 0.8, 1])
+               col1_1, col1_2, col1_3, col1_4 = st.columns([1, 1, 0.8, 1])
                with col1_1:
                   if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}_{i}"):
                      st.session_state.add_saving_plan_id = plan.plan_id
                      st.switch_page("pages/8_Add_Saving.py")
                with col1_2:
+                  if st.button(f"Invest", key=f"invest_{plan.plan_id}_{i}"):
+                     st.session_state.invest_plan_id = plan.plan_id
+                     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+               with col1_3:
                   if st.button(f"✏️ Edit", key=f"edit_{plan.plan_id}_{i}"):
                      st.session_state.edit_plan_id = plan.plan_id
                      st.switch_page("pages/3_Edit_Plan.py")
-               with col1_3:
+               with col1_4:
                   if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}_{i}"):
                      deletePlan(plan.plan_id)
                      st.experimental_rerun()
@@ -305,16 +309,20 @@ def main():
                   """, unsafe_allow_html=True
                )
             
-               col1_1, col1_2, col1_3 = st.columns([2, 0.8, 1])
+               col1_1, col1_2, col1_3, col1_4 = st.columns([1, 1, 0.8, 1])
                with col1_1:
                   if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}_{i}"):
                      st.session_state.add_saving_plan_id = plan.plan_id
                      st.switch_page("pages/8_Add_Saving.py")
                with col1_2:
+                  if st.button(f"Invest", key=f"invest_{plan.plan_id}_{i}"):
+                     st.session_state.invest_plan_id = plan.plan_id
+                     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+               with col1_3:
                   if st.button(f"✏️ Edit", key=f"edit_{plan.plan_id}_{i}"):
                      st.session_state.edit_plan_id = plan.plan_id
                      st.switch_page("pages/3_Edit_Plan.py")
-               with col1_3:
+               with col1_4:
                   if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}_{i}"):
                      deletePlan(plan.plan_id)
                      st.experimental_rerun()
