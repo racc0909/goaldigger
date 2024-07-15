@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 from datetime import datetime, timedelta, date
 import matplotlib.pyplot as plt
-from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan, getSavings
+from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan, getSavings, getTotalSavingsByMonth
 
 # Helper function to calculate monthly savings
 def calculate_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_months, inflation_rate):
@@ -16,17 +16,30 @@ def calculate_monthly_saving(target_amount, current_savings, current_savings_ret
 
         monthly_interest_rate = current_savings_return / 100 / 12
         number_of_payments = savings_term_months
+
         if current_savings > 0:
             current_savings_future_value = current_savings * ((1 + monthly_interest_rate) ** number_of_payments)
             future_value_needed = future_value_target_amount - current_savings_future_value
         else:
             future_value_needed = future_value_target_amount
+
         if future_value_needed <= 0:
-            return 0
-        monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
+            return 0, float(round(future_value_target_amount, 2))
+
+        # Avoid division by zero or negative rates
+        if monthly_interest_rate == 0:
+            monthly_saving = future_value_needed / number_of_payments
+        else:
+            try:
+                monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
+            except (ValueError, OverflowError) as e:
+                print(f"Error calculating monthly saving: {e}")
+                return float('inf'), float(round(future_value_target_amount, 2))
     else:
         monthly_saving = 0
         future_value_needed = 0
+        future_value_target_amount = 0
+
     return float(round(monthly_saving, 2)), float(round(future_value_target_amount, 2))
 
 def calculateMonthlyFinalPayment(final_payment_amount, loan_term_years):
@@ -288,6 +301,95 @@ def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_p
     st.plotly_chart(fig)
     #st.write(data)
 
+def generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol):
+    if savings_term_months > 12:
+        st.error("Savings term months should be less than or equal to 12.")
+        return
+
+    plan = getPlan(plan_id)
+
+    # Generate data for plotting
+    plan_month = plan.created_on.month
+    plan_year = plan.created_on.year
+    total_months = savings_term_months + (loan_term_years * 12)
+    months = [plan.created_on + pd.DateOffset(months=i) for i in range(total_months)]
+    cumulative_savings = np.zeros(total_months, dtype=float)
+    monthly_payments = np.zeros(total_months, dtype=float)
+    actual_savings = np.zeros(total_months, dtype=float)
+
+    # Get actual savings data by month
+    total_savings_by_month = getTotalSavingsByMonth(plan_id)
+
+    # Initialize cumulative savings and actual savings for the first month
+    if total_months > 0:
+        monthly_payments[0] = monthly_saving if savings_term_months > 0 else 0
+        cumulative_savings[0] = monthly_payments[0]
+        actual_savings[0] = current_savings + total_savings_by_month.get((plan_year, plan_month), 0)
+
+    # Calculate cumulative savings and actual savings for subsequent months
+    for i in range(1, savings_term_months):
+        cumulative_savings[i] = cumulative_savings[i-1] + monthly_saving
+        monthly_payments[i] = monthly_saving
+        actual_savings[i] = actual_savings[i-1] + total_savings_by_month.get((plan_year, plan_month + i), 0)
+
+    savings_before_loan = cumulative_savings[savings_term_months-1] + monthly_loan_payment
+
+    for i in range(savings_term_months, total_months):
+        cumulative_savings[i] = savings_before_loan + (i - savings_term_months) * monthly_loan_payment
+        monthly_payments[i] = monthly_loan_payment + monthly_final_payment
+        actual_savings[i] = actual_savings[i - 1]  # Savings stop accumulating after the savings term
+
+    data = pd.DataFrame({
+        'Month': months,
+        'Cumulative Savings': cumulative_savings,
+        'Monthly Payments': monthly_payments,
+        'Monthly Savings': monthly_saving,
+        'Monthly Loan Payments': monthly_loan_payment,
+        'Actual Savings': actual_savings
+    })
+
+    # Create the cumulative savings line plot
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=data['Month'],
+        y=data['Cumulative Savings'],
+        mode='lines+markers',
+        name='Cumulative Savings',
+        marker=dict(size=5),
+        hovertemplate='Month: %{x}<br>Cumulative Savings: %{y:,.2f} ' + currency_symbol
+    ))
+
+    # Create the monthly payments bar plot
+    fig.add_trace(go.Bar(
+        x=data['Month'],
+        y=data['Monthly Payments'],
+        name='Monthly Payments',
+        opacity=0.6,
+        hovertemplate='Month: %{x}<br>Monthly Payments: %{y:,.2f} ' + currency_symbol
+    ))
+
+    # Create the actual savings line plot
+    fig.add_trace(go.Scatter(
+        x=data['Month'],
+        y=data['Actual Savings'],
+        mode='lines+markers',
+        name='Actual Savings',
+        marker=dict(size=5),
+        line=dict(dash='dash'),
+        hovertemplate='Month: %{x}<br>Actual Savings: %{y:,.2f} ' + currency_symbol
+    ))
+
+    fig.update_layout(
+        title='Plan for Savings and Loan Payment',
+        xaxis_title='Months',
+        yaxis_title=f'Cumulative Savings ({currency_symbol})',
+        legend_title='',
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        showlegend=True
+    )
+
+    st.plotly_chart(fig)
 
 def create_savings_graph(plan_id):
     plan = getPlan(plan_id)

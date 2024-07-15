@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime, date, timedelta
 import time
 from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, createSaving, backToOverview, getSavings, getTotalSavings, deletePlan, showChosenPages
-from financial_plan import generate_data_and_plot, calculateMonthlyFinalPayment, create_savings_graph
+from financial_plan import generate_data_and_plot, calculateMonthlyFinalPayment, create_savings_graph, generate_monthly_data_and_plot
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_pension_monthly_saving
 import base64
 
@@ -209,7 +209,7 @@ def editing_page():
                 st.divider()
             
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3, col1_4 = st.columns([2, 1, 1, 1])
+                col1_1, col1_2 = st.columns([4, 1])
                 with col1_1:
                     if st.button("💾 Save changes"):  
                         # Add plan to database
@@ -219,39 +219,70 @@ def editing_page():
                                     down_payment_percent, down_payment_amount, final_payment_percent, final_payment_amount, 
                                     loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
                         # Write result
-                        st.success("Plan updated successfully!")  
+                        st.success("Plan updated successfully!") 
                 with col1_2:
-                    if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}"):
-                        st.session_state.invest_plan_id = plan.plan_id
-                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
-                with col1_3:
-                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
-                        st.session_state.add_saving_plan_id = plan.plan_id
-                        add_saving(user_id, plan)
-                with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
                         st.switch_page("Goaldigger.py")
                 
                 st.divider()
-            
-                st.write(f"### Financial Goal Summary")
-
-                st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')} (including inflation: {future_goal_target:,.2f} {profile.user_currency})", unsafe_allow_html=True)
-                st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
-                st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                
+                st.subheader("Summary")
 
                 if take_house_loan == "Yes":
-                    st.write(f"### Mortgage Loan Details")
-                    st.write(f"**Loan Start Date**: {loan_start_date.strftime('%d.%m.%Y')}")
-                    st.write(f"**Monthly Loan Payment**: <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                    if final_payment_percent > 0:
-                        st.write(f"**Additional Savings Needed for Final Payment**: {monthly_final_payment:,.2f} {currency_symbol}")
-                        st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    tab1, tab2 = st.tabs(["📊 Financial Goal", "📝 Loan Details"])
+                    with tab2:
+                        st.write(f"**Loan Start Date**: {loan_start_date.strftime('%d.%m.%Y')}")
+                        st.write(f"**Monthly Loan Payment**: <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                        if final_payment_percent > 0:
+                            st.write(f"**Additional Savings Needed for Final Payment**: {monthly_final_payment:,.2f} {currency_symbol}")
+                            st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
-                # Call the function to generate data and plot
-                generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
+                else:
+                    tab1, = st.tabs(["📊 Financial Goal"])
+            
+                with tab1:
+                    st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')} (including inflation: {future_goal_target:,.2f} {profile.user_currency})", unsafe_allow_html=True)
+                    st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                    st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+
+                    if plan.goal_target > 0:
+                        progress = min(float(total_saving / plan.goal_target), 1.0)
+                        st.progress(progress)
+                    else:
+                        st.warning("Target amount for this plan is zero, cannot show graph.")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
+
+                # BUTTONS
+                col1_1, col1_2 = st.columns([2, 1])
+                with col1_1:
+                    if st.button(f"📈 Grow your savings", key=f"invest_{plan.plan_id}"):
+                        st.session_state.invest_plan_id = plan.plan_id
+                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+                with col1_2:
+                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
+                        st.session_state.add_saving_plan_id = plan.plan_id
+                        add_saving(user_id, plan)
+
+                st.divider()
+                
+                st.subheader("Statistics")
+                tab1, tab2 = st.tabs(["📊 Plan Overview", "📝 Saving Progress"])
+                with tab1:
+                    if plan.goal_age - current_age > 1:
+                        # Call the function to generate data and plot
+                        generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
+                    else:
+                        # Call the function to generate data and plot
+                        generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
+
+                with tab2:
+                    if plan.goal_target > 0:
+                        create_savings_graph(plan_id)
+                    else:
+                        st.warning("Target amount for this plan is zero, cannot show graph.")
 
                 st.divider()
             
@@ -497,7 +528,7 @@ def editing_page():
                             st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
                 else:
-                    tab1 = st.tabs(["📊 Financial Goal"])
+                    tab1, = st.tabs(["📊 Financial Goal"])
 
                 with tab1:
                     st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')} (including inflation: {future_goal_target:,.2f} {profile.user_currency})", unsafe_allow_html=True)
@@ -532,7 +563,8 @@ def editing_page():
                         # Call the function to generate data and plot
                         generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
                     else:
-                        st.warning("Plan duration is too short, cannot show graph.")
+                        # Call the function to generate data and plot
+                        generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
 
                 with tab2:
                     if plan.goal_target > 0:
@@ -577,7 +609,7 @@ def editing_page():
                 st.divider()
             
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3, col1_4 = st.columns([2, 1, 1, 1])
+                col1_1, col1_2 = st.columns([4, 1])
                 with col1_1:
                     if st.button("💾 Save changes"):  
                         # Save plan to DB
@@ -590,36 +622,57 @@ def editing_page():
                         # Write result
                         st.success("Plan updated successfully!")
                 with col1_2:
-                    if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}"):
-                        st.session_state.invest_plan_id = plan.plan_id
-                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
-                with col1_3:
-                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
-                        st.session_state.add_saving_plan_id = plan.plan_id
-                        add_saving(user_id, plan)
-                with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
                         st.switch_page("Goaldigger.py")
 
                 st.divider()
 
-                st.write(f"### Financial Goal Summary")
+                st.subheader("Summary")
 
-                st.write(f"**Saving Target**: <span style='color: blue;'>{retirement_amount:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')}", unsafe_allow_html=True)
-                st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
-                st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                tab1, = st.tabs(["📊 Financial Goal"])
+                with tab1:
+                    st.write(f"**Saving Target**: <span style='color: blue;'>{retirement_amount:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')}", unsafe_allow_html=True)
+                    st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                    st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
-                # st.write(f"**Plan Name:** {goal_name}")
-                # st.write(f"**Target Amount:** {retirement_amount:,.2f} {currency_symbol}")
-                # st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                # st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                # st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                # st.write(f"**Savings Term:** {savings_term_years} years")
+                    if plan.goal_target > 0:
+                        progress = min(float(total_saving / plan.goal_target), 1.0)
+                        st.progress(progress)
+                    else:
+                        st.warning("Target amount for this plan is zero, cannot show graph.")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
 
-                # Call the function to generate data and plot
-                generate_data_and_plot(plan_id, current_savings, savings_term_months, retirement_amount, 0, monthly_saving, 0, 0, currency_symbol)
+                # BUTTONS
+                col1_1, col1_2 = st.columns([2, 1])
+                with col1_1:
+                    if st.button(f"📈 Grow your savings", key=f"invest_{plan.plan_id}"):
+                        st.session_state.invest_plan_id = plan.plan_id
+                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+                with col1_2:
+                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
+                        st.session_state.add_saving_plan_id = plan.plan_id
+                        add_saving(user_id, plan)
+
+                st.divider()
+                
+                st.subheader("Statistics")
+                tab1, tab2 = st.tabs(["📊 Plan Overview", "📝 Saving Progress"])
+                with tab1:
+                    if plan.goal_age - current_age > 1:               
+                        # Call the function to generate data and plot
+                        generate_data_and_plot(plan_id, current_savings, savings_term_months, retirement_amount, 0, monthly_saving, 0, 0, currency_symbol)
+                    else:
+                        # Call the function to generate data and plot
+                        generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
+
+                with tab2:
+                    if plan.goal_target > 0:
+                        create_savings_graph(plan_id)
+                    else:
+                        st.warning("Target amount for this plan is zero, cannot show graph.")
 
             # --- CUSTOMIZED FINANCIAL PLAN ---
             if page == "Customized Financial Plan":
@@ -723,7 +776,7 @@ def editing_page():
                 st.divider()
             
                 # SAVING PLAN OPTION 
-                col1_1, col1_2, col1_3, col1_4 = st.columns([2, 1, 1, 1])
+                col1_1, col1_2 = st.columns([4, 1])
                 with col1_1:
                     if st.button("💾 Save changes"):  
                         # Save plan to DB
@@ -736,48 +789,69 @@ def editing_page():
                         # Write result
                         st.success("Plan updated successfully!")
                 with col1_2:
-                    if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}"):
-                        st.session_state.invest_plan_id = plan.plan_id
-                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
-                with col1_3:
-                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
-                        st.session_state.add_saving_plan_id = plan.plan_id
-                        add_saving(user_id, plan)
-                with col1_4:
                     if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}"):
                         deletePlan(plan.plan_id)
-                        st.switch_page("Goaldigger.py")  
+                        st.switch_page("Goaldigger.py")
 
                 st.divider()
             
-                st.write(f"### Financial Goal Summary")
-
-                st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')} (including inflation: {future_goal_target:,.2f} {profile.user_currency})", unsafe_allow_html=True)
-                st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
-                st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                st.subheader("Summary")
 
                 if loan_option == "Yes":
-                    st.write(f"### Loan Details")
-                    st.write(f"**Loan Start Date**: {loan_start_date.strftime('%d.%m.%Y')}")
-                    st.write(f"**Monthly Loan Payment**: <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                    if final_payment_percent > 0:
-                        st.write(f"**Additional Savings Needed for Final Payment**: {monthly_final_payment:,.2f} {currency_symbol}")
-                        st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    tab1, tab2 = st.tabs(["📊 Financial Goal", "📝 Loan Details"])
+                    with tab2:
+                        st.write(f"### Loan Details")
+                        st.write(f"**Loan Start Date**: {loan_start_date.strftime('%d.%m.%Y')}")
+                        st.write(f"**Monthly Loan Payment**: <span style='color: blue;'>{monthly_loan_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                        if final_payment_percent > 0:
+                            st.write(f"**Additional Savings Needed for Final Payment**: {monthly_final_payment:,.2f} {currency_symbol}")
+                            st.write(f"**Combined Monthly Payment**: <span style='color: green;'>{combined_monthly_payment:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                
+                else:
+                    tab1, = st.tabs(["📊 Financial Goal"])
 
+                with tab1:
+                    st.write(f"**Saving Target**: <span style='color: blue;'>{goal_target:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')} (including inflation: {future_goal_target:,.2f} {profile.user_currency})", unsafe_allow_html=True)
+                    st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                    st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
+                    st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
-                # st.write(f"**Plan Name:** {goal_name}")
-                # st.write(f"**Target Amount:** {down_payment_amount:,.2f} {currency_symbol}")
-                # st.write(f"**Monthly Savings Needed:** <span style='color: red;'>{monthly_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                # st.write(f"**Current Savings:** <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                # st.write(f"**Rest Amount Needed:** <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
-                # st.write(f"**Savings Term:** {savings_term_months} months")
-                # if loan_option == "Yes":
-                #     st.write(f"**Monthly Loan Payment:** {monthly_loan_payment:,.2f} {currency_symbol}")
-                #     st.write(f"**Total Loan Payment:** {loan_amount:,.2f} {currency_symbol}")
+                    if plan.goal_target > 0:
+                        progress = min(float(total_saving / plan.goal_target), 1.0)
+                        st.progress(progress)
+                    else:
+                        st.warning("Target amount for this plan is zero, cannot show graph.")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
 
-                # Call the function to generate data and plot
-                generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
+                # BUTTONS
+                col1_1, col1_2 = st.columns([2, 1])
+                with col1_1:
+                    if st.button(f"📈 Grow your savings", key=f"invest_{plan.plan_id}"):
+                        st.session_state.invest_plan_id = plan.plan_id
+                        st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+                with col1_2:
+                    if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}"):
+                        st.session_state.add_saving_plan_id = plan.plan_id
+                        add_saving(user_id, plan)
+
+                st.divider()
+                
+                st.subheader("Statistics")
+                tab1, tab2 = st.tabs(["📊 Plan Overview", "📝 Saving Progress"])
+                with tab1:
+                    if plan.goal_age - current_age > 1:
+                        # Call the function to generate data and plot
+                        generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
+                    else:
+                        # Call the function to generate data and plot
+                        generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
+
+                with tab2:
+                    if plan.goal_target > 0:
+                        create_savings_graph(plan_id)
+                    else:
+                        st.warning("Target amount for this plan is zero, cannot show graph.")
         
         else: 
             st.error("No plan selected for editing.")

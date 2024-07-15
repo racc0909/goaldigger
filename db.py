@@ -393,6 +393,33 @@ def getTotalSavingsByYear(plan_id):
     finally:
         session.close()
 
+def getTotalSavingsByMonth(plan_id):
+    session = Session()
+    try:
+        # Query the total savings by month
+        total_savings_by_month = (
+            session.query(
+                extract('year', Saving.saving_date).label('year'),
+                extract('month', Saving.saving_date).label('month'),
+                func.sum(Saving.saving_amount).label('total_saving')
+            )
+            .filter(Saving.plan_id == plan_id)
+            .group_by(extract('year', Saving.saving_date), extract('month', Saving.saving_date))
+            .order_by('year', 'month')
+            .all()
+        )
+
+        # Convert the result to a dictionary
+        savings_by_month = {(int(row.year), int(row.month)): float(row.total_saving) for row in total_savings_by_month}
+
+        return savings_by_month
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+        return {}
+    finally:
+        session.close()
+
 ### FEEDBACK
 def createFeedback(user_id, overall_experience, positive_feedback, improvements, additional_comments):
     session = Session()
