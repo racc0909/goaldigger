@@ -426,7 +426,7 @@ def editing_page():
                             price = selected_car_details['sellingprice'].values[0]
                             col3.write(f"Suggested price: {currency_symbol}{price:.2f}")
                             # Concat car brand and model to combined_name
-                            combined_name = f"{goal_name}%%{selected_make}%%{selected_model}"
+                            combined_name = f"{saved_goal_name}%%{selected_make}%%{selected_model}"
 
                     car_price_input = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(price) if selected_model else 0.0, key='adjusted_car_price')
                 else:
