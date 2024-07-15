@@ -374,11 +374,14 @@ def editing_page():
 
                 df = pd.read_excel("data/car_prices.xlsx")
 
-                # Find the index of saved_selected_make in the unique values
-                try:
-                    index_make = list(df['make'].unique()).index(saved_selected_make)
-                except ValueError:
-                    index_make = 0
+                if '%%' in plan.goal_name:
+                    # Find the index of saved_selected_make in the unique values
+                    try:
+                        index_make = list(df['make'].unique()).index(saved_selected_make)
+                    except ValueError:
+                        index_make = 0
+                else:
+                        index_make = 0
 
                 st.markdown(
                     f"""
@@ -402,11 +405,14 @@ def editing_page():
 
                     if selected_make:
                         models = filter_models(df, selected_make)
-                    
-                        # Find the index of saved_selected_model in the unique values
-                        try:
-                            index_model = list(models).index(saved_selected_model)
-                        except ValueError:
+                        
+                        if '%%' in plan.goal_name:
+                            # Find the index of saved_selected_model in the unique values
+                            try:
+                                index_model = list(models).index(saved_selected_model)
+                            except ValueError:
+                                index_model = 0
+                        else:
                             index_model = 0
 
                         # Check if index_model is valid and within bounds
