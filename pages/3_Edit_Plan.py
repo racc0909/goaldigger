@@ -358,8 +358,9 @@ def editing_page():
 
             # --- CAR BUYER SAVINGS PLAN ----
             if page == "Car Buyer Savings Plan":
-                # Split the combined_name into goal name and brand and model
-                saved_goal_name, saved_selected_make, saved_selected_model = plan.goal_name.split('%%')
+                if '%%' in plan.goal_name:
+                    # Split the combined_name into goal name and brand and model
+                    saved_goal_name, saved_selected_make, saved_selected_model = plan.goal_name.split('%%')
                 st.markdown(
                     f"""
                     <h1>🚘 {saved_goal_name}</h1>
