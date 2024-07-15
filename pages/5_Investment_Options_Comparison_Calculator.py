@@ -262,7 +262,7 @@ def bank_page():
                                     comparison_data.append([selected_bank, term, rate[">250000"]])
                             elif selected_bank in ["Deutsche Bank", "Commerzbank"]:
                                 # Ensure constant rates are plotted across common terms for straight lines
-                                for common_term in ["3 months", "6 months", "12 months", "2 years", "3 years", "4 years"]:
+                                for common_term in ["12 months"]:
                                     comparison_data.append([selected_bank, common_term, rate])
                             else:
                                 comparison_data.append([selected_bank, term, rate])
