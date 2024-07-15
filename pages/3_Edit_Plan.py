@@ -4,7 +4,7 @@ from datetime import datetime, date, timedelta
 import time
 from db import getPlan, getUserInfo, calculateUserAge, logout, calculateGoalDate, updatePlan, createSaving, backToOverview, getSavings, getTotalSavings, deletePlan, showChosenPages
 from financial_plan import generate_data_and_plot, calculateMonthlyFinalPayment, create_savings_graph, generate_monthly_data_and_plot
-from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculate_pension_monthly_saving
+from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models
 import base64
 
 showChosenPages()
@@ -358,16 +358,24 @@ def editing_page():
 
             # --- CAR BUYER SAVINGS PLAN ----
             if page == "Car Buyer Savings Plan":
+                # Split the combined_name into goal name and brand and model
+                saved_goal_name, saved_selected_make, saved_selected_model = plan.goal_name.split('%%')
                 st.markdown(
                     f"""
-                    <h1>🚘 {plan.goal_name}</h1>
+                    <h1>🚘 {saved_goal_name}</h1>
                     """,
                     unsafe_allow_html=True
                 )
                 # Enter goal name
-                goal_name = st.text_input("Name of the plan", value = plan.goal_name)
+                goal_name = st.text_input("Name of the plan", value = saved_goal_name)
 
                 df = pd.read_excel("data/car_prices.xlsx")
+
+                # Find the index of saved_selected_make in the unique values
+                try:
+                    index_make = list(df['make'].unique()).index(saved_selected_make)
+                except ValueError:
+                    index_make = 0
 
                 st.markdown(
                     f"""
@@ -386,12 +394,23 @@ def editing_page():
                 )
 
                     col1, col2, col3 = st.columns(3)
-                    selected_make = col1.selectbox('Select Car Make', df['make'].unique())
+                    selected_make = col1.selectbox('Select Car Brand', df['make'].unique(), index=index_make)
                     selected_model = None
 
                     if selected_make:
                         models = filter_models(df, selected_make)
-                        selected_model = col2.selectbox('Select Car Model', models)
+                    
+                        # Find the index of saved_selected_model in the unique values
+                        try:
+                            index_model = list(models).index(saved_selected_model)
+                        except ValueError:
+                            index_model = 0
+
+                        # Check if index_model is valid and within bounds
+                        if not (0 <= index_model < len(models)):
+                            index_model = 0
+
+                        selected_model = col2.selectbox('Select Car Model', models, index=index_model)
 
                         if selected_model:
                             selected_car_details = df[(df['make'] == selected_make) & (df['model'] == selected_model)]
@@ -601,7 +620,9 @@ def editing_page():
                 savings_term_months = (target_age - current_age) * 12
                 savings_term_years = target_age - current_age
 
-                monthly_saving = calculate_pension_monthly_saving(retirement_amount, current_savings, current_savings_return, savings_term_months)
+                goal_target = retirement_amount - current_savings
+                monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
+                
                 rest_saving = plan.goal_target - total_saving
                 monthly_final_payment = 0
                 combined_monthly_payment = 0
@@ -614,7 +635,7 @@ def editing_page():
                     if st.button("💾 Save changes"):  
                         # Save plan to DB
                         updatePlan(plan.plan_id, goal_name, target_age, due_date, 
-                                    retirement_amount, retirement_amount, monthly_saving, 
+                                    retirement_amount, goal_target, monthly_saving, 
                                     current_savings, current_savings_return, savings_term_months,
                                     0, savings_term_months, 0, 0, 
                                     0, '1900-01-01', 0, 0, 0)
@@ -632,8 +653,8 @@ def editing_page():
 
                 tab1, = st.tabs(["📊 Financial Goal"])
                 with tab1:
-                    st.write(f"**Saving Target**: <span style='color: blue;'>{retirement_amount:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')}", unsafe_allow_html=True)
-                    st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_months}</span> months", unsafe_allow_html=True)
+                    st.write(f"**Saving Target**: <span style='color: blue;'>{retirement_amount:,.2f} {currency_symbol}</span> by {due_date.strftime('%d.%m.%Y')} (including inflation: {future_goal_target:,.2f} {profile.user_currency})", unsafe_allow_html=True)
+                    st.write(f"**Monthly Savings Required**: <span style='color: green;'>{monthly_saving:,.2f} {currency_symbol}</span> per month for <span style='color: green;'>{savings_term_years}</span> years", unsafe_allow_html=True)
                     st.write(f"**Current Savings**: <span style='color: red;'>{total_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                     st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 

@@ -197,18 +197,6 @@ def calculate_loan_payment(loan_amount, annual_interest_rate, loan_term_years):
     total_payment = monthly_payment * number_of_payments
     return float(monthly_payment)
 
-def calculate_pension_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_years):
-        monthly_interest_rate = current_savings_return / 100 / 12
-        number_of_payments = savings_term_years * 12
-        if current_savings > 0:
-            future_value_needed = target_amount - current_savings * ((1 + monthly_interest_rate) ** number_of_payments)
-        else:
-            future_value_needed = target_amount
-        if future_value_needed <= 0:
-            return 0
-        monthly_saving = npf.pmt(monthly_interest_rate, number_of_payments, 0, -future_value_needed)
-        return float(monthly_saving)
-
 
 # Define your function to create the graph
 def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_payment_amount, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol):
@@ -396,7 +384,7 @@ def create_savings_graph(plan_id):
     savings = getSavings(plan.user_id, plan_id)
 
     if not plan or not savings:
-        st.error("No data found for the specified plan ID.")
+        st.error("No data found for this specific plan.")
         return
 
     # Prepare data for the graph
