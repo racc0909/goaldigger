@@ -53,12 +53,7 @@ def login_page():
         unsafe_allow_html=True
     )
     st.divider()
-    st.markdown(
-        f"""
-        <h2 class="custom-subheader">Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.</h2>
-        """,
-        unsafe_allow_html=True
-    )
+    st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
 
     # Signup and Login Page
     if "signup_mode" not in st.session_state:
