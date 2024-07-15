@@ -133,6 +133,7 @@ def main():
          col1_1, col1_2 = st.columns([1, 1])
          with col1_1:
             if st.button("✅ Submit"):
+               st.balloons()
                createSaving(user_id, plan.plan_id, savings_date, savings_amount)
                st.success("Saving added successfully!")
                time.sleep(0.3)
