@@ -53,7 +53,12 @@ def login_page():
         unsafe_allow_html=True
     )
     st.divider()
-    st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
+    st.markdown(
+        f"""
+        <h2 class="custom-subheader">Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.</h2>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Signup and Login Page
     if "signup_mode" not in st.session_state:
@@ -297,7 +302,12 @@ def main():
 
          # Show each plan
          # Plans with loans
-         st.subheader(" Saving Plans Summary")
+         st.markdown(
+             f"""
+             <h2 class="costum-subheader">Saving Plans Summary</h2>
+             """,
+             unsafe_allow_html=True
+         )
          for i, plan in enumerate([plan for plan in plans]): 
             if '%%' in plan.goal_name:
                plan.goal_name, saved_selected_make, saved_selected_model = plan.goal_name.split('%%')
