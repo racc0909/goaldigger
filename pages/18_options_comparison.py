@@ -129,6 +129,7 @@ def comparison_page():
             # 在 Streamlit 页面中显示图表
             st.plotly_chart(fig, use_container_width=True)
 
+            st.write("For now, we've created this 3D chart based on the developers' understanding and simulated data. Since this data is subjective and varies with market conditions, the chart is for reference only. In the future, we think about to let users create and customize their own 3D charts based on the investment options they are interested in.")
             # 返回按钮
             if st.button("Back to Assessment"):
                 st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
