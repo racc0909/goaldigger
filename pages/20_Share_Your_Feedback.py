@@ -18,7 +18,7 @@ def feedback_page():
         backToOverview()
         st.markdown(
             f"""
-            <h1>We Value Your Feedback</h1>
+            <h1>✨ We Value Your Feedback ✨</h1>
             """,
             unsafe_allow_html=True
         )
