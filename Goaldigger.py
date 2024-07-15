@@ -275,90 +275,64 @@ def main():
          # Show each plan
          # Plans with loans
          st.subheader(" Saving Plans Summary")
-         col1, col2 = st.columns(2)
-         for i, plan in enumerate([plan for plan in plans if plan.goal_target_monthly]): 
+         for i, plan in enumerate([plan for plan in plans]): 
             total_saving = getTotalSavings(user_id, plan.plan_id)
-            rest_saving = plan.goal_target - total_saving     
-            with col1 if i % 2 == 0 else col2:
-               st.markdown(
-                  f"""
-                  <div id="wholetext" style="background-color:#f4f4f4; padding: 10px; margin: 10px; border-radius: 10px;">
-                        <div class="plan-box">
-                           <h3>{plan.goal_name}</h3>
-                           <p><strong>Target Amount:</strong> {plan.goal_target:,.2f} {profile.user_currency}</p>
-                           <p><strong>Due Date:</strong> {plan.goal_date.strftime('%d.%m.%Y')}</p>
-                           <p style="margin: 1;"><strong>Monthly Savings Needed:</strong> {plan.goal_target_monthly:,.2f} {profile.user_currency}</p>
-                           <p style="margin: 1; color: red;"><strong>Current Savings:</strong> {total_saving:,.2f} {profile.user_currency}</p>
-                           <p style="margin: 1; color: red;"><strong>Rest Amount Needed:</strong> {rest_saving:,.2f} {profile.user_currency}</p>
-                           <div style='background-color:#e0f7fa; padding: 10px; border-radius: 10px;'>
-                              <p style='color: blue;'><strong>Monthly Savings needed for Loan Payment:</strong> {plan.goal_target_monthly:,.2f} {profile.user_currency}</p>
-                              <p><strong>Total Loan Payment:</strong> {plan.loan_amount:,.2f} {profile.user_currency}</p>
-                              <p><strong>Loan End Date:</strong> {plan.loan_startdate.strftime('%d.%m.%Y')} to {(plan.loan_startdate + pd.DateOffset(years=plan.loan_duration)).strftime('%d.%m.%Y')}</p>
-                           </div>
-                        </div>
-                  </div>
-                  """, unsafe_allow_html=True
-               )
-            
-               col1_1, col1_2, col1_3, col1_4 = st.columns([1, 1, 0.8, 1])
+            rest_saving = plan.goal_target - total_saving  
+            with st.container(border=True):
+               col1_1, col1_2, col1_3 = st.columns([3, 1, 1.2])
                with col1_1:
+                  st.markdown(f"<h3>📋 {plan.goal_name}</h3>", unsafe_allow_html=True)
+               with col1_2:
+                  if st.button(f"✏️ View plan", key=f"edit_{plan.plan_id}_{i}"):
+                     st.session_state.edit_plan_id = plan.plan_id
+                     st.switch_page("pages/3_Edit_Plan.py")
+               with col1_3:
+                  if st.button(f"🗑️ Delete plan", key=f"delete_{plan.plan_id}_{i}"):
+                     deletePlan(plan.plan_id)
+                     st.experimental_rerun()
+                   
+               # Tabs
+               if plan.loan_amount > 0:
+                  tab1, tab2, tab3 = st.tabs(["📊 Saving Progress", "📝 Plan Details", "💳 Loan Details"])
+                  with tab3:
+                     st.markdown(f"<p style='color: blue;'><strong>Monthly Loan Payment:</strong> {plan.goal_target_monthly:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+                     st.markdown(f"<p><strong>Total Loan Payment:</strong> {plan.loan_amount:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+                     st.markdown(f"<p><strong>Loan End Date:</strong> {plan.loan_startdate.strftime('%d.%m.%Y')} to {(plan.loan_startdate + pd.DateOffset(years=plan.loan_duration)).strftime('%d.%m.%Y')}</p>", unsafe_allow_html=True)
+               
+               else:
+                  tab1, tab2 = st.tabs(["📊 Saving Progress", "📝 Plan Details"])
+
+               with tab1:
+                  st.markdown(f"<p style='margin: 1;'><strong>Current Savings:</strong> {total_saving:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p style='margin: 1;'><strong>Rest Amount Needed:</strong> {rest_saving:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+
+                  if plan.goal_target > 0:
+                     progress = min(float(total_saving / plan.goal_target), 1.0)
+                     st.progress(progress)
+
+                  else:
+                     st.warning("Target amount for this plan is zero, cannot show graph.")
+
+                  if rest_saving <= 0:
+                     st.balloons()
+
+               with tab2:
+                  st.markdown(f"<p><strong>Target Amount:</strong> {plan.goal_target:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p><strong>Due Date:</strong> {plan.goal_date.strftime('%d.%m.%Y')}</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p style='margin: 1;'><strong>Monthly Savings Needed:</strong> {plan.goal_target_monthly:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+                  
+               st.markdown("</div>", unsafe_allow_html=True)
+
+               # BUTTONS
+               col1_1, col1_2 = st.columns([2, 1])
+               with col1_1:
+                  if st.button(f"📈 Grow your savings", key=f"invest_{plan.plan_id}_{i}"):
+                     st.session_state.invest_plan_id = plan.plan_id
+                     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
+               with col1_2:
                   if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}_{i}"):
                      st.session_state.add_saving_plan_id = plan.plan_id
                      add_saving(user_id, plan)
-                        
-               with col1_2:
-                  if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}_{i}"):
-                     st.session_state.invest_plan_id = plan.plan_id
-                     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
-               with col1_3:
-                  if st.button(f"✏️ View", key=f"edit_{plan.plan_id}_{i}"):
-                     st.session_state.edit_plan_id = plan.plan_id
-                     st.switch_page("pages/3_Edit_Plan.py")
-               with col1_4:
-                  if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}_{i}"):
-                     deletePlan(plan.plan_id)
-                     st.experimental_rerun()
-
-         # Plans without loans
-         st.subheader("")
-         col1, col2 = st.columns(2)
-         for i, plan in enumerate([plan for plan in plans if plan.goal_target_monthly == False]):
-            total_saving = getTotalSavings(user_id, plan.plan_id)
-            rest_saving = plan.goal_target - total_saving     
-            with col1 if i % 2 == 0 else col2:
-               st.markdown(
-                  f"""
-                  <div id="wholetext" style="background-color:#f4f4f4; padding: 10px; margin: 10px; border-radius: 10px;">
-                        <div class="plan-box">
-                           <h3>{plan.goal_name}</h3>
-                           <p><strong>Target Amount:</strong> {plan.goal_target:,.2f} {profile.user_currency}</p>
-                           <p><strong>Due Date:</strong> {plan.goal_date.strftime('%d.%m.%Y')}</p>
-                           <p style="margin: 1;"><strong>Monthly Savings Needed:</strong> {plan.goal_target_monthly:,.2f} {profile.user_currency}</p>
-                           <p style="margin: 1; color: red;"><strong>Current Savings:</strong> {total_saving:,.2f} {profile.user_currency}</p>
-                           <p style="margin: 1; color: red;"><strong>Rest Amount Needed:</strong> {rest_saving:,.2f} {profile.user_currency}</p>
-                        </div>
-                  </div>
-                  """, unsafe_allow_html=True
-               )
-            
-               col1_1, col1_2, col1_3, col1_4 = st.columns([1, 1, 0.8, 1])
-               with col1_1:
-                  if st.button(f"✅ Add Saving", key=f"add_saving_{plan.plan_id}_{i}"):
-                     st.session_state.add_saving_plan_id = plan.plan_id
-                     add_saving(user_id, plan)
-               with col1_2:
-                  if st.button(f"📈 Invest", key=f"invest_{plan.plan_id}_{i}"):
-                     st.session_state.invest_plan_id = plan.plan_id
-                     st.switch_page("pages/7_Risk_Tolerance_Assessment.py")
-               with col1_3:
-                  if st.button(f"✏️ Edit", key=f"edit_{plan.plan_id}_{i}"):
-                     st.session_state.edit_plan_id = plan.plan_id
-                     st.switch_page("pages/3_Edit_Plan.py")
-               with col1_4:
-                  if st.button(f"🗑️ Delete", key=f"delete_{plan.plan_id}_{i}"):
-                     deletePlan(plan.plan_id)
-                     st.experimental_rerun()
-
 
     else:
          login_page()
