@@ -123,11 +123,28 @@ def main():
       
       logout()
 
+      # Helper function to get a list of years
+      def get_years(start_year, end_year):
+         return [str(year) for year in range(start_year, end_year + 1)]
+
       @st.experimental_dialog("📊 Add Saving Progress")
       def add_saving(user_id, plan):
          profile = getUserInfo(user_id)
+         if '%%' in plan.goal_name:
+            plan.goal_name, saved_selected_make, saved_selected_model = plan.goal_name.split('%%')
+
          st.header(f"Plan: {plan.goal_name}")
-         savings_date = st.date_input("📅 Select Date", value=datetime.today(), format="DD.MM.YYYY")
+         months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+         years = get_years(datetime.now().year - 3, datetime.now().year + 7)
+         col1, col2 = st.columns([2, 1])
+         selected_month = col1.selectbox ("📅 Select month", months, index=datetime.now().month - 1)
+         selected_year = col2.selectbox("📅 Select year", years, index=years.index(str(datetime.now().year)))
+
+         # Map the month name to its corresponding number
+         month_number = months.index(selected_month) + 1
+
+         # Combine selected_year, month_number, and day 01 into a date
+         savings_date = datetime(int(selected_year), month_number, 1)
          savings_amount = st.number_input(f"🪙 Saving Amount for {savings_date.strftime('%B %Y')} ({profile.user_currency})", value=float(plan.goal_target_monthly))
 
          col1_1, col1_2 = st.columns([1, 1])
@@ -162,6 +179,11 @@ def main():
                st.switch_page("pages/2_Create_Plan.py")
 
       else:
+         # Process each plan to split the goal_name if it contains '%%'
+         for plan in plans:
+            if '%%' in plan.goal_name:
+               plan.goal_name, _, _ = plan.goal_name.split('%%')
+               
          st.markdown(
              f"""
              <h1>Overview of All Financial Plans for {profile.user_nickname}</h1>
@@ -277,6 +299,8 @@ def main():
          # Plans with loans
          st.subheader(" Saving Plans Summary")
          for i, plan in enumerate([plan for plan in plans]): 
+            if '%%' in plan.goal_name:
+               plan.goal_name, saved_selected_make, saved_selected_model = plan.goal_name.split('%%')
             total_saving = getTotalSavings(user_id, plan.plan_id)
             rest_saving = plan.goal_target - total_saving  
             with st.container(border=True):
