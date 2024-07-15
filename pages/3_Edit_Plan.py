@@ -425,6 +425,8 @@ def editing_page():
                             selected_car_details = df[(df['make'] == selected_make) & (df['model'] == selected_model)]
                             price = selected_car_details['sellingprice'].values[0]
                             col3.write(f"Suggested price: {currency_symbol}{price:.2f}")
+                            # Concat car brand and model to combined_name
+                            combined_name = f"{goal_name}%%{selected_make}%%{selected_model}"
 
                     car_price_input = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(price) if selected_model else 0.0, key='adjusted_car_price')
                 else:
@@ -435,6 +437,7 @@ def editing_page():
                     unsafe_allow_html=True
                     )
                     car_price_input = st.number_input('Enter the total cost of the car:', min_value=0.0, format="%.2f", key='adjusted_car_price')
+                    combined_name = saved_goal_name
                 
                 # Calculate age and date
                 target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, key='car_target_age', value=plan.goal_age)
@@ -530,7 +533,7 @@ def editing_page():
                 with col1_1:
                     if st.button("💾 Save changes"):
                         # Save plan to DB
-                        updatePlan(plan.plan_id, goal_name, target_age, due_date, 
+                        updatePlan(plan.plan_id, combined_name, target_age, due_date, 
                                     car_price_input, goal_target, monthly_saving, 
                                     current_savings, current_savings_return, savings_term_months,
                                     down_payment_percent, down_payment_amount, final_payment_percent, final_payment_amount, 
