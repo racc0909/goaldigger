@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 from datetime import datetime, timedelta, date
 import matplotlib.pyplot as plt
-from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan
+from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan, getSavings
 
 # Helper function to calculate monthly savings
 def calculate_monthly_saving(target_amount, current_savings, current_savings_return, savings_term_months, inflation_rate):
@@ -287,6 +287,77 @@ def generate_data_and_plot(plan_id, current_savings, savings_term_months, down_p
 
     st.plotly_chart(fig)
     #st.write(data)
+
+
+def create_savings_graph(plan_id):
+    plan = getPlan(plan_id)
+    savings = getSavings(plan.user_id, plan_id)
+
+    if not plan or not savings:
+        st.error("No data found for the specified plan ID.")
+        return
+
+    # Prepare data for the graph
+    saving_dates = [saving.saving_date for saving in savings]
+    actual_savings = [saving.saving_amount for saving in savings]
+
+    # Create a DataFrame for actual savings
+    df_savings = pd.DataFrame({
+        'Date': saving_dates,
+        'Actual Savings': actual_savings
+    })
+
+    # Ensure 'Date' column is in datetime format
+    df_savings['Date'] = pd.to_datetime(df_savings['Date'])
+
+    # Calculate expected savings
+    start_date = min(saving_dates)
+    end_date = plan.goal_date
+    date_range = pd.date_range(start=start_date, end=end_date, freq='MS')
+    expected_savings = [plan.goal_target_monthly for _ in range(len(date_range))]
+
+    # Create a DataFrame for expected savings
+    df_expected = pd.DataFrame({
+        'Date': date_range,
+        'Expected Savings': expected_savings
+    })
+    
+    # Merge the dataframes on Date
+    df = pd.merge(df_savings, df_expected, on='Date', how='outer').fillna(0)
+
+    # Fill 'Expected Savings' where it is 0 with plan.goal_target_monthly
+    df.loc[df['Expected Savings'] == 0, 'Expected Savings'] = plan.goal_target_monthly
+
+    # Group by month and year
+    df['Month'] = df['Date'].dt.to_period('M')
+    df_grouped = df.drop(columns='Date').groupby('Month').sum().reset_index()
+
+    # Convert 'Month' back to datetime for plotting
+    df_grouped['Month'] = df_grouped['Month'].dt.to_timestamp()
+
+    # Calculate the average of Expected Savings
+    max_y_value = max(df_grouped['Expected Savings'].max(), df_grouped['Actual Savings'].max()) + 200
+
+    # Set the minimum y-axis value to 0 or the minimum actual savings minus a margin
+    min_y_value = min(df_grouped['Expected Savings'].min(), df_grouped['Actual Savings'].min()) - 200
+
+    # Filter data to show only within the last and next 5 months
+    current_date = datetime.now()
+    past_date_limit = current_date - timedelta(days=5*30)  # approximately 5 months ago
+    future_date_limit = current_date + timedelta(days=5*30)  # approximately 5 months from now
+
+    df_filtered = df_grouped[(df_grouped['Month'] >= past_date_limit) & (df_grouped['Month'] <= future_date_limit)]
+
+    # Create the plot with markers for each data point
+    fig = px.line(df_filtered, x='Month', y=['Actual Savings', 'Expected Savings'],
+                  title='Savings Comparison',
+                  labels={'value': 'Amount', 'variable': 'Legend'},
+                  markers=True)
+
+    # Update the y-axis range
+    fig.update_yaxes(range=[min_y_value, max_y_value])
+
+    st.plotly_chart(fig)
 
 # Function to filter plans based on the selected date range
 def filter_plans_by_date(plans, selected_month):
