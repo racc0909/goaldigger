@@ -361,6 +361,8 @@ def editing_page():
                 if '%%' in plan.goal_name:
                     # Split the combined_name into goal name and brand and model
                     saved_goal_name, saved_selected_make, saved_selected_model = plan.goal_name.split('%%')
+                else:
+                    saved_goal_name = plan.goal_name
                 st.markdown(
                     f"""
                     <h1>🚘 {saved_goal_name}</h1>
@@ -368,7 +370,7 @@ def editing_page():
                     unsafe_allow_html=True
                 )
                 # Enter goal name
-                goal_name = st.text_input("Name of the plan", value = saved_goal_name)
+                saved_goal_name = st.text_input("Name of the plan", value = saved_goal_name)
 
                 df = pd.read_excel("data/car_prices.xlsx")
 
