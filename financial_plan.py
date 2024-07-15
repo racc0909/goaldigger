@@ -30,7 +30,7 @@ def calculate_monthly_saving(target_amount, current_savings, current_savings_ret
         if monthly_interest_rate == 0:
             if number_of_payments == 0:
                 # todo
-                number_of_payments == 3
+                number_of_payments = 3
             monthly_saving = future_value_needed / number_of_payments
         else:
             try:
