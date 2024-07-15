@@ -202,7 +202,7 @@ def editing_page():
                 # Calculate monthly saving
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
                 monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)   
-                rest_saving = goal_target - total_saving
+                rest_saving = float(goal_target) - float(total_saving)
                 monthly_final_payment = calculateMonthlyFinalPayment(final_payment_amount, loan_term_years)
                 combined_monthly_payment = monthly_loan_payment + monthly_final_payment
 
@@ -520,7 +520,7 @@ def editing_page():
 
                 # Calculate monthly saving
                 monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
-                rest_saving = goal_target - total_saving
+                rest_saving = float(goal_target) - float(total_saving)
                 monthly_final_payment = calculateMonthlyFinalPayment(final_payment_amount, loan_term_years)
                 combined_monthly_payment = monthly_loan_payment + monthly_final_payment
 
@@ -632,7 +632,7 @@ def editing_page():
                 goal_target = retirement_amount - current_savings
                 monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
                 
-                rest_saving = goal_target - total_saving
+                rest_saving = float(goal_target) - float(total_saving)
                 monthly_final_payment = 0
                 combined_monthly_payment = 0
 
@@ -731,7 +731,7 @@ def editing_page():
 
                 st.divider()
   
-                rest_saving = goal_target - total_saving
+                rest_saving = float(goal_target) - float(total_saving)
 
                 # LOAN OPTION
                 col1_1, col1_2 = st.columns([2, 3])
