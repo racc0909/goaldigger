@@ -733,8 +733,6 @@ def editing_page():
                     current_savings_return = 0
 
                 st.divider()
-  
-                rest_saving = float(goal_target) - float(total_saving)
 
                 # LOAN OPTION
                 col1_1, col1_2 = st.columns([2, 3])
@@ -801,6 +799,7 @@ def editing_page():
                     monthly_loan_payment = 0.0
                     goal_target = goal_total - current_savings
                     
+                rest_saving = float(goal_target) - float(total_saving)
                 savings_term_months = (due_date.year - current_date.year) * 12 + (due_date.month - current_date.month)
                 monthly_final_payment = calculateMonthlyFinalPayment(final_payment_amount, loan_term_years)
                 combined_monthly_payment = monthly_loan_payment + monthly_final_payment
