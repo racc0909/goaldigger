@@ -123,7 +123,7 @@ def planning_page():
                 loan_term_years = st.number_input('Mortgage loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=20)
                 loan_start_date = st.date_input("Mortgage start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value=due_date)  
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - loan_amount
+                goal_target = down_payment_amount if down_payment_amount > 0 else goal_total - loan_amount
                 
             else:
                 down_payment_percent = 0.0
@@ -135,7 +135,7 @@ def planning_page():
                 loan_term_years = 0
                 loan_start_date = current_date
                 monthly_loan_payment = 0.0
-                goal_target = goal_total - current_savings
+                goal_target = goal_total
                 down_payment_radio = None
                 final_payment_radio = None
 
@@ -270,7 +270,7 @@ def planning_page():
                 loan_term_years = st.number_input('Car loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=2)
                 loan_start_date = st.date_input("Car loan start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value=due_date)  
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - loan_amount
+                goal_target = down_payment_amount if down_payment_amount > 0 else goal_total - loan_amount
                 
             else:
                 down_payment_percent = 0.0
@@ -282,7 +282,7 @@ def planning_page():
                 loan_term_years = 0
                 loan_start_date = current_date
                 monthly_loan_payment = 0.0
-                goal_target = goal_total - current_savings
+                goal_target = goal_total
                 down_payment_radio = None
                 final_payment_radio = None
 
@@ -340,7 +340,7 @@ def planning_page():
             savings_term_months = (target_age - current_age) * 12
             monthly_final_payment = 0.0
             combined_monthly_payment = 0.0
-            goal_target = goal_total - current_savings
+            goal_target = goal_total
             monthly_saving, future_goal_target = calculate_monthly_saving(goal_target, current_savings, current_savings_return, savings_term_months, inflation_rate)
                 
             st.divider()
@@ -441,7 +441,7 @@ def planning_page():
                 loan_term_years = st.number_input('Loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=20)
                 loan_start_date = st.date_input("Loan start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value=due_date)  
                 monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
-                goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - loan_amount
+                goal_target = down_payment_amount if down_payment_amount > 0 else goal_total - loan_amount
                 
             else:
                 down_payment_percent = 0.0
@@ -453,7 +453,7 @@ def planning_page():
                 loan_term_years = 0
                 loan_start_date = current_date
                 monthly_loan_payment = 0.0
-                goal_target = goal_total - current_savings
+                goal_target = goal_total
                 down_payment_radio = None
                 final_payment_radio = None
 
