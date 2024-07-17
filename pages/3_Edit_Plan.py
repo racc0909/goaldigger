@@ -141,37 +141,31 @@ def editing_page():
                 with col1_1:
                     st.subheader('Choose an Option: 👉')
                 with col1_2:
-                    loan_radio = st.radio("Do you want to calculate the mortgage loan?", ("Yes", "No"), index= 0 if plan.loan_amount > 0 else 1)
+                    loan_radio = st.radio("Do you want to calculate the mortgage loan?", ("Yes", "No"), index = 0 if plan.button_loan == "Yes" else 1)
                 
                 if loan_radio == "Yes":
                     st.divider()
                     # Down payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        down_payment_radio = st.radio("Is there a down payment?", ("Yes", "No"), index=0 if plan.payment_first_percent > 0 else 1)
+                        down_payment_radio = st.radio("Is there a down payment?", ("Yes", "No"), index = 0 if plan.button_payment_first == "Yes" else 1)
                     if down_payment_radio == "Yes":
                         with col1_2:
-                            down_payment_percent = st.slider('Down payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=float(plan.payment_first_percent))
+                            down_payment_percent = st.slider('Down payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=float(plan.payment_first_percent) if plan.button_payment_first == "Yes" else 10.00)
                             down_payment_amount = round(goal_total * (down_payment_percent / 100), 2)
                             st.write(f"👉 Down payment: {down_payment_amount:.2f} {profile.user_currency}")
-                    else:
-                        down_payment_percent = 0.0
-                        down_payment_amount = 0.0
                     
                     st.divider()
                     
                     # Final payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), index=0 if plan.payment_last_percent > 0 else 1)
+                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), ndex = 0 if plan.button_payment_last == "Yes" else 1)
                     if final_payment_radio == "Yes":
                         with col1_2:
-                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent))
+                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent) if plan.button_payment_last == "Yes" else 10.00)
                             final_payment_amount = round(goal_total * (final_payment_percent / 100), 2)  
                             st.write(f"👉 Final payment: {final_payment_amount:.2f} {profile.user_currency}")
-                    else:
-                        final_payment_percent = 0.0
-                        final_payment_amount = 0.0
 
                     st.divider()
 
@@ -182,9 +176,9 @@ def editing_page():
                     with col1_1:
                         loan_amount = st.number_input(f'Mortgage loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=loan_amount_input)
                     with col1_2:
-                        loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest))
-                    loan_term_years = st.number_input('Mortgage loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
-                    loan_start_date = st.date_input("Mortgage start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value="01.01.1900" if loan_radio == "No" else plan.loan_startdate)  
+                        loan_interest_rate = st.slider('Mortgage interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest) if plan.button_loan == "Yes" else 5.7)
+                    loan_term_years = st.number_input('Mortgage loan term (years):', min_value=1, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration if plan.button_loan == "Yes" else 20)
+                    loan_start_date = st.date_input("Mortgage start date:", min_value=profile.user_birthday, key='loan_start_date', format="DD.MM.YYYY", value=plan.loan_startdate if plan.button_loan == "Yes" else current_date)  
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                     goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - loan_amount
                 else:
@@ -435,7 +429,7 @@ def editing_page():
                     goal_total = st.number_input('Enter the total cost of the car:', min_value=0.0, format="%.2f", key='adjusted_car_price')
                 
                 # Calculate age and date
-                target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, key='car_target_age', value=plan.goal_age)
+                target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, value=plan.goal_age)
                 due_date = calculateGoalDate(profile.user_birthday, target_age)
                 savings_term_months = (target_age - current_age) * 12
                 
@@ -456,7 +450,7 @@ def editing_page():
                 with col1_1:
                     st.subheader('Choose an Option: 👉')
                 with col1_2:
-                    loan_radio = st.radio("Do you want to calculate the car loan?", ("Yes", "No"), index=0 if plan.loan_amount > 0 else 1)
+                    loan_radio = st.radio("Do you want to calculate the car loan?", ("Yes", "No"), index = 0 if plan.button_loan == "Yes" else 1)
                 
                 if loan_radio == "Yes":
                     st.divider()
@@ -464,30 +458,24 @@ def editing_page():
                     # Down payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        down_payment_radio = st.radio("Is there a down payment?", ("Yes", "No"), index=0 if plan.payment_first_percent > 0 else 1)
+                        down_payment_radio = st.radio("Is there a down payment?", ("Yes", "No"), index = 0 if plan.button_payment_first == "Yes" else 1)
                     if down_payment_radio == "Yes":
                         with col1_2:
-                            down_payment_percent = st.slider('Down payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=float(plan.payment_first_percent))
+                            down_payment_percent = st.slider('Down payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=float(plan.payment_first_percent) if plan.button_payment_first == "Yes" else 10.00)
                             down_payment_amount = round(goal_total * (down_payment_percent / 100), 2)
                             st.write(f"👉 Down payment: {down_payment_amount:.2f} {profile.user_currency}")
-                    else:
-                        down_payment_percent = 0.0
-                        down_payment_amount = 0.0
                     
                     st.divider()
 
                     # Final payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), index=0 if plan.payment_last_percent > 0 else 1)
+                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), ndex = 0 if plan.button_payment_last == "Yes" else 1)
                     if final_payment_radio == "Yes":
                         with col1_2:
-                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent))
+                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent) if plan.button_payment_last == "Yes" else 10.00)
                             final_payment_amount = round(goal_total * (final_payment_percent / 100), 2)  
                             st.write(f"👉 Final payment: {final_payment_amount:.2f} {profile.user_currency}")
-                    else:
-                        final_payment_percent = 0.0
-                        final_payment_amount = 0.0
 
                     st.divider()
 
@@ -498,9 +486,9 @@ def editing_page():
                     with col1_1:
                         loan_amount = st.number_input(f'Car loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=loan_amount_input)
                     with col1_2:
-                        loan_interest_rate = st.slider('Car loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest))
-                    loan_term_years = st.number_input('Car loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration)
-                    loan_start_date = st.date_input("Car loan start date:", min_value=current_date, key='loan_start_date', format="DD.MM.YYYY", value=current_date if loan_radio == "No" else plan.loan_startdate)  
+                        loan_interest_rate = st.slider('Car loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", key='loan_interest_rate', value=float(plan.loan_interest) if plan.button_loan == "Yes" else 5.7)
+                    loan_term_years = st.number_input('Car loan term (years):', min_value=0, max_value=50, step=1, key='loan_term_years', value=plan.loan_duration if plan.button_loan == "Yes" else 20)
+                    loan_start_date = st.date_input("Car loan start date:", min_value=profile.user_birthday, key='loan_start_date', format="DD.MM.YYYY", value=plan.loan_startdate if plan.button_loan == "Yes" else current_date)  
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                     goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - loan_amount
                 
@@ -738,7 +726,7 @@ def editing_page():
                 with col1_1:
                     st.subheader('Choose an Option: 👉')
                 with col1_2:
-                    loan_radio = st.radio("Do you want to take a loan to cover this goal?", ("Yes", "No"), index=0 if plan.loan_amount > 0 else 1)
+                    loan_radio = st.radio("Do you want to take a loan to cover this goal?", ("Yes", "No"), index = 0 if plan.button_loan == "Yes" else 1)
                 
                 if loan_radio == "Yes":
                     st.divider()
@@ -746,30 +734,24 @@ def editing_page():
                     # Down payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        down_payment_radio = st.radio("Is there a down payment?", ("Yes", "No"), index=0 if plan.payment_first_percent > 0 else 1)
+                        down_payment_radio = st.radio("Is there a down payment?", ("Yes", "No"), index = 0 if plan.button_payment_first == "Yes" else 1)
                     if down_payment_radio == "Yes":
                         with col1_2:
-                            down_payment_percent = st.slider('Down payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=float(plan.payment_first_percent))
+                            down_payment_percent = st.slider('Down payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='down_payment_percent', value=float(plan.payment_first_percent) if plan.button_payment_first == "Yes" else 10.00)
                             down_payment_amount = round(goal_total * (down_payment_percent / 100), 2)
                             st.write(f"👉 Down payment: {down_payment_amount:.2f} {profile.user_currency}")
-                    else:
-                        down_payment_percent = 0.0
-                        down_payment_amount = 0.0
                     
                     st.divider()
 
                     # Final payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), index=0 if plan.payment_last_percent > 0 else 1)
+                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), ndex = 0 if plan.button_payment_last == "Yes" else 1)
                     if final_payment_radio == "Yes":
                         with col1_2:
-                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent))
+                            final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent) if plan.button_payment_last == "Yes" else 10.00)
                             final_payment_amount = round(goal_total * (final_payment_percent / 100), 2)  
                             st.write(f"👉 Final payment: {final_payment_amount:.2f} {profile.user_currency}")
-                    else:
-                        final_payment_percent = 0.0
-                        final_payment_amount = 0.0
 
                     st.divider()
 
@@ -780,9 +762,9 @@ def editing_page():
                     with col1_1:
                         loan_amount = st.number_input(f'Loan amount ({currency_symbol}):', min_value=0.0, format="%.2f", value=loan_amount_input)
                     with col1_2:
-                        loan_term_years = st.number_input('Loan term (years):', min_value=0, max_value=30, step=1, value=plan.loan_duration)
-                    loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value = float(plan.loan_interest))
-                    loan_start_date = st.date_input("Loan start date:", value=plan.loan_startdate, format="DD.MM.YYYY")
+                        loan_term_years = st.number_input('Loan term (years):', min_value=0, max_value=30, step=1, value=plan.loan_duration if plan.button_loan == "Yes" else 20)
+                    loan_interest_rate = st.slider('Loan interest rate (%):', min_value=0.0, max_value=20.0, step=0.1, format="%.1f", value = float(plan.loan_interest) if plan.button_loan == "Yes" else 5.7)
+                    loan_start_date = st.date_input("Loan start date:", value=plan.loan_startdate if plan.button_loan == "Yes" else current_date, format="DD.MM.YYYY", min_value=profile.user_birthday)
                     monthly_loan_payment = calculate_loan_payment(loan_amount, loan_interest_rate, loan_term_years)
                     goal_target = down_payment_amount - current_savings if down_payment_amount > 0 else goal_total - loan_amount
                 
