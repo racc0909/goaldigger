@@ -25,94 +25,115 @@ css_file_path = "data/titlestyle.css"
 load_css(css_file_path)
 
 def login_page():
-    # 引入 Google Fonts
-    st.markdown(
-        """
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Montserrat+Alternates:wght@400&display=swap');
+      # Google Fonts
+      st.markdown(
+         """
+         <style>
+         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Montserrat+Alternates:wght@400&display=swap');
 
-        h1 {
-            font-family: 'Montserrat', sans-serif;
-            color: #4535C1;
-        }
-        .custom-subheader {
-            font-family: 'Montserrat', sans-serif;
-            color: #478CCF;
-            font-size: 24px;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+         h1 {
+               font-family: 'Montserrat', sans-serif;
+               color: #4535C1;
+         }
+         .custom-subheader {
+               font-family: 'Montserrat', sans-serif;
+               color: #478CCF;
+               font-size: 24px;
+         }
+         </style>
+         """,
+         unsafe_allow_html=True
+      )
 
-    # 使用 HTML 和 CSS 更改标题颜色和字体
-    st.markdown(
-        f"""
-        <h1>✨ Welcome to Goaldigger ✨</h1>
-        """,
-        unsafe_allow_html=True
-    )
-    st.divider()
-    st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
+      # Welcome page
+      st.markdown(
+         f"""
+         <h1>✨ Welcome to Goaldigger ✨</h1>
+         """,
+         unsafe_allow_html=True
+      )
+      st.divider()
+      st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
+      st.write("""
+               🏆 This project represents the hard work and dedication of [Shiya Li](https://www.linkedin.com/in/shiya-li-19676620a), [Nhu Nguyen](https://www.linkedin.com/in/maithaonhunguyen), and [Linh Ha Le](https://www.linkedin.com/in/linh-ha-le), created over 4 weeks for the course "Financial Economics with Python" in the Summer Semester of 2024 🏆
+               """)
 
-    # Signup and Login Page
-    if "signup_mode" not in st.session_state:
-        st.session_state.signup_mode = False
+      # Signup and Login Page
+      if "signup_mode" not in st.session_state:
+         st.session_state.signup_mode = False
 
-    if not st.session_state.signup_mode:
-        # Login
-        st.markdown(
-            f"""
-            <h2 class="custom-subheader">Login</h2>
-            """,
-            unsafe_allow_html=True
-        )
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        if st.button("Login"):
-            # Function to authenticate the user
-            user = authenticate(username, password)
-            if user:
-                st.session_state.logged_in = True
-                st.session_state.user_id = user.user_id
-                st.success("Login successfully!")
-                time.sleep(0.1)
-                st.experimental_rerun()
-            else:
-                st.error("Invalid username or password.")
-        st.markdown(
-            """
-            <p style="font-family: 'Montserrat', sans-serif; color: #7776B3; font-size: 14px;">New here?</p>
-            """,
-            unsafe_allow_html=True
-        )
-        if st.button("Create an account!"):
-            st.session_state.signup_mode = True
-            st.experimental_rerun()
-    else:
-        # Sign up
-        st.markdown(
+      if not st.session_state.signup_mode:
+         # Login
+         st.markdown(
+               f"""
+               <h2 class="custom-subheader">Login</h2>
+               """,
+               unsafe_allow_html=True
+         )
+         username = st.text_input("Username")
+         password = st.text_input("Password", type="password")
+         if st.button("Login"):
+               # Function to authenticate the user
+               user = authenticate(username, password)
+               if user:
+                  st.session_state.logged_in = True
+                  st.session_state.user_id = user.user_id
+                  st.success("Login successfully!")
+                  time.sleep(0.1)
+                  st.experimental_rerun()
+               else:
+                  st.error("Invalid username or password.")
+
+         st.markdown(
+               """
+               <p style="font-family: 'Montserrat', sans-serif; color: #7776B3; font-size: 14px;">New here?</p>
+               """,
+               unsafe_allow_html=True
+         )
+         if st.button("Create an account!"):
+               st.session_state.signup_mode = True
+               st.experimental_rerun()
+
+         # Tip box content
+         tip_message = """
+         **💡**
+         We don't require your real data for signup. But if you prefer not to register a new user, you have the option to use a pre-made login.
+
+         Feel free check out our app with:
+         - **Username:** fake_user
+         - **Password:** fake_password
+         """
+
+         # Display the tip box
+         st.warning(tip_message)
+      else:
+         # Sign up
+         st.markdown(
             f"""
             <h2 class="custom-subheader">Sign Up</h2>
             """,
             unsafe_allow_html=True
-        )
-        username = st.text_input("New Username")
-        password = st.text_input("New Password", type="password")
-        if st.button("Sign Up"):
+         )
+         username = st.text_input("New Username")
+         password = st.text_input("New Password", type="password")
+         if st.button("Sign Up"):
             # Function to add user to database
             if signup(username, password):
-                st.balloons()
-                st.success("User created successfully!")
-                st.session_state.signup_mode = False
-                # Automatically logging in
-                user = authenticate(username, password)
-                st.session_state.user_id = user.user_id
-                st.session_state.logged_in = True
-                time.sleep(0.5)
-                st.switch_page("pages/1_Personal_Information.py")
+                  st.balloons()
+                  st.success("User created successfully!")
+                  st.session_state.signup_mode = False
+                  # Automatically logging in
+                  user = authenticate(username, password)
+                  st.session_state.user_id = user.user_id
+                  st.session_state.logged_in = True
+                  time.sleep(0.5)
+                  st.switch_page("pages/1_Personal_Information.py")
             else:
-                st.error("Username already taken")
+                  st.error("Username already taken")
+         
+         if st.button("Back to Login"):
+            st.session_state.signup_mode = False
+            st.experimental_rerun()
 
 def main():
     # Content of the main page
