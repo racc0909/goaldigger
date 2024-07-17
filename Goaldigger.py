@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objs as go
 import pandas as pd
 from datetime import datetime, timedelta, date
-from financial_plan import filter_plans_by_date, filter_loans_by_date
+from financial_plan import filter_plans_by_date, filter_loans_by_date, calculateMonthlyFinalPayment
 from graph import display_timeline, display_piechart
 from db import authenticate, signup, logout, deletePlan, showChosenPages, getUserInfo, getUserPlans, getTotalSavings, logout, createSaving
 import time
@@ -320,7 +320,7 @@ def main():
              unsafe_allow_html=True
          )
          for i, plan in enumerate([plan for plan in plans]): 
-            total_saving = getTotalSavings(user_id, plan.plan_id)
+            total_saving = getTotalSavings(user_id, plan.plan_id) + plan.saving_initial
             rest_saving = plan.goal_target - total_saving  
             with st.container(border=True):
                col1_1, col1_2, col1_3 = st.columns([3, 1, 1.2])
@@ -339,16 +339,23 @@ def main():
                if plan.loan_amount > 0:
                   tab1, tab2, tab3 = st.tabs(["📊 Saving Progress", "📝 Plan Details", "💳 Loan Details"])
                   with tab3:
-                     st.markdown(f"<p style='color: blue;'><strong>Monthly Loan Payment:</strong> {plan.goal_target_monthly:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
-                     st.markdown(f"<p><strong>Total Loan Payment:</strong> {plan.loan_amount:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
-                     st.markdown(f"<p><strong>Loan End Date:</strong> {plan.loan_startdate.strftime('%d.%m.%Y')} to {(plan.loan_startdate + pd.DateOffset(years=plan.loan_duration)).strftime('%d.%m.%Y')}</p>", unsafe_allow_html=True)
+                     st.markdown(f"<p><strong>Total Loan Payment:</strong> {plan.loan_amount:,.2f} {profile.user_currency}</p>", unsafe_allow_html=True)
+                     st.markdown(f"<p><strong>Loan Duration:</strong> {plan.loan_startdate.strftime('%d.%m.%Y')} - {(plan.loan_startdate + pd.DateOffset(years=plan.loan_duration)).strftime('%d.%m.%Y')}</p>", unsafe_allow_html=True)
+                     st.markdown(f"<p><strong>Monthly Loan Payment:</strong> <span style='color: blue;'>{plan.goal_target_monthly:,.2f} {profile.user_currency}</span></p>", unsafe_allow_html=True)
+                     if plan.payment_last > 0:
+                        monthly_final_payment = calculateMonthlyFinalPayment(plan.payment_last, plan.loan_duration)
+                        st.markdown(f"<p><strong>Additional Savings Needed for Final Payment:</strong> <span style='color: blue;'>{monthly_final_payment:,.2f} {profile.user_currency}</span></p>", unsafe_allow_html=True)
+                        st.markdown(f"<p><strong>Combined Monthly Payment:</strong> <span style='color: red;'>{monthly_final_payment + plan.goal_target_monthly:,.2f} {profile.user_currency}</span></p>", unsafe_allow_html=True)
+
                
                else:
                   tab1, tab2 = st.tabs(["📊 Saving Progress", "📝 Plan Details"])
 
                with tab1:
-                  st.markdown(f"<p style='margin: 1;'><strong>Current Savings:</strong> {total_saving:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
-                  st.markdown(f"<p style='margin: 1;'><strong>Rest Amount Needed:</strong> {rest_saving:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p style='margin: 1;'><strong>Saving Target:</strong> {plan.goal_target:,.2f} {profile.user_currency}</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p style='margin: 1;'><strong>Monthly Savings Required:</strong> <span style='color: green;'>{plan.goal_target_monthly:,.2f} {profile.user_currency}</span> per month for <span style='color: green;'>{plan.saving_duration}</span> months</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p style='margin: 1;'><strong>Current Savings:</strong> <span style='color: blue;'>{total_saving:,.2f} {profile.user_currency}</span></p>", unsafe_allow_html=True)
+                  st.markdown(f"<p style='margin: 1;'><strong>Rest Amount Needed:</strong> <span style='color: red;'>{rest_saving:,.2f} {profile.user_currency}</span></p>", unsafe_allow_html=True)
 
                   if plan.goal_target > 0:
                      progress = min(float(total_saving / plan.goal_target), 1.0)
@@ -361,9 +368,9 @@ def main():
                      st.balloons()
 
                with tab2:
-                  st.markdown(f"<p><strong>Target Amount:</strong> {plan.goal_target:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p><strong>Total Amount:</strong> {plan.goal_total:,.2f} {profile.user_currency}</p>", unsafe_allow_html=True)
+                  st.markdown(f"<p><strong>Target Age:</strong> {plan.goal_age} years old</p>", unsafe_allow_html=True)
                   st.markdown(f"<p><strong>Due Date:</strong> {plan.goal_date.strftime('%d.%m.%Y')}</p>", unsafe_allow_html=True)
-                  st.markdown(f"<p style='margin: 1;'><strong>Monthly Savings Needed:</strong> {plan.goal_target_monthly:,.2f} {'EUR'}</p>", unsafe_allow_html=True)
                   
                st.markdown("</div>", unsafe_allow_html=True)
 

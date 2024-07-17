@@ -267,7 +267,7 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
                     if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
@@ -277,13 +277,13 @@ def editing_page():
                         generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
 
                 with tab2:
+                    create_monthly_comparison_graph(plan_id)
+        
+                with tab3:
                     if plan.goal_target > 0:
                         create_savings_graph(plan_id)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
-        
-                with tab3:
-                    create_monthly_comparison_graph(plan_id)
 
                 st.divider()
             
@@ -424,7 +424,7 @@ def editing_page():
                             price = selected_car_details['sellingprice'].values[0]
                             col3.write(f"Suggested price: {price:.2f} {currency_symbol}")
 
-                    goal_total = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(price) if selected_model else 0.0, key='adjusted_car_price')
+                    goal_total = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(plan.goal_total) if plan.goal_total else float(price))
                 else:
                     st.markdown(
                     f"""
@@ -432,7 +432,7 @@ def editing_page():
                     """,
                     unsafe_allow_html=True
                     )
-                    goal_total = st.number_input('Enter the total cost of the car:', min_value=0.0, format="%.2f", key='adjusted_car_price')
+                    goal_total = st.number_input('Enter the total cost of the car:', min_value=0.0, format="%.2f", key='adjusted_car_price', value = float(plan.goal_total))
                 
                 # Calculate age and date
                 target_age = st.number_input('Enter the age you wish to buy the car:', min_value=current_age + 1, max_value=100, step=1, value=plan.goal_age)
@@ -581,7 +581,7 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
                     if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
@@ -591,13 +591,13 @@ def editing_page():
                         generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
 
                 with tab2:
+                    create_monthly_comparison_graph(plan_id)
+        
+                with tab3:
                     if plan.goal_target > 0:
                         create_savings_graph(plan_id)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
-        
-                with tab3:
-                    create_monthly_comparison_graph(plan_id)
 
 
             # --- RETIREMENT SAVINGS PLAN ----
@@ -703,7 +703,7 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
                     if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
@@ -713,13 +713,13 @@ def editing_page():
                         generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
 
                 with tab2:
+                    create_monthly_comparison_graph(plan_id)
+        
+                with tab3:
                     if plan.goal_target > 0:
                         create_savings_graph(plan_id)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
-        
-                with tab3:
-                    create_monthly_comparison_graph(plan_id)
 
             # --- CUSTOMIZED FINANCIAL PLAN ---
             if page == "Customized Financial Plan":
@@ -882,7 +882,7 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
                     if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
@@ -892,13 +892,13 @@ def editing_page():
                         generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
 
                 with tab2:
+                    create_monthly_comparison_graph(plan_id)
+        
+                with tab3:
                     if plan.goal_target > 0:
                         create_savings_graph(plan_id)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
-        
-                with tab3:
-                    create_monthly_comparison_graph(plan_id)
         else: 
             st.error("No plan selected for editing.")
             return

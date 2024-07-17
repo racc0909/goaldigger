@@ -70,7 +70,7 @@ def assessment_page():
             # 使用自定义样式的子标题
             st.markdown(
                 f"""
-                <p class="custom-subheader">So, you're planning to save <span style="text-decoration: underline;">{saving_amount}</span> {profile.user_currency} over <span style="text-decoration: underline;">{saving_time}</span> months, huh? That's great! Now, let's talk about your risk tolerance. How bold are you feeling today? 😃</p>
+                <p class="custom-subheader">So, you're planning to save <span style="text-decoration: underline;">{saving_amount:.2f}</span> {profile.user_currency} over <span style="text-decoration: underline;">{saving_time}</span> months, huh? That's great! Now, let's talk about your risk tolerance. How bold are you feeling today? 😃</p>
                 """,
                 unsafe_allow_html=True
             )

@@ -35,7 +35,7 @@ def create_custom_legend(user_id, savings_distribution, custom_colors):
     for i, (name, value) in enumerate(savings_distribution.items()):
         color = custom_colors[i % len(custom_colors)]
         st.markdown(
-                f"<p style='color:{color};'><strong>{name}:</strong> {profile.user_currency}{value:,.2f}</p>", 
+                f"<p style='color:{color};'><strong>{name}:</strong> {value:,.2f} {profile.user_currency}</p>", 
                 unsafe_allow_html=True
         )
 
