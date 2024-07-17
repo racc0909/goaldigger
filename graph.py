@@ -7,6 +7,7 @@ import plotly.express as px
 from datetime import datetime, timedelta, date
 import matplotlib.pyplot as plt
 from db import getUserPlans, getUserInfo, getTotalSavingsByYear, getPlan, getSavings, getTotalSavingsByMonth
+from financial_plan import calculateMonthlyFinalPayment
 
 # Custom color palette extracted from the provided image
 custom_colors = [
@@ -380,11 +381,77 @@ def create_savings_graph(plan_id):
 
     # Create the plot with markers for each data point
     fig = px.line(df_filtered, x='Month', y=['Actual Savings', 'Expected Savings'],
-                  title='Savings Comparison',
+                  title='Monthly Saving Progress',
                   labels={'value': 'Amount', 'variable': 'Legend'},
-                  markers=True)
+                  markers=True,
+                  color_discrete_map={'Actual Savings': 'red', 'Expected Savings': '#1f77b4'})
+
+    # Update the traces to customize the line styles
+    fig.update_traces(selector=dict(name='Actual Savings'), line=dict(dash='dash'))
+    fig.update_traces(selector=dict(name='Expected Savings'), line=dict(dash='solid'))
 
     # Update the y-axis range
     fig.update_yaxes(range=[min_y_value, max_y_value])
 
+    st.plotly_chart(fig)
+
+def create_monthly_comparison_graph(plan_id):
+    plan = getPlan(plan_id)
+
+    # Calculate monthly_final_payment
+    monthly_final_payment = calculateMonthlyFinalPayment(plan.payment_last, plan.loan_duration)
+
+    # Create date ranges
+    saving_end_date = plan.created_on + timedelta(days=plan.saving_duration * 30)
+    loan_end_date = saving_end_date + timedelta(days=plan.loan_duration * 12 * 30)
+    
+    dates = []
+    target_monthly = []
+    loan_monthly = []
+
+    current_date = plan.created_on
+    while current_date <= loan_end_date:
+        dates.append(current_date)
+        if current_date <= saving_end_date:
+            target_monthly.append(plan.goal_target_monthly)
+            loan_monthly.append(0)
+        else:
+            target_monthly.append(monthly_final_payment)
+            loan_monthly.append(plan.loan_monthly)
+        current_date += timedelta(days=30)
+
+    # Create a DataFrame for plotting
+    df = pd.DataFrame({
+        'Date': dates,
+        'Monthly Saving': target_monthly,
+        'Monthly Loan Payment': loan_monthly
+    })
+
+    # Ensure all numerical columns are of float type
+    df['Monthly Saving'] = df['Monthly Saving'].astype(float)
+    df['Monthly Loan Payment'] = df['Monthly Loan Payment'].astype(float)
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    # Create the plot
+    fig = px.line(df, x='Date', y=['Monthly Saving', 'Monthly Loan Payment'],
+                  title='Monthly Savings and Loan Payments Comparison',
+                  labels={'value': 'Amount', 'variable': 'Legend'},
+                  markers=False,
+                  color_discrete_map={'Monthly Saving': 'red', 'Monthly Loan Payment': '#1f77b4'})
+
+    # Add a vertical line to separate saving and loan periods
+    fig.add_vline(x=saving_end_date, line_width=1.5, line_dash="dash", line_color="darkgrey")
+
+    # Add annotations for the periods with adjusted positions and opacity
+    max_value = max(float(df['Monthly Saving'].max()), float(df['Monthly Loan Payment'].max()))
+    fig.add_annotation(x=saving_end_date - timedelta(days=plan.saving_duration * 15), y=max_value * 1.2, 
+                       text="Saving Period", showarrow=False, font=dict(size=14, color="red"), opacity=0.6)
+    fig.add_annotation(x=saving_end_date + timedelta(days=plan.loan_duration * 6 * 30), y=max_value * 1.2, 
+                       text="Loan Period", showarrow=False, font=dict(size=14, color="blue"), opacity=0.6)
+    
+    # Update the traces to customize the line styles
+    fig.update_traces(selector=dict(name='Monthly Loan Payment'), line=dict(dash='solid'))
+    fig.update_traces(selector=dict(name='Monthly Saving'), line=dict(dash='solid'))
+
+    # Display the plot in Streamlit
     st.plotly_chart(fig)

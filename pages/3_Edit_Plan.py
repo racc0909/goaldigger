@@ -4,7 +4,7 @@ from datetime import datetime, date, timedelta
 import time
 from db import getPlan, getUserInfo, updatePlan, createSaving, getSavings, getTotalSavings, deletePlan, logout, backToOverview, showChosenPages
 from financial_plan import calculate_monthly_saving, calculate_loan_payment, filter_models, calculateMonthlyFinalPayment, calculateGoalDate, calculateUserAge
-from graph import generate_data_and_plot, create_savings_graph, generate_monthly_data_and_plot
+from graph import generate_data_and_plot, create_savings_graph, generate_monthly_data_and_plot, create_monthly_comparison_graph
 import base64
 
 showChosenPages()
@@ -267,7 +267,7 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2 = st.tabs(["📊 Plan Overview", "📝 Saving Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
                 with tab1:
                     if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
@@ -281,6 +281,9 @@ def editing_page():
                         create_savings_graph(plan_id)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
+        
+                with tab3:
+                    create_monthly_comparison_graph(plan_id)
 
                 st.divider()
             
@@ -398,18 +401,20 @@ def editing_page():
 
                     if selected_brand:
                         models = filter_models(df, selected_brand)
+                        # Convert all elements in models to strings
+                        models_str = [str(model) for model in models]
                         
                         if plan.goal_name_extra2:
                             # Find the index of plan.goal_name_extra2 in the unique values
                             try:
-                                index_model = list(models).index(plan.goal_name_extra2)
+                                index_model = list(models_str).index(str(plan.goal_name_extra2))
                             except ValueError:
                                 index_model = 0
                         else:
                             index_model = 0
 
                         # Check if index_model is valid and within bounds
-                        if not (0 <= index_model < len(models) +1):
+                        if len(models) + 1 < index_model < 0:
                             index_model = 0
 
                         selected_model = col2.selectbox('Select Car Model', models, index=index_model)
@@ -576,7 +581,7 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2 = st.tabs(["📊 Plan Overview", "📝 Saving Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
                 with tab1:
                     if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
@@ -590,6 +595,9 @@ def editing_page():
                         create_savings_graph(plan_id)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
+        
+                with tab3:
+                    create_monthly_comparison_graph(plan_id)
 
 
             # --- RETIREMENT SAVINGS PLAN ----
@@ -625,8 +633,21 @@ def editing_page():
                  
                 total_saving_plus = float(total_saving) + current_savings
                 rest_saving = float(goal_target) - float(total_saving_plus)
+                # Place holder
                 monthly_final_payment = 0
                 combined_monthly_payment = 0
+                down_payment_percent = 0.0
+                down_payment_amount = 0.0
+                final_payment_percent = 0.0
+                final_payment_amount = 0.0
+                loan_amount = 0.0
+                loan_interest_rate = 0.0
+                loan_term_years = 0
+                loan_start_date = current_date
+                monthly_loan_payment = 0.0
+                loan_radio = None
+                down_payment_radio = None
+                final_payment_radio = None
 
                 st.divider()
             
@@ -638,9 +659,9 @@ def editing_page():
                         updatePlan(plan.plan_id, goal_name, None, None, target_age, due_date, 
                                     goal_total, goal_target, monthly_saving, 
                                     current_savings, current_savings_return, savings_term_months,
-                                    None, None, None,
-                                    0, savings_term_months, 0, 0, 
-                                    0, '1900-01-01', 0, 0, 0)
+                                    loan_radio, down_payment_radio, final_payment_radio,
+                                    down_payment_percent, down_payment_amount, final_payment_percent, final_payment_amount, 
+                                    loan_term_years, loan_start_date, loan_amount, loan_interest_rate, monthly_loan_payment)
                         
                         # Write result
                         st.success("Plan updated successfully!")
@@ -682,11 +703,11 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2 = st.tabs(["📊 Plan Overview", "📝 Saving Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
                 with tab1:
-                    if plan.goal_age - current_age > 1:               
+                    if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
-                        generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_total, 0, monthly_saving, 0, 0, currency_symbol)
+                        generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
                     else:
                         # Call the function to generate data and plot
                         generate_monthly_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
@@ -696,6 +717,9 @@ def editing_page():
                         create_savings_graph(plan_id)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
+        
+                with tab3:
+                    create_monthly_comparison_graph(plan_id)
 
             # --- CUSTOMIZED FINANCIAL PLAN ---
             if page == "Customized Financial Plan":
@@ -858,7 +882,7 @@ def editing_page():
                 st.divider()
                 
                 st.subheader("Statistics")
-                tab1, tab2 = st.tabs(["📊 Plan Overview", "📝 Saving Progress"])
+                tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📝 Saving Progress", "📈 Monthly Progress"])
                 with tab1:
                     if plan.goal_age - current_age > 1:
                         # Call the function to generate data and plot
@@ -873,6 +897,8 @@ def editing_page():
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
         
+                with tab3:
+                    create_monthly_comparison_graph(plan_id)
         else: 
             st.error("No plan selected for editing.")
             return
