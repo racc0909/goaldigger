@@ -55,7 +55,10 @@ def login_page():
       st.divider()
       st.write("Empowering you to reach your financial dreams, from your next big purchase to a comfortable retirement. Whether it's short-term savings or long-term investments, we're here to guide you every step of the way.")
       st.write("""
-               🏆 This project represents the hard work and dedication of [Shiya Li](https://www.linkedin.com/in/shiya-li-19676620a), [Nhu Nguyen](https://www.linkedin.com/in/maithaonhunguyen), and [Linh Ha Le](https://www.linkedin.com/in/linh-ha-le), created over 4 weeks for the course "Financial Economics with Python" in the Summer Semester of 2024 🏆
+               🏆 This project represents the hard work and dedication of [Shiya Li](https://www.linkedin.com/in/shiya-li-19676620a), [Nhu Nguyen](https://www.linkedin.com/in/maithaonhunguyen), and [Linh Ha Le](https://www.linkedin.com/in/linh-ha-le), created over 4 weeks for the course "Financial Economics with Python" by Dr. Jan Radermacher and Prof. Dr. Andreas Hackethal in the Summer of 2024 🏆
+               """)
+      st.write("""
+               🥳 Special thanks to [Fabian Goldhorn](https://www.linkedin.com/in/fabian-goldhorn/) for helping us setting up and hosting the PostGreSQL database.
                """)
 
       # Signup and Login Page
