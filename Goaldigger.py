@@ -368,7 +368,7 @@ def main():
                st.markdown("</div>", unsafe_allow_html=True)
 
                # BUTTONS
-               col1_1, col1_2 = st.columns([2, 1])
+               col1_1, col1_2 = st.columns([3.5, 1])
                with col1_1:
                   if st.button(f"📈 Grow your savings", key=f"invest_{plan.plan_id}_{i}"):
                      st.session_state.invest_plan_id = plan.plan_id

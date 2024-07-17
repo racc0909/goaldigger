@@ -160,7 +160,7 @@ def editing_page():
                     # Final payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), ndex = 0 if plan.button_payment_last == "Yes" else 1)
+                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), index = 0 if plan.button_payment_last == "Yes" else 1)
                     if final_payment_radio == "Yes":
                         with col1_2:
                             final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent) if plan.button_payment_last == "Yes" else 10.00)
@@ -408,7 +408,7 @@ def editing_page():
                             index_model = 0
 
                         # Check if index_model is valid and within bounds
-                        if not (0 <= index_model < len(models)):
+                        if not (0 <= index_model < len(models) +1):
                             index_model = 0
 
                         selected_model = col2.selectbox('Select Car Model', models, index=index_model)
@@ -416,7 +416,7 @@ def editing_page():
                         if selected_model:
                             selected_car_details = df[(df['make'] == selected_brand) & (df['model'] == selected_model)]
                             price = selected_car_details['sellingprice'].values[0]
-                            col3.write(f"Suggested price: {currency_symbol}{price:.2f}")
+                            col3.write(f"Suggested price: {price:.2f} {currency_symbol}")
 
                     goal_total = st.number_input('Adjust the car price if needed:', min_value=0.0, format="%.2f", value=float(price) if selected_model else 0.0, key='adjusted_car_price')
                 else:
@@ -470,7 +470,7 @@ def editing_page():
                     # Final payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), ndex = 0 if plan.button_payment_last == "Yes" else 1)
+                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), index = 0 if plan.button_payment_last == "Yes" else 1)
                     if final_payment_radio == "Yes":
                         with col1_2:
                             final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent) if plan.button_payment_last == "Yes" else 10.00)
@@ -746,7 +746,7 @@ def editing_page():
                     # Final payment
                     col1_1, col1_2 = st.columns([1, 3])
                     with col1_1:
-                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), ndex = 0 if plan.button_payment_last == "Yes" else 1)
+                        final_payment_radio = st.radio("Is there a final payment?", ("Yes", "No"), index = 0 if plan.button_payment_last == "Yes" else 1)
                     if final_payment_radio == "Yes":
                         with col1_2:
                             final_payment_percent = st.slider('Final payment (%):', min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key='final_payment_percent', value=float(plan.payment_last_percent) if plan.button_payment_last == "Yes" else 10.00)
