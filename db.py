@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, extract, func, Column, Integer, String, Da
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime, timedelta, date
+from datetime import datetime
 import hashlib
 from st_pages import Page, show_pages, hide_pages
 
@@ -41,6 +41,8 @@ class Plan(Base):
     created_on = Column(Date, nullable=False)
     goal_type = Column(String(255), nullable=False)
     goal_name = Column(String(255), nullable=False)
+    goal_name_extra1 = Column(String(255), nullable=True)
+    goal_name_extra2 = Column(String(255), nullable=True)
     goal_age = Column(Integer)
     goal_date = Column(Date, nullable=False)
     goal_total = Column(Numeric(10, 2), nullable=False)
@@ -49,6 +51,9 @@ class Plan(Base):
     saving_initial = Column(Numeric(10, 2), nullable=False)
     saving_duration = Column(Integer)
     saving_interest = Column(Numeric(10, 2), nullable=False)
+    button_loan = Column(String(10))
+    button_payment_first = Column(String(10))
+    button_payment_last = Column(String(10))
     payment_first_percent = Column(Numeric(10, 2), nullable=True)
     payment_first = Column(Numeric(10, 2), nullable=True)
     payment_last_percent = Column(Numeric(10, 2), nullable=True)
@@ -115,19 +120,6 @@ def signup(username, password):
     finally:
         session.close()
 
-def logout():
-    # Button to logout
-    if st.sidebar.button("Logout"):
-        st.session_state.logged_in = False
-        st.switch_page("Goaldigger.py")
-        st.experimental_rerun()
-
-def backToOverview():
-    # Button to backToOverview
-    if st.sidebar.button("Back to Overview"):
-        #del st.session_state.edit_plan_id
-        st.switch_page("Goaldigger.py")
-
 ### --- USER INFO ---
 def getUserInfo(user_id):
     session = Session()
@@ -165,56 +157,12 @@ def createOrUpdateUserInfo(user_id, user_nickname, user_country, user_currency, 
     finally:
         session.close()
 
-# Calculate date function
-def calculateGoalDate(user_birthday, goal_age):
-    """
-    Calculate the goal date by adding goal_age years to the user's birthday.
-    """
-    # Calculate the goal date
-    goal_date = user_birthday + timedelta(days=goal_age * 365.25)  # Approximately accounts for leap years
-    return goal_date
-
-def calculateSavingDuration(goal_date):
-    """
-    Calculate the number of days from today until the goal date.
-    """
-    today = datetime.today()
-    # Calculate the duration in days
-    duration_days = (goal_date - today).days
-    return duration_days
-
-def calculateGoalAge(user_birthday, goal_date):
-    """
-    Calculate the goal age by subtracting goal_date from the user's birthday and get the lower number
-    """
-    # Calculate the difference in years
-    goal_age = goal_date.year - user_birthday.year
-    
-    # Adjust for cases where the goal date is before the birthday in the year
-    if (goal_date.month, goal_date.day) < (user_birthday.month, user_birthday.day):
-        goal_age -= 1
-    
-    return goal_age
-
-def calculateUserAge(user_birthday):
-    """
-    Calculate the user age by subtracting today from the user's birthday and get the lower number
-    """
-    # Calculate the difference in years
-    today = date.today()
-    user_age = today.year - user_birthday.year
-    
-    # Adjust for cases where the goal date is before the birthday in the year
-    if (today.month, today.day) < (user_birthday.month, user_birthday.day):
-        user_age -= 1
-    
-    return user_age
-
 
 ### --- PLANS ---
-def createPlan(user_id, goal_type, goal_name, goal_age, goal_date, 
+def createPlan(user_id, goal_type, goal_name, goal_name_extra1, goal_name_extra2, goal_age, goal_date, 
                 goal_total, goal_target, goal_target_monthly, 
                 saving_initial, saving_interest, saving_duration,
+                button_loan, button_payment_first, button_payment_last,
                 payment_first_percent, payment_first, payment_last_percent, payment_last, 
                 loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
     session = Session()
@@ -225,6 +173,8 @@ def createPlan(user_id, goal_type, goal_name, goal_age, goal_date,
                     created_on=datetime.now(),
                     goal_type=goal_type, 
                     goal_name=goal_name, 
+                    goal_name_extra1=goal_name_extra1, 
+                    goal_name_extra2=goal_name_extra2, 
                     goal_age=goal_age, 
                     goal_date=goal_date, 
                     goal_total=round(goal_total, 2), 
@@ -233,6 +183,9 @@ def createPlan(user_id, goal_type, goal_name, goal_age, goal_date,
                     saving_initial=round(saving_initial, 2), 
                     saving_interest=round(saving_interest, 2), 
                     saving_duration=saving_duration,
+                    button_loan=button_loan, 
+                    button_payment_first=button_payment_first,
+                    button_payment_last=button_payment_last,
                     payment_first_percent=round(payment_first_percent, 2), 
                     payment_first=round(payment_first, 2), 
                     payment_last_percent=round(payment_last_percent, 2), 
@@ -277,9 +230,10 @@ def getPlan(plan_id):
     finally:
         session.close()
 
-def updatePlan(plan_id, goal_name, goal_age, goal_date, 
+def updatePlan(plan_id, goal_name, goal_name_extra1, goal_name_extra2, goal_age, goal_date, 
                 goal_total, goal_target, goal_target_monthly, 
                 saving_initial, saving_interest, saving_duration,
+                button_loan, button_payment_first, button_payment_last,
                 payment_first_percent, payment_first, payment_last_percent, payment_last, 
                 loan_duration, loan_startdate, loan_amount, loan_interest, loan_monthly):
     session = Session()
@@ -287,6 +241,8 @@ def updatePlan(plan_id, goal_name, goal_age, goal_date,
         plan = session.query(Plan).filter_by(plan_id=plan_id).first()
         if plan:
             plan.goal_name = goal_name
+            plan.goal_name_extra1 = goal_name_extra1
+            plan.goal_name_extra2 = goal_name_extra2
             plan.goal_age = goal_age
             plan.goal_date = goal_date
             plan.goal_total = round(goal_total, 2)
@@ -295,6 +251,9 @@ def updatePlan(plan_id, goal_name, goal_age, goal_date,
             plan.saving_initial = round(saving_initial, 2)
             plan.saving_interest = round(saving_interest, 2)
             plan.saving_duration = saving_duration
+            plan.button_loan = button_loan
+            plan.button_payment_first = button_payment_first
+            plan.button_payment_last = button_payment_last
             plan.payment_first_percent = round(payment_first_percent, 2)
             plan.payment_first = round(payment_first, 2)
             plan.payment_last_percent = round(payment_last_percent, 2)
@@ -439,7 +398,21 @@ def createFeedback(user_id, overall_experience, positive_feedback, improvements,
     finally:
         session.close()
 
-### PAGES
+
+### PAGE CONFIGURATIONS ###
+def logout():
+    # Button to logout
+    if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
+        st.switch_page("Goaldigger.py")
+        st.experimental_rerun()
+
+def backToOverview():
+    # Button to backToOverview
+    if st.sidebar.button("Back to Overview"):
+        #del st.session_state.edit_plan_id
+        st.switch_page("Goaldigger.py")
+
 def showChosenPages():
     show_pages(
         [
