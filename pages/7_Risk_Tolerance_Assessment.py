@@ -38,7 +38,7 @@ def assessment_page():
                 plan = getPlan(plan_id)
                 difference = relativedelta(plan.goal_date, datetime.now().date())
                 saving_duration = difference.years * 12 + difference.months
-                goal_target = getTotalSavings(user_id, plan_id)
+                goal_target = getTotalSavings(user_id, plan_id) + plan.saving_initial
             else:
                 saving_duration = 12
                 goal_target = 10000.00
