@@ -269,7 +269,7 @@ def editing_page():
                 st.subheader("Statistics")
                 tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
-                    if plan.goal_age - current_age > 1:
+                    if plan.goal_age - current_age > 2:
                         # Call the function to generate data and plot
                         generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
                     else:
@@ -583,7 +583,7 @@ def editing_page():
                 st.subheader("Statistics")
                 tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
-                    if plan.goal_age - current_age > 1:
+                    if plan.goal_age - current_age > 2:
                         # Call the function to generate data and plot
                         generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
                     else:
@@ -705,7 +705,7 @@ def editing_page():
                 st.subheader("Statistics")
                 tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
-                    if plan.goal_age - current_age > 1:
+                    if plan.goal_age - current_age > 2:
                         # Call the function to generate data and plot
                         generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
                     else:
@@ -884,7 +884,7 @@ def editing_page():
                 st.subheader("Statistics")
                 tab1, tab2, tab3 = st.tabs(["📊 Plan Overview", "📈 Monthly Progress", "📝 Saving Progress"])
                 with tab1:
-                    if plan.goal_age - current_age > 1:
+                    if plan.goal_age - current_age > 2:
                         # Call the function to generate data and plot
                         generate_data_and_plot(plan_id, current_savings, savings_term_months, goal_target, loan_term_years, monthly_saving, monthly_loan_payment, monthly_final_payment, currency_symbol)
                     else:
