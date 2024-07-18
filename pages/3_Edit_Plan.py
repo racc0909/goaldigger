@@ -248,7 +248,7 @@ def editing_page():
                     st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
                     if plan.goal_target > 0:
-                        progress = min(float(total_saving_plus / plan.goal_target), 1.0)
+                        progress = min(float(total_saving_plus) / float(plan.goal_target), 1.0)
                         st.progress(progress)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
@@ -565,7 +565,7 @@ def editing_page():
                     st.write(f"**Current Savings**: <span style='color: red;'>{total_saving_plus:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                     st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
                     if plan.goal_target > 0:
-                        progress = min(float(total_saving_plus / plan.goal_target), 1.0)
+                        progress = min(float(total_saving_plus) / float(plan.goal_target), 1.0)
                         st.progress(progress)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
@@ -690,7 +690,7 @@ def editing_page():
                     st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
                     if plan.goal_target > 0:
-                        progress = min(float(total_saving_plus / plan.goal_target), 1.0)
+                        progress = min(float(total_saving_plus) / float(plan.goal_target), 1.0)
                         st.progress(progress)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
@@ -872,7 +872,7 @@ def editing_page():
                     st.write(f"**Amount Still Needed**: <span style='color: red;'>{rest_saving:,.2f} {currency_symbol}</span>", unsafe_allow_html=True)
 
                     if plan.goal_target > 0:
-                        progress = min(float(total_saving_plus / plan.goal_target), 1.0)
+                        progress = min(float(total_saving_plus) / float(plan.goal_target), 1.0)
                         st.progress(progress)
                     else:
                         st.warning("Target amount for this plan is zero, cannot show graph.")
