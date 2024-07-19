@@ -10,3 +10,5 @@ Our vision is to create a user-friendly platform, rich with visualizations where
 ### Feature Previews
 - [Plan Overview & Investment](https://www.canva.com/design/DAGLTFebPUQ/_IlbAmT0qoy8ZFjjPJUcaQ/watch?utm_content=DAGLTFebPUQ&utm_campaign=designshare&utm_medium=link&utm_source=editor)
 - [Create Plan & Calculations](https://www.canva.com/design/DAGLS7TJi8I/ZXXCjuhdbw7LnfLP6ltV8w/watch?utm_content=DAGLS7TJi8I&utm_campaign=designshare&utm_medium=link&utm_source=editor)
+
+**More about us and our story [here](https://www.linkedin.com/posts/linh-ha-le_fiep-chatgpt-fiep-activity-7219703951275798528-IUHs?utm_source=share&utm_medium=member_desktop)**
