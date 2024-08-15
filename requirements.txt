@@ -21,7 +21,7 @@ streamlit_folium
 scikit-misc
 simpy
 streamlit_authenticator
-streamlit
+streamlit==1.36.0
 pathlib
 sqlalchemy
 psycopg2-binary
